@@ -144,7 +144,12 @@ const databaseViewController = {
       // Build project stage from table_columns
       const projectFields = { _id: 1, form_slug: 1, status: 1, created_at: 1, updated_at: 1 };
       for (const col of form.table_columns || []) {
-        if (col.key && col.checked !== false) {
+        if (!col.key || col.checked === false) continue;
+        if (col.key === "id") {
+          projectFields["id"] = "$_id";
+        } else if (["_id", "form_slug", "status", "created_at", "updated_at", "created_by", "updated_by"].includes(col.key)) {
+          projectFields[col.key] = 1;
+        } else {
           projectFields[col.key] = `$data.${col.key}`;
         }
       }

@@ -68,7 +68,11 @@ const DynamicAddEditFormV2 = forwardRef((props, ref) => {
   }, [currentFormValues]);
 
   const memoizedSections = useMemo(
-    () => schema?.sections || [],
+    () =>
+      (schema?.sections || []).map((s, idx) => ({
+        ...s,
+        section_id: s.section_id || s.id || s.slug || `sec_${idx}`,
+      })),
     [schema?.sections]
   );
   const memoizedSectionsData = useMemo(() => data || {}, [data]);

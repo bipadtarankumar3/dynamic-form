@@ -288,13 +288,22 @@ const DynamicFormViewV2 = ({
     loadViewData();
   }, [loadViewData]);
 
+  const memoizedSections = useMemo(
+    () =>
+      (schema?.sections || []).map((s, idx) => ({
+        ...s,
+        section_id: s.section_id || s.id || s.slug || `sec_${idx}`,
+      })),
+    [schema?.sections]
+  );
+
   const [activeSectionId, setActiveSectionId] = useState(null);
 
   useEffect(() => {
-    if (schema?.sections?.length > 0 && !activeSectionId) {
-      setActiveSectionId(schema.sections[0]?.section_id);
+    if (memoizedSections?.length > 0 && !activeSectionId) {
+      setActiveSectionId(memoizedSections[0]?.section_id);
     }
-  }, [schema?.sections, activeSectionId]);
+  }, [memoizedSections, activeSectionId]);
 
   // Check if current user is initiator/creator or admin
   const loggedInUser = getUser();
@@ -427,7 +436,7 @@ const DynamicFormViewV2 = ({
                   parent_form_title={schema?.parent_form_title || schema?.parent_form_name || "Parent Form"}
                 />
               )}
-              {schema?.sections?.map((section) => {
+              {memoizedSections?.map((section) => {
                 const isSecVisible = !section.conditions || evaluateConditions(section.conditions, data || {});
                 if (!isSecVisible) return null;
                 const currentSlug = form_slug || decoded?.form_slug;
@@ -538,7 +547,7 @@ const DynamicFormViewV2 = ({
 
              
 
-              {schema?.sections?.map((section) => {
+              {memoizedSections?.map((section) => {
                 const currentSlug = form_slug || decoded?.form_slug;
                 if (currentSlug === "monitoring" && section.type === "add_more") return null;
                 return (

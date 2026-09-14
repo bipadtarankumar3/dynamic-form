@@ -49,7 +49,11 @@ const PublicDynamicAddEditFormV2 = forwardRef((props, ref) => {
   const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
 
   const memoizedSections = useMemo(
-    () => schema?.sections || [],
+    () =>
+      (schema?.sections || []).map((s, idx) => ({
+        ...s,
+        section_id: s.section_id || s.id || s.slug || `sec_${idx}`,
+      })),
     [schema?.sections]
   );
   const memoizedSectionsData = useMemo(() => data || {}, [data]);

@@ -135,7 +135,14 @@ async function seed() {
             created_at: 1,
             status: 1,
             ...(form.table_columns || []).reduce((acc, col) => {
-              acc[col.key] = `$data.${col.key}`;
+              if (!col.key || col.checked === false) return acc;
+              if (col.key === "id") {
+                acc["id"] = "$_id";
+              } else if (["_id", "created_at", "updated_at", "status", "created_by", "updated_by", "form_slug"].includes(col.key)) {
+                acc[col.key] = 1;
+              } else {
+                acc[col.key] = `$data.${col.key}`;
+              }
               return acc;
             }, {}),
           },

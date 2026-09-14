@@ -4,6 +4,8 @@ const Form = require("../../models/Form.model");
 const FormData = require("../../models/FormData.model");
 const MasterSchema = require("../../models/MasterSchema.model");
 const MasterData = require("../../models/MasterData.model");
+const User = require("../../models/User.model");
+const Role = require("../../models/Role.model");
 const AuditLog = require("../../models/AuditLog.model");
 const DatabaseView = require("../../models/DatabaseView.model");
 const mongoose = require("mongoose");
@@ -21,6 +23,100 @@ async function resolveMasterOptions(field) {
   const masterSchema = await MasterSchema.findOne({ slug: field.master_slug, deleted_at: null }).lean();
   const labelField = masterSchema?.label_field || "name";
   return masterData.map(d => ({ value: d._id.toString(), label: d.data?.[labelField] || d.data?.name || String(d._id) }));
+}
+
+// Extract and flatten form fields from section payloads or root payload
+function extractFormData(form, reqBody, files = []) {
+  const resultData = {};
+  const rootPK = form.root_entity?.primary_key || "id";
+  const internalKeys = new Set([
+    "form_slug",
+    "form_id",
+    "record_id",
+    "id",
+    "_id",
+    rootPK,
+    "status",
+    "parent_id",
+    "parent_primary_key_value",
+    "parent_primary_key",
+    "children_slug",
+    "undefined",
+    "extra__",
+  ]);
+
+  // 1. Process sections defined in form schema
+  for (const section of form.sections || []) {
+    const secKey = section.section_id || section.id || section.slug;
+    const secData =
+      reqBody[secKey] ||
+      (section.section_id && reqBody[section.section_id]) ||
+      (section.id && reqBody[section.id]) ||
+      (section.slug && reqBody[section.slug]);
+
+    if (section.type === "general" && secData && typeof secData === "object" && !Array.isArray(secData)) {
+      for (const [k, v] of Object.entries(secData)) {
+        if (!internalKeys.has(k)) {
+          resultData[k] = v;
+        }
+      }
+    } else if (section.type === "add_more" && secData) {
+      const addMoreKey = section.slug || section.section_id || section.id;
+      if (Array.isArray(secData)) {
+        resultData[addMoreKey] = secData;
+      } else if (typeof secData === "object") {
+        resultData[addMoreKey] = Object.values(secData);
+      }
+    }
+  }
+
+  // 2. Also check if fields were passed flat in reqBody
+  for (const [k, v] of Object.entries(reqBody)) {
+    if (internalKeys.has(k)) continue;
+    const isSectionContainer = (form.sections || []).some(
+      (s) => s.section_id === k || s.id === k || s.slug === k
+    );
+    if (!isSectionContainer && k !== "undefined") {
+      resultData[k] = v;
+    }
+  }
+
+  // 3. If there is an "undefined" key in reqBody (from unkeyed sections), extract its fields if missing
+  if (reqBody["undefined"] && typeof reqBody["undefined"] === "object" && !Array.isArray(reqBody["undefined"])) {
+    for (const [k, v] of Object.entries(reqBody["undefined"])) {
+      if (!internalKeys.has(k) && resultData[k] === undefined) {
+        resultData[k] = v;
+      }
+    }
+  }
+
+  // 4. Attach any uploaded files
+  if (files && Array.isArray(files)) {
+    files.forEach((file) => {
+      const match = file.fieldname.match(/\[([^\]]+)\]$/);
+      const fieldKey = match ? match[1] : file.fieldname;
+      resultData[fieldKey] = file.filename || file.originalname;
+    });
+  }
+
+  return resultData;
+}
+
+// Clean and normalize existing record data from any legacy nested section keys
+function cleanRecordData(rawData) {
+  const data = { ...(rawData || {}) };
+  for (const [k, v] of Object.entries(data)) {
+    if (v && typeof v === "object" && !Array.isArray(v) && (k.startsWith("sec_") || k === "undefined")) {
+      for (const [subK, subV] of Object.entries(v)) {
+        if (subV !== undefined && subV !== null && subV !== "") {
+          data[subK] = subV;
+        }
+      }
+      delete data[k];
+    }
+  }
+  delete data["undefined"];
+  return data;
 }
 
 const dynamicFormController = {
@@ -81,27 +177,21 @@ const dynamicFormController = {
   add: async (req, res) => {
     try {
       const userId = req.user?.user_id;
-      const { form_slug, ...formData } = req.body;
+      const { form_slug, parent_id, parent_primary_key_value, status } = req.body;
 
       if (!form_slug) return res.status(400).json({ success: false, message: "form_slug is required" });
 
       const form = await getFormSchema(form_slug);
       if (!form) return res.status(400).json({ success: false, message: "Invalid form schema" });
 
-      // Remove internal keys
-      const { form_slug: _fs, form_id: _fi, ...cleanData } = formData;
-
-      // Attach any uploaded files
-      if (req.files && Array.isArray(req.files)) {
-        req.files.forEach((file) => {
-          cleanData[file.fieldname] = file.filename || file.originalname;
-        });
-      }
+      const effectiveParentId = parent_id || parent_primary_key_value || null;
+      const cleanData = extractFormData(form, req.body, req.files);
 
       const record = await FormData.create({
         form_slug,
         form_version: form.version || 1,
-        status: cleanData.status || "draft",
+        parent_id: effectiveParentId,
+        status: status || cleanData.status || "draft",
         data: cleanData,
         created_by: userId,
         updated_by: userId,
@@ -119,120 +209,186 @@ const dynamicFormController = {
   edit: async (req, res) => {
     try {
       const userId = req.user?.user_id;
-      const { form_slug, record_id, id, ...formData } = req.body;
-      const targetId = record_id || id;
+      const { form_slug, record_id, id, selected_data, status } = req.body;
 
       if (!form_slug) return res.status(400).json({ success: false, message: "form_slug is required" });
-      if (!targetId) return res.status(400).json({ success: false, message: "record_id is required" });
 
       const form = await getFormSchema(form_slug);
       if (!form) return res.status(400).json({ success: false, message: "Invalid form schema" });
 
+      const rootPK = form.root_entity?.primary_key || "id";
+      const targetId =
+        record_id ||
+        id ||
+        req.body[rootPK] ||
+        req.body.id ||
+        req.body._id ||
+        selected_data?.id ||
+        selected_data?._id ||
+        selected_data?.[rootPK] ||
+        (Object.keys(req.body).find((k) => k.endsWith("_id") && req.body[k])
+          ? req.body[Object.keys(req.body).find((k) => k.endsWith("_id") && req.body[k])]
+          : null);
+
+      if (!targetId) return res.status(400).json({ success: false, message: "record_id is required" });
+
       const existing = await FormData.findOne({ _id: targetId, form_slug, deleted_at: null }).lean();
       if (!existing) return res.status(404).json({ success: false, message: "Record not found" });
 
-      const { form_slug: _fs, ...cleanData } = formData;
+      const cleanData = extractFormData(form, req.body, req.files);
 
-      // Attach any uploaded files
-      if (req.files && Array.isArray(req.files)) {
-        req.files.forEach((file) => {
-          cleanData[file.fieldname] = file.filename || file.originalname;
-        });
+      // Clean existing data from legacy nested section keys or undefined keys
+      const updatedData = cleanRecordData(existing.data);
+      for (const s of form.sections || []) {
+        if (s.section_id) delete updatedData[s.section_id];
+        if (s.id) delete updatedData[s.id];
+        if (s.slug) delete updatedData[s.slug];
       }
 
+      Object.assign(updatedData, cleanData);
+      const targetStatus = status || cleanData.status || existing.status;
+
       await FormData.findByIdAndUpdate(targetId, {
-        data: { ...existing.data, ...cleanData },
-        status: cleanData.status || existing.status,
+        data: updatedData,
+        status: targetStatus,
         updated_by: userId,
       });
 
-      await AuditLog.create({ action: "update", module: form_slug, record_id: targetId, user_id: userId, old_data: existing.data, new_data: cleanData });
+      await AuditLog.create({ action: "update", module: form_slug, record_id: targetId, user_id: userId, old_data: existing.data, new_data: updatedData });
 
       return res.json({ success: true, message: "Record updated successfully" });
     } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
   },
 
   // ================================================================
-  // GENERAL LIST VIEW — paginated list from MongoDB view or collection
+  // GENERAL LIST VIEW — paginated list from FormData collection
   // ================================================================
   generalListView: async (req, res) => {
     try {
-      const { form_slug, page = 1, limit = 20, search, sort_field, sort_order, filters = [] } = req.body;
+      const {
+        form_slug,
+        page,
+        limit,
+        pageSize,
+        search,
+        sort_field,
+        sort_order,
+        filters,
+        parent_id,
+        parent_primary_key_value,
+        pagination,
+      } = req.body;
+
       if (!form_slug) return res.status(400).json({ success: false, message: "form_slug is required" });
 
       const form = await getFormSchema(form_slug);
       if (!form) return res.status(404).json({ success: false, message: "Form schema not found" });
 
-      const viewSlug = `v_${form_slug}`;
-      const db = mongoose.connection.db;
-      const skip = (Number(page) - 1) * Number(limit);
+      const currentPage = Number(page || pagination?.current_page || pagination?.page || 1);
+      const limitVal = Number(limit || pageSize || pagination?.page_size || pagination?.limit || 100);
+      const skip = (currentPage - 1) * limitVal;
+
+      // Safely parse filters if passed as JSON string or object/array
+      let parsedFilters = filters;
+      if (typeof parsedFilters === "string") {
+        try { parsedFilters = JSON.parse(parsedFilters); } catch (_) { parsedFilters = {}; }
+      }
+      if (!parsedFilters || typeof parsedFilters !== "object") {
+        parsedFilters = {};
+      }
+
+      // Extract effective search string
+      let effectiveSearch = "";
+      if (typeof search === "string" && search.trim()) {
+        effectiveSearch = search.trim();
+      } else if (!Array.isArray(parsedFilters) && typeof parsedFilters.search === "string" && parsedFilters.search.trim()) {
+        effectiveSearch = parsedFilters.search.trim();
+      }
 
       // Build filter query
-      const matchQuery = { deleted_at: null };
-      if (search && form.table_columns?.length > 0) {
-        const searchFields = form.table_columns
-          .filter(c => c.checked !== false)
-          .map(c => ({ [`data.${c.key}`]: { $regex: search, $options: "i" } }));
+      const matchQuery = { form_slug, deleted_at: null };
+
+      // Parent ID filter
+      const effectiveParentId = parent_id || parent_primary_key_value || (!Array.isArray(parsedFilters) ? parsedFilters.parent_id : undefined);
+      if (effectiveParentId) {
+        matchQuery.parent_id = effectiveParentId;
+      }
+
+      // Search across table_columns or sections fields
+      if (effectiveSearch) {
+        const searchCols = (form.table_columns && form.table_columns.length > 0)
+          ? form.table_columns.filter(c => c.checked !== false && !["id", "_id", "created_at", "updated_at"].includes(c.key))
+          : [];
+        const searchFields = searchCols.map(c => ({ [`data.${c.key}`]: { $regex: effectiveSearch, $options: "i" } }));
         if (searchFields.length > 0) matchQuery.$or = searchFields;
       }
 
-      // Apply additional filters
-      for (const f of filters) {
-        if (f.field && f.value !== undefined) {
-          matchQuery[`data.${f.field}`] = f.operator === "contains"
-            ? { $regex: f.value, $options: "i" }
-            : f.value;
+      // Apply additional filters (support both array format and object format)
+      if (Array.isArray(parsedFilters)) {
+        for (const f of parsedFilters) {
+          if (f && f.field && f.value !== undefined && f.value !== "") {
+            const key = (f.field === "status" || f.field === "parent_id") ? f.field : `data.${f.field}`;
+            matchQuery[key] = f.operator === "contains"
+              ? { $regex: f.value, $options: "i" }
+              : f.value;
+          }
+        }
+      } else {
+        for (const [k, v] of Object.entries(parsedFilters)) {
+          if (k === "search" || k === "parent_id" || k === "form_slug") continue;
+          if (v !== null && v !== undefined && v !== "") {
+            const key = (k === "status" || k === "parent_id") ? k : `data.${k}`;
+            matchQuery[key] = v;
+          }
         }
       }
 
-      matchQuery.form_slug = form_slug;
-
       // Sort
+      const sortField = sort_field || req.body.sort?.field || req.body.sort_by;
+      const sortOrder = sort_order || req.body.sort?.order || "desc";
+      const sortDir = (sortOrder === "desc" || sortOrder === -1 || sortOrder === "DESC") ? -1 : 1;
+
       const sortObj = {};
-      if (sort_field) {
-        sortObj[sort_field === "created_at" ? "created_at" : `data.${sort_field}`] = sort_order === "desc" ? -1 : 1;
+      if (sortField) {
+        const isRootField = ["created_at", "updated_at", "status", "_id"].includes(sortField);
+        sortObj[isRootField ? sortField : `data.${sortField}`] = sortDir;
       } else {
         sortObj.created_at = -1;
       }
 
-      // Try querying the MongoDB view first, fallback to direct FormData collection
-      let viewExists = false;
-      try {
-        const views = await db.listCollections({ name: viewSlug }).toArray();
-        viewExists = views.length > 0;
-      } catch (_) {}
+      // Query FormData collection directly
+      const [records, total] = await Promise.all([
+        FormData.find(matchQuery)
+          .skip(skip)
+          .limit(limitVal)
+          .sort(sortObj)
+          .populate("created_by", "name email")
+          .populate("updated_by", "name email")
+          .lean(),
+        FormData.countDocuments(matchQuery),
+      ]);
 
-      let records, total;
-
-      if (viewExists) {
-        // Query the MongoDB view
-        const viewCollection = db.collection(viewSlug);
-        const [recs, cnt] = await Promise.all([
-          viewCollection.find({}).skip(skip).limit(Number(limit)).sort(sortObj).toArray(),
-          viewCollection.countDocuments({}),
-        ]);
-        records = recs.map((r) => ({
-          id: r._id,
-          ...(r.data || {}),
-          ...r,
-        }));
-        total = cnt;
-      } else {
-        // Fallback: query FormData directly
-        [records, total] = await Promise.all([
-          FormData.find(matchQuery).skip(skip).limit(Number(limit)).sort(sortObj).lean(),
-          FormData.countDocuments(matchQuery),
-        ]);
-
-        // Flatten data fields for response
-        records = records.map((r) => ({
-          id: r._id,
-          ...r.data,
+      // Flatten data fields for response
+      const flattenedRecords = records.map((r) => {
+        const idStr = r._id?.toString() || r.id;
+        const createdByName = r.created_by?.name || (typeof r.created_by === "string" ? r.created_by : "");
+        const updatedByName = r.updated_by?.name || (typeof r.updated_by === "string" ? r.updated_by : "");
+        const cleanedData = cleanRecordData(r.data);
+        return {
+          id: idStr,
+          _id: idStr,
+          ...cleanedData,
           status: r.status,
           created_at: r.created_at,
           updated_at: r.updated_at,
-        }));
-      }
+          created_by: r.created_by?._id?.toString() || r.created_by || null,
+          created_by_name: createdByName,
+          name_created_by: createdByName,
+          updated_by: r.updated_by?._id?.toString() || r.updated_by || null,
+          updated_by_name: updatedByName,
+          name_updated_by: updatedByName,
+        };
+      });
 
       // Ensure table_columns has columns if not specified
       let tableColumns = form.table_columns || [];
@@ -240,25 +396,35 @@ const dynamicFormController = {
         tableColumns = [];
         form.sections.forEach((sec) => {
           (sec.fields || []).forEach((fld) => {
-            const k = fld.db_field || fld.id;
+            const k = fld.db_field || fld.column_name || fld.id;
             if (k && !tableColumns.some((c) => c.key === k)) {
-              tableColumns.push({ key: k, label: fld.label || k, type: fld.type || "text" });
+              tableColumns.push({ key: k, label: fld.label || k, type: fld.type || "text", checked: true, sortable: true });
             }
           });
         });
       }
 
+      const formObj = form.toObject ? form.toObject() : form;
       return res.json({
         success: true,
+        status: true,
         schema: {
-          title: form.title,
-          slug: form.slug,
+          ...formObj,
           table_columns: tableColumns,
-          actions: form.actions || {},
-          enable_approval: form.enable_approval || false,
         },
-        pagination: { page: Number(page), limit: Number(limit), total, pages: Math.ceil(total / limit) },
-        data: records,
+        pagination: {
+          current_page: currentPage,
+          page: currentPage,
+          page_size: limitVal,
+          limit: limitVal,
+          total,
+          pages: Math.ceil(total / limitVal) || 1,
+        },
+        total,
+        page: currentPage,
+        pageSize: limitVal,
+        data: flattenedRecords,
+        rows: flattenedRecords,
       });
     } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
   },
@@ -268,21 +434,47 @@ const dynamicFormController = {
   // ================================================================
   details: async (req, res) => {
     try {
-      const { form_slug, record_id, id } = req.body;
-      const targetId = record_id || id;
-
-      if (!form_slug || !targetId) return res.status(400).json({ success: false, message: "form_slug and record_id are required" });
+      const { form_slug, record_id, id, selected_data } = req.body;
+      if (!form_slug) return res.status(400).json({ success: false, message: "form_slug is required" });
 
       const form = await getFormSchema(form_slug);
       if (!form) return res.status(404).json({ success: false, message: "Form schema not found" });
 
+      const rootPK = form.root_entity?.primary_key || "id";
+      const targetId =
+        record_id ||
+        id ||
+        selected_data?.id ||
+        selected_data?._id ||
+        selected_data?.[rootPK] ||
+        (selected_data && typeof selected_data === "object"
+          ? selected_data[Object.keys(selected_data).find((k) => k.endsWith("_id"))]
+          : null);
+
+      if (!targetId) return res.status(400).json({ success: false, message: "form_slug and record_id are required" });
+
       const record = await FormData.findOne({ _id: targetId, form_slug, deleted_at: null }).lean();
       if (!record) return res.status(404).json({ success: false, message: "Record not found" });
 
+      const idStr = record._id.toString();
+      const cleanedData = cleanRecordData(record.data);
+      const responseData = {
+        id: idStr,
+        _id: idStr,
+        ...cleanedData,
+        status: record.status,
+        created_at: record.created_at,
+        updated_at: record.updated_at,
+      };
+      if (rootPK && rootPK !== "id") {
+        responseData[rootPK] = idStr;
+      }
+
       return res.json({
         success: true,
+        status: true,
         schema: form,
-        data: { id: record._id, ...record.data, status: record.status, created_at: record.created_at },
+        data: responseData,
       });
     } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
   },
@@ -292,29 +484,58 @@ const dynamicFormController = {
   // ================================================================
   viewById: async (req, res) => {
     try {
-      const { form_slug, record_id, id } = req.body;
-      const targetId = record_id || id;
-
-      if (!form_slug || !targetId) return res.status(400).json({ success: false, message: "form_slug and record_id are required" });
+      const { form_slug, record_id, id, selected_data } = req.body;
+      if (!form_slug) return res.status(400).json({ success: false, message: "form_slug is required" });
 
       const form = await getFormSchema(form_slug);
       if (!form) return res.status(404).json({ success: false, message: "Form schema not found" });
 
+      const rootPK = form.root_entity?.primary_key || "id";
+      const targetId =
+        record_id ||
+        id ||
+        selected_data?.id ||
+        selected_data?._id ||
+        selected_data?.[rootPK] ||
+        (selected_data && typeof selected_data === "object"
+          ? selected_data[Object.keys(selected_data).find((k) => k.endsWith("_id"))]
+          : null);
+
+      if (!targetId) return res.status(400).json({ success: false, message: "form_slug and record_id are required" });
+
       const record = await FormData.findOne({ _id: targetId, form_slug, deleted_at: null })
         .populate("created_by", "name email")
+        .populate("updated_by", "name email")
         .lean();
       if (!record) return res.status(404).json({ success: false, message: "Record not found" });
 
+      const idStr = record._id.toString();
+      const createdByName = record.created_by?.name || (typeof record.created_by === "string" ? record.created_by : "");
+      const updatedByName = record.updated_by?.name || (typeof record.updated_by === "string" ? record.updated_by : "");
+      const cleanedData = cleanRecordData(record.data);
+
+      const responseData = {
+        id: idStr,
+        _id: idStr,
+        ...cleanedData,
+        status: record.status,
+        created_at: record.created_at,
+        updated_at: record.updated_at,
+        created_by: record.created_by?._id?.toString() || record.created_by || null,
+        created_by_name: createdByName,
+        name_created_by: createdByName,
+        updated_by: record.updated_by?._id?.toString() || record.updated_by || null,
+        updated_by_name: updatedByName,
+      };
+      if (rootPK && rootPK !== "id") {
+        responseData[rootPK] = idStr;
+      }
+
       return res.json({
         success: true,
+        status: true,
         schema: form,
-        data: {
-          id: record._id,
-          ...record.data,
-          status: record.status,
-          created_at: record.created_at,
-          created_by: record.created_by,
-        },
+        data: responseData,
       });
     } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
   },
@@ -324,8 +545,8 @@ const dynamicFormController = {
   // ================================================================
   activeInactive: async (req, res) => {
     try {
-      const { form_slug, record_id, id, is_active } = req.body;
-      const targetId = record_id || id;
+      const { form_slug, record_id, id, selected_data, is_active } = req.body;
+      const targetId = record_id || id || selected_data?.id || selected_data?._id;
       if (!form_slug || !targetId) return res.status(400).json({ success: false, message: "form_slug and record_id are required" });
 
       const record = await FormData.findOne({ _id: targetId, form_slug, deleted_at: null });
@@ -343,8 +564,8 @@ const dynamicFormController = {
   // ================================================================
   deleteRecord: async (req, res) => {
     try {
-      const { form_slug, record_id, id } = req.body;
-      const targetId = record_id || id;
+      const { form_slug, record_id, id, selected_data } = req.body;
+      const targetId = record_id || id || selected_data?.id || selected_data?._id;
       if (!form_slug || !targetId) return res.status(400).json({ success: false, message: "form_slug and record_id are required" });
 
       await FormData.findOneAndUpdate({ _id: targetId, form_slug, deleted_at: null }, { deleted_at: new Date(), updated_by: req.user?.user_id });
