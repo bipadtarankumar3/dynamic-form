@@ -1,0 +1,587 @@
+{
+  "schema_version": "1.0",
+  "form_id": "user_registration",
+  "title": "User Registration",
+
+  "root_entity": {
+    "table": "users",
+    "primary_key": "user_id"
+  },
+
+  "sections": [
+    {
+      "section_id": "basic_info",
+      "section_label": "Personal Details",
+      "type": "general",
+      "table": "users",
+      "primary_key": "user_id",
+      "fields": [
+        {
+          "id": "full_name",
+          "label": "Full Name",
+          "type": "text",
+          "db_field": "u_full_name",
+          "required": true,
+          "ui": {
+            "placeholder": "Enter your full name"
+          },
+          "validation": {
+            "min_length": 3,
+            "pattern": "^[a-zA-Z ]+$"
+          },
+          "messages": {
+            "required": "Full name is required",
+            "min_length": "Full name must be at least 3 characters",
+            "pattern": "Only alphabets and spaces allowed"
+          }
+        },
+        {
+          "id": "employment_period",
+          "label": "Employment Period",
+          "type": "date_range",
+          "data_type": "daterange",
+          "act_db_field": {
+            "start": "u_employment_start_date",
+            "end": "u_employment_end_date"
+          },
+
+          "db_field": "u_employment_period",
+          "required": true,
+          "validation": {
+            "min_date": "dob",
+            "max_date": "today"
+          },
+          "messages": {
+            "required": "Employment period is required",
+            "range": "Invalid date range",
+            "min_date": "Start date cannot be before DOB",
+            "max_date": "End date cannot be in the future"
+          }
+        },
+
+        {
+          "id": "gender",
+          "label": "Gender",
+          "type": "select",
+          "db_field": "u_gender",
+          "required": true,
+          "ui": {
+            "placeholder": "Select your gender"
+          },
+          "options": [
+            { "label": "Male", "value": "M" },
+            { "label": "Female", "value": "F" },
+            { "label": "Other", "value": "O" }
+          ],
+          "messages": {
+            "required": "Please select your gender"
+          }
+        },
+        {
+          "id": "u_dob",
+          "label": "Date of Birth",
+          "type": "date",
+          "db_field": "u_dob",
+          "ui": {
+            "placeholder": "Select your date of birth"
+          },
+          "required_when": {
+            "full_name": { "not_null": true }
+          },
+          "validation": {
+            "max_date": "today"
+          },
+          "messages": {
+            "required": "Date of Birth is required",
+            "max_date": "DOB cannot be in the future"
+          }
+        },
+        {
+          "id": "hobbies",
+          "label": "Hobbies",
+          "type": "select",
+          "db_field": "u_hobby_id",
+          "ui": {
+            "placeholder": "Select your hobby"
+          },
+          "required": true,
+          "data_source": {
+            "type": "master",
+            "name": "hobbies",
+            "primary_key": "th_hobby_id",
+            "label_key": "th_hobby_name",
+            "table_name": "hobbies"
+          },
+          "messages": {
+            "required": "Please select your hobby"
+          }
+        },
+        {
+          "id": "state",
+          "label": "State",
+          "type": "select",
+          "db_field": "u_user_state_id",
+          "required": true,
+          "ui": {
+            "placeholder": "Select your state"
+          },
+          "data_source": {
+            "type": "master",
+            "name": "states",
+            "primary_key": "ts_state_id",
+            "label_key": "ts_state_name",
+            "table_name": "states"
+          },
+          "messages": {
+            "required": "Please select your state"
+          }
+        },
+        {
+          "id": "grade",
+          "label": "Grade",
+          "type": "select",
+          "multiple": true,
+          "db_field": "u_grade",
+          "ui": {
+            "placeholder": "Select your grades"
+          },
+          "required": true,
+          "options": [
+            { "label": "A", "value": "A" },
+            { "label": "B", "value": "B" },
+            { "label": "C", "value": "C" },
+            { "label": "D", "value": "D" }
+          ],
+          "messages": {
+            "required": "Please select your grades"
+          }
+        },
+        {
+          "id": "hobbiess",
+          "label": "Hobbiess",
+          "type": "select",
+          "multiple": true,
+          "db_field": "u_hobby_ids",
+          "ui": {
+            "placeholder": "Select your hobbys"
+          },
+          "required": true,
+          "data_source": {
+            "type": "master",
+            "name": "hobbies",
+            "primary_key": "th_hobby_id",
+            "label_key": "th_hobby_name",
+            "table_name": "hobbies"
+          },
+          "messages": {
+            "required": "Please select your hobbys"
+          }
+        },
+        {
+          "id": "district",
+          "label": "District",
+          "type": "select",
+          "db_field": "u_user_district_id",
+          "ui": {
+            "placeholder": "Select your district"
+          },
+          "required": true,
+          "enabled_when": { "u_user_state_id": { "not_null": true } },
+          "dependency": {
+            "parent": "state",
+            "parent_db_field": "u_user_state_id",
+            "clear_on_change": true,
+            "fetch_on_parent_change": true
+          },
+          "data_source": {
+            "type": "master",
+            "name": "districts",
+            "filters": ["u_user_state_id"],
+            "primary_key": "tdis_district_id",
+            "label_key": "tdis_district_name",
+            "table_name": "districts"
+          },
+          "messages": {
+            "required": "Please select your district"
+          }
+        },
+        {
+          "id": "block",
+          "label": "Block",
+          "type": "select",
+          "db_field": "u_user_block_id",
+          "ui": {
+            "placeholder": "Select your block"
+          },
+          "required": true,
+          "enabled_when": { "u_user_district_id": { "not_null": true } },
+          "dependency": {
+            "parent": "district",
+            "parent_db_field": "u_user_district_id",
+            "clear_on_change": true,
+            "fetch_on_parent_change": true
+          },
+          "data_source": {
+            "type": "master",
+            "name": "blocks",
+            "filters": ["u_user_district_id"],
+            "primary_key": "tblo_block_id",
+            "label_key": "tblo_block_name",
+            "table_name": "blocks"
+          },
+          "messages": {
+            "required": "Please select your block"
+          }
+        },
+        {
+          "id": "village",
+          "label": "Village",
+          "type": "select",
+          "db_field": "user_village_id",
+          "ui": {
+            "placeholder": "Select your village"
+          },
+          "enabled_when": { "u_user_block_id": { "not_null": true } },
+          "dependency": {
+            "parent": "block",
+            "parent_db_field": "u_user_block_id",
+            "clear_on_change": true,
+            "fetch_on_parent_change": true
+          },
+          "data_source": {
+            "type": "master",
+            "name": "villages",
+            "filters": ["u_user_block_id"],
+            "primary_key": "tvil_village_id",
+            "label_key": "tvil_village_name",
+            "table_name": "villages"
+          },
+          "messages": {
+            "required": "Please select your village"
+          }
+        },
+        {
+          "id": "profile_photo",
+          "label": "Profile Photo",
+          "type": "file",
+          "db_field": "profile_photo",
+          "required": true,
+          "ui": {
+            "placeholder": "Upload profile photo"
+          },
+
+          "file": {
+            "table": "t_documents",
+            "foreign_key": "final_doc_id",
+            "primary_key": "tdoc_id",
+            "file_path_key": "file_path",
+            "file_name_key": "file_name",
+            "doc_type_key": "doc_purpose",
+            "doc_base_url": "BASE_URL",
+            "multiple": false,
+            "max_size_mb": 5,
+            "allowed_types": ["image/jpeg", "image/png"],
+            "upload_path": "users/profile"
+          },
+
+          "validation": {
+            "min_items": 1,
+            "max_items": 2
+          },
+
+          "messages": {
+            "required": "Profile photo is required",
+            "min_items": "Please upload a profile photo",
+            "max_items": "Only one profile photo is allowed",
+            "file_size": "File size must be under 5MB",
+            "file_type": "Only JPG or PNG files are allowed"
+          },
+
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin", "user"]
+          }
+        }
+      ]
+    },
+
+    {
+      "section_id": "bank_details",
+      "section_label": "Bank Details",
+      "type": "general",
+      "table": "user_banks",
+      "primary_key": "ub_bank_id",
+      "relation": {
+        "type": "one_to_one",
+        "parent_table": "users",
+        "parent_key": "user_id",
+        "foreign_key": "ub_user_id"
+      },
+      "fields": [
+        {
+          "id": "ub_bank_name",
+          "label": "Bank Name",
+          "type": "text",
+          "db_field": "ub_bank_name",
+          "ui": {
+            "placeholder": "Enter your bank name"
+          },
+          "required": true,
+          "validation": { "min_length": 3 },
+          "messages": {
+            "required": "Bank name is required",
+            "min_length": "Bank name must be at least 3 characters"
+          }
+        },
+        {
+          "id": "ub_account_number",
+          "label": "Account Number",
+          "type": "text",
+          "db_field": "ub_account_number",
+          "ui": {
+            "placeholder": "Enter your account number"
+          },
+          "required": true,
+          "validation": { "pattern": "^[0-9]{9,18}$" },
+          "messages": {
+            "required": "Account number is required",
+            "pattern": "Account number must be 9 to 18 digits"
+          }
+        },
+        {
+          "id": "ub_ifsc",
+          "label": "IFSC",
+          "type": "text",
+          "db_field": "ub_ifsc",
+          "ui": {
+            "placeholder": "Enter IFSC code"
+          },
+          "required": true,
+          "validation": { "pattern": "^[A-Z]{4}0[A-Z0-9]{6}$" },
+          "messages": {
+            "required": "IFSC is required",
+            "pattern": "Invalid IFSC format"
+          }
+        }
+      ]
+    },
+
+    {
+      "section_id": "family_members",
+      "section_label": "Family Members",
+      "type": "add_more",
+      "table": "family_members",
+      "primary_key": "family_member_id",
+      "slug": "family_members",
+      "relation": {
+        "type": "one_to_many",
+        "parent_table": "users",
+        "parent_key": "user_id",
+        "foreign_key": "fm_user_id"
+      },
+      "fields": [
+        {
+          "id": "fm_name",
+          "label": "Name",
+          "type": "text",
+          "db_field": "fm_name",
+          "required": true,
+          "ui": {
+            "placeholder": "Enter family member's name"
+          },
+          "validation": { "min_length": 3 },
+          "messages": {
+            "required": "Name is required",
+            "min_length": "Name must be at least 3 characters"
+          }
+        },
+        {
+          "id": "employment_period",
+          "label": "Employment Period",
+          "type": "date_range",
+          "data_type": "daterange",
+          "act_db_field": {
+            "start": "fm_employment_start_date",
+            "end": "fm_employment_end_date"
+          },
+
+          "db_field": "fm_employment_period",
+          "required": true,
+          "validation": {
+            "min_date": "dob",
+            "max_date": "today"
+          },
+          "messages": {
+            "required": "Employment period is required",
+            "range": "Invalid date range",
+            "min_date": "Start date cannot be before DOB",
+            "max_date": "End date cannot be in the future"
+          }
+        },
+        {
+          "id": "fm_skills_id",
+          "label": "Skills",
+          "type": "select",
+          "ui": {
+            "placeholder": "Select your skill"
+          },
+          "db_field": "fm_skills_id",
+          "data_source": {
+            "type": "master",
+            "name": "skills",
+            "primary_key": "tski_skill_id",
+            "label_key": "tski_skill_name",
+            "table_name": "skills_master"
+          },
+          "required": true,
+          "messages": {
+            "required": "Please select your skill"
+          }
+        },
+        {
+          "id": "fm_user_relation_id",
+          "label": "Relation",
+          "type": "select",
+          "ui": {
+            "placeholder": "Select relation"
+          },
+          "db_field": "fm_user_relation_id",
+          "options": [
+            { "label": "Father", "value": 1 },
+            { "label": "Mother", "value": 2 },
+            { "label": "Sibling", "value": 3 },
+            { "label": "Spouse", "value": 4 },
+            { "label": "Child", "value": 5 }
+          ],
+          "required": true,
+          "messages": {
+            "required": "Please select relation"
+          }
+        },
+        {
+          "id": "hobbies",
+          "label": "Hobbies",
+          "type": "select",
+          "multiple": true,
+          "db_field": "fm_hobby_id",
+          "ui": {
+            "placeholder": "Select your hobby"
+          },
+          "required": true,
+          "data_source": {
+            "type": "master",
+            "name": "hobbies",
+            "primary_key": "th_hobby_id",
+            "label_key": "th_hobby_name",
+            "table_name": "hobbies"
+          },
+          "messages": {
+            "required": "Please select your hobby"
+          }
+        },
+        {
+          "id": "fm_dob",
+          "label": "DOB",
+          "type": "date",
+          "db_field": "fm_dob",
+          "ui": {
+            "placeholder": "Select date of birth"
+          },
+          "validation": { "max_date": "today" },
+          "messages": {
+            "max_date": "DOB cannot be in the future"
+          }
+        }
+      ]
+    },
+
+    {
+      "section_id": "qualifications",
+      "section_label": "Qualifications",
+      "type": "add_more",
+      "table": "user_qualifications",
+      "primary_key": "qualification_id",
+      "slug": "qualifications",
+      "relation": {
+        "type": "one_to_many",
+        "parent_table": "users",
+        "parent_key": "user_id",
+        "foreign_key": "uq_user_id"
+      },
+      "fields": [
+        {
+          "id": "uq_degree_id",
+          "label": "Degree",
+          "type": "select",
+          "multiple": true,
+          "ui": {
+            "placeholder": "Select your degree"
+          },
+          "db_field": "uq_degree_id",
+          "options": [
+            { "label": "High School", "value": 1 },
+            { "label": "Bachelor's", "value": 2 },
+            { "label": "Master's", "value": 3 },
+            { "label": "PhD", "value": 4 }
+          ],
+          "required": true,
+          "messages": {
+            "required": "Please select your degree"
+          }
+        },
+        {
+          "id": "uq_skills_id",
+          "label": "Skills",
+          "type": "select",
+          "multiple": true,
+          "ui": {
+            "placeholder": "Select your skills"
+          },
+          "db_field": "uq_skills_id",
+          "data_source": {
+            "type": "master",
+            "name": "skills",
+            "primary_key": "tski_skill_id",
+            "label_key": "tski_skill_name",
+            "table_name": "skills_master"
+          },
+          "required": true,
+          "messages": {
+            "required": "Please select your skills"
+          }
+        },
+        {
+          "id": "uq_institution",
+          "label": "Institution",
+          "type": "text",
+          "db_field": "uq_institution",
+          "required": true,
+          "ui": {
+            "placeholder": "Enter institution name"
+          },
+          "validation": { "min_length": 3 },
+          "messages": {
+            "required": "Institution name is required",
+            "min_length": "Institution name must be at least 3 characters"
+          }
+        },
+        {
+          "id": "uq_passing_year",
+          "label": "Passing Year",
+          "type": "number",
+          "ui": {
+            "placeholder": "Enter passing year"
+          },
+          "number_type": "integer",
+          "db_field": "uq_passing_year",
+          "validation": { "min": 1950, "max": 2035 }
+        }
+      ]
+    }
+  ],
+  "actions": [
+    { "type": "view", "roles": ["admin", "user"] },
+    { "type": "edit", "roles": ["admin"] },
+    { "type": "delete", "roles": ["admin"], "confirm": true,"visible": false }
+  ]
+}

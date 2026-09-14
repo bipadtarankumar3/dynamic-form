@@ -1,0 +1,164 @@
+#popup .popover {
+    width: 400px;
+}
+
+.layer-section .tree input[type=checkbox] {
+    margin: -6px 2px 0 0px;
+    position: relative;
+    top: -3px;
+    width: 23px;
+    height: 18px;
+}
+
+.pop-head {
+    margin-bottom: 13px;
+    font-size: 15px;
+    font-weight: 600;
+    background: #b74848;
+    color: #fff;
+    padding: 4px 7px 3px 10px;
+    text-align: center;
+}
+
+/* .popover {
+    box-shadow: rgb(169 0 0 / 17%) 0px -23px 25px 0px inset, rgb(0 0 0 / 15%) 0px -36px 30px 0px inset, rgb(0 0 0 / 10%) 0px -79px 40px 0px inset, rgb(225 15 15 / 6%) 0px 2px 1px, rgb(0 0 0 / 9%) 0px 4px 2px, rgb(0 0 0 / 9%) 0px 8px 4px, rgb(0 0 0 / 9%) 0px 16px 8px, rgb(0 0 0 / 9%) 0px 32px 16px;
+    border: 3px solid #ffc107;
+} */
+
+.link-bt {
+    float: right !important;
+}
+
+.ol-dragbox {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 0, 1);
+}
+
+#progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 5px;
+    background: rgba(0, 60, 136, 0.4);
+    width: 0;
+    transition: width 250ms;
+}
+
+.colorpick-btn {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    position: relative;
+    top: -5px;
+    margin-right: 6px;
+}
+
+.layer-section .tree label {
+    cursor: pointer;
+    width: calc(100% - 60px);
+}
+
+.close-pop {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: block;
+    width: 50px;
+    height: 50px;
+    font-size: 0;
+}
+
+.close-pop:before,
+.close-pop:after {
+    position: absolute;
+    /* color: #000 !important; */
+    top: 21%;
+    left: 82%;
+    width: 5px;
+    height: 14px;
+    background-color: #212529;
+    transform: rotate(45deg) translate(-50%, -50%);
+    transform-origin: top left;
+    content: '';
+}
+
+.close-pop:after {
+    transform: rotate(-45deg) translate(-50%, -50%);
+}
+
+.popover-body {
+    padding: 1.5rem 0.75rem;
+    color: #212529;
+    width: 334px;
+}
+
+.popover {
+    max-width: 288px !important;
+}
+
+.nav-tabs .nav-link-m {
+    border: 1px solid transparent;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+
+.nav-tabs .nav-link-m {
+    margin-bottom: -1px;
+    background: 0 0;
+    border: 1px solid transparent;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+
+.ol-popup {
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #cccccc;
+    bottom: 12px;
+    left: -50px;
+    min-width: 150px;
+    max-width: 300px;
+}
+
+.ol-popup:after,
+.ol-popup:before {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.ol-popup:after {
+    border-top-color: white;
+    border-width: 10px;
+    left: 48px;
+    margin-left: -10px;
+}
+
+.ol-popup:before {
+    border-top-color: #cccccc;
+    border-width: 11px;
+    left: 48px;
+    margin-left: -11px;
+}
+
+.ol-popup-closer {
+    text-decoration: none;
+    position: absolute;
+    top: 2px;
+    right: 8px;
+}
+
+.leaflet-popup-content {
+    margin: 0 !important;
+}
+

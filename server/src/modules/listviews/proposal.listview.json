@@ -1,0 +1,170 @@
+{
+  "list_view": {
+    "entity": {
+     "table": "public.t_proposal",
+      "alias": "p",
+      "primary_key": "tpsl_proposal_id"
+    },
+
+    "default_sort": {
+      "column": "p.tpsl_created_at",
+      "order": "desc"
+    },
+
+    "columns": [
+      {
+        "key": "proposal_id",
+        "label": "Proposal ID",
+        "db_field": "p.tpsl_proposal_id",
+        "sortable": true,
+        "filterable": true,
+        "visible_to": ["admin"]
+      },
+      {
+        "key": "proposal_name",
+        "label": "Proposal Name",
+        "db_field": "p.tpsl_proposal_name",
+        "sortable": true,
+        "filterable": true,
+        "visible_to": ["admin", "user"]
+      },
+      {
+        "key": "proposal_code",
+        "label": "Proposal Code",
+        "db_field": "p.tpsl_proposal_code",
+        "sortable": true,
+        "filterable": true,
+        "visible_to": ["admin"]
+      },
+      {
+        "key": "proposal_age",
+        "label": "Proposal Age",
+        "db_field": "p.tpsl_age",
+        "sortable": true,
+        "filterable": true,
+        "visible_to": ["admin"]
+      },
+
+      {
+        "key": "state_id",
+        "label": "State ID",
+        "db_field": "p.tpsl_state_id",
+        "filterable": true,
+        "visible_to": ["admin"]
+      },
+      {
+        "key": "state_name",
+        "label": "State",
+        "db_field": "s.tsl_state_name",
+        "source": "join",
+        "join": {
+         "table": "public.t_state",
+          "alias": "s",
+          "on": "s.tsl_state_id = p.tpsl_state_id"
+        },
+        "filterable": true,
+        "filter_type": "select",
+        "visible_to": ["admin", "user"]
+      },
+
+      {
+        "key": "district_id",
+        "label": "District ID",
+        "db_field": "p.tpsl_district_id",
+        "filterable": true,
+        "visible_to": ["admin"]
+      },
+      {
+        "key": "district_name",
+        "label": "District",
+        "db_field": "d.tdl_district_name",
+        "source": "join",
+        "depends_on": "state_name",
+        "join": {
+          "table": "public.t_district",
+          "alias": "d",
+          "on": "d.tdl_district_id = p.tpsl_district_id"
+        },
+        "filterable": true,
+        "filter_type": "select",
+        "visible_to": ["admin", "user"]
+      },
+
+      {
+        "key": "block_id",
+        "label": "Block ID",
+        "db_field": "p.tpsl_block_id",
+        "filterable": true,
+        "visible_to": ["admin"]
+      },
+      {
+        "key": "block_name",
+        "label": "Block",
+        "db_field": "b.tbl_block_name",
+        "source": "join",
+        "depends_on": "district_name",
+        "join": {
+          "table": "public.t_block",
+          "alias": "b",
+          "on": "b.tbl_block_id = p.tpsl_block_id"
+        },
+        "filterable": true,
+        "filter_type": "select",
+        "visible_to": ["admin"]
+      },
+
+      {
+        "key": "is_active",
+        "label": "Active",
+        "db_field": "p.tpsl_is_active",
+        "filterable": true,
+        "filter_type": "boolean",
+        "visible_to": ["admin"]
+      },
+
+      {
+        "key": "created_by",
+        "label": "Created By",
+        "db_field": "p.tpsl_created_by",
+        "visible_to": ["admin"]
+      },
+      {
+        "key": "updated_by",
+        "label": "Updated By",
+        "db_field": "p.tpsl_updated_by",
+        "visible_to": ["admin"]
+      },
+
+      {
+        "key": "created_at",
+        "label": "Created At",
+        "db_field": "p.tpsl_created_at",
+        "sortable": true,
+        "visible_to": ["admin"]
+      },
+      {
+        "key": "updated_at",
+        "label": "Updated At",
+        "db_field": "p.tpsl_updated_at",
+        "sortable": true,
+        "visible_to": ["admin"]
+      }
+    ],
+
+    "actions": [
+      {
+        "type": "view",
+        "roles": ["admin", "user"]
+      },
+      {
+        "type": "edit",
+        "roles": ["admin"]
+      },
+      {
+        "type": "delete",
+        "roles": ["admin"],
+        "confirm": true
+      }
+    ]
+  }
+}

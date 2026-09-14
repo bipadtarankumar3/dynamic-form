@@ -1,0 +1,301 @@
+/* c:\nextjs\techcsr-csrproduct-web\client\src\assets\css\csr-services.css */
+
+.csr-section {
+  padding: 80px 5%;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 80vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.csr-content {
+  width: 40%;
+  max-width: 500px;
+  z-index: 2;
+}
+
+.csr-tagline {
+  color: #1a62ba;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.csr-title {
+  font-size: 42px;
+  color: #111827;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 24px;
+}
+
+.csr-desc {
+  color: #4b5563;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.csr-cta {
+  background: #1a62ba;
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(26, 98, 186, 0.3);
+}
+
+.csr-cta:hover {
+  background: #134e97;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(26, 98, 186, 0.4);
+}
+
+/* Right side circular composition */
+.csr-visual {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: 500px;
+}
+
+/* Connecting circle track */
+.csr-circle-track {
+  position: absolute;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  border: 2px dashed rgba(26, 98, 186, 0.2);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+/* Central Bubble */
+.csr-center-bubble {
+  width: 160px;
+  height: 160px;
+  background: linear-gradient(135deg, #1a62ba 0%, #15803d 100%);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  z-index: 3;
+  box-shadow: 0 15px 35px rgba(21, 128, 61, 0.3);
+  position: relative;
+}
+
+.csr-center-bubble h3 {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Outer Bubbles */
+.csr-service-bubble {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  z-index: 2;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(26, 98, 186, 0.1);
+}
+
+.csr-service-bubble:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 15px 35px rgba(26, 98, 186, 0.15);
+  border-color: rgba(26, 98, 186, 0.3);
+}
+
+.csr-bubble-icon {
+  font-size: 32px;
+  color: #15803d;
+  margin-bottom: 8px;
+}
+
+.csr-service-bubble p {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Positioning for desktop/tablet */
+/* Angle 1: Top (0 deg) */
+.bubble-1 {
+  top: -65px;
+  left: calc(50% - 65px);
+}
+
+/* Angle 2: Right (90 deg) */
+.bubble-2 {
+  top: calc(50% - 65px);
+  right: -65px;
+}
+
+/* Angle 3: Bottom (180 deg) */
+.bubble-3 {
+  bottom: -65px;
+  left: calc(50% - 65px);
+}
+
+/* Angle 4: Left (270 deg) */
+.bubble-4 {
+  top: calc(50% - 65px);
+  left: -65px;
+}
+
+/* Animations */
+.animate-hidden {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.animate-fade-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-float {
+  animation: floatPulse 4s ease-in-out infinite;
+}
+
+.delay-1 {
+  animation-delay: 0.1s;
+}
+
+.delay-2 {
+  animation-delay: 0.3s;
+}
+
+.delay-3 {
+  animation-delay: 0.5s;
+}
+
+.delay-4 {
+  animation-delay: 0.7s;
+}
+
+.delay-5 {
+  animation-delay: 0.9s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatPulse {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Tablet (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .csr-section {
+    flex-direction: column;
+    padding: 60px 5%;
+  }
+
+  .csr-content {
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .csr-visual {
+    width: 100%;
+    margin-top: 40px;
+  }
+}
+
+/* Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .csr-title {
+    font-size: 32px;
+  }
+
+  .csr-visual {
+    height: auto;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .csr-circle-track {
+    display: none;
+    /* Hide dashed circle on mobile */
+  }
+
+  .csr-center-bubble {
+    width: 100%;
+    border-radius: 12px;
+    height: auto;
+    padding: 30px;
+    margin-bottom: 20px;
+  }
+
+  .csr-service-bubble {
+    position: relative;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .csr-bubble-icon {
+    margin-bottom: 0;
+    font-size: 28px;
+  }
+
+  .csr-service-bubble p {
+    font-size: 16px;
+  }
+}

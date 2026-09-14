@@ -1,0 +1,1998 @@
+/* ── Form Builder V2 Modern Design System ── */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --fb-primary: var(--primary-color, #15803d);
+  --fb-primary-hover: var(--primary-color-dark, #166534);
+  --fb-primary-light: rgba(var(--primary-color-rgb, 21, 128, 61), 0.1);
+  --fb-secondary: var(--secondary-color, #15803d);
+  --fb-accent: var(--secondary-color, #16a34a);
+  --fb-bg: #f8fafc;
+  --fb-card-bg: #ffffff;
+  --fb-border: #e2e8f0;
+  --fb-border-hover: #cbd5e1;
+  --fb-text-main: #0f172a;
+  --fb-text-muted: #64748b;
+  --fb-text-light: #94a3b8;
+  --fb-radius-lg: 14px;
+  --fb-radius-md: 10px;
+  --fb-radius-sm: 6px;
+  --fb-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --fb-shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+  --fb-shadow-lg: 0 12px 28px -4px rgba(0, 0, 0, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Full Page Builder Overlay Container ── */
+.fb-v2-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  max-width: 100%;
+  max-height: 100vh;
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: var(--fb-text-main);
+  background-color: #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 10;
+}
+
+/* ── Fullscreen Ant Modal Styling for Form Builder V2 ── */
+.fb-v2-fullscreen-modal.ant-modal {
+  max-width: 100vw !important;
+  width: 100vw !important;
+  top: 0 !important;
+  left: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100vh !important;
+}
+
+.fb-v2-fullscreen-modal .ant-modal-content {
+  padding: 0 !important;
+  border-radius: 0 !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+}
+
+.fb-v2-fullscreen-modal .ant-modal-body {
+  padding: 0 !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+}
+
+/* ── Ant Design Component Custom Overrides for High Contrast ── */
+.ant-radio-button-wrapper {
+  color: #475569 !important;
+  font-weight: 600 !important;
+  border-color: #cbd5e1 !important;
+  background: #f8fafc !important;
+}
+
+.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  color: #ffffff !important;
+  background: var(--primary-color, #15803d) !important;
+  border-color: var(--primary-color, #15803d) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 6px rgba(var(--primary-color-rgb, 21, 128, 61), 0.25) !important;
+}
+
+.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)::before {
+  background-color: transparent !important;
+}
+
+.ant-tabs-nav .ant-tabs-tab {
+  color: #64748b !important;
+  font-weight: 600 !important;
+}
+
+.ant-tabs-nav .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--primary-color, #15803d) !important;
+  font-weight: 700 !important;
+}
+
+.ant-tabs-ink-bar {
+  background: var(--primary-gradient, var(--primary-color, #15803d)) !important;
+  height: 3px !important;
+  border-radius: 3px !important;
+}
+
+/* ── Top Header Navigation ── */
+.fb-v2-header {
+  height: 64px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--fb-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.fb-v2-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.fb-v2-back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--fb-radius-md);
+  border: 1px solid var(--fb-border);
+  background: #ffffff;
+  color: var(--fb-text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fb-v2-back-btn:hover {
+  background: var(--fb-primary-light);
+  color: var(--fb-primary);
+  border-color: #c7d2fe;
+}
+
+.fb-v2-form-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--fb-text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.fb-v2-header-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 12px;
+}
+
+.fb-v2-nav-tab {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fb-text-muted);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background: transparent;
+}
+
+.fb-v2-nav-tab:hover {
+  color: var(--fb-text-main);
+}
+
+.fb-v2-nav-tab.active {
+  background: #ffffff;
+  color: var(--fb-primary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.fb-v2-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fb-v2-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--fb-radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.fb-v2-btn-secondary {
+  background: #ffffff;
+  border-color: var(--fb-border);
+  color: var(--fb-text-main);
+}
+
+.fb-v2-btn-secondary:hover {
+  background: #f8fafc;
+  border-color: var(--fb-border-hover);
+}
+
+.fb-v2-btn-primary {
+  background: var(--primary-gradient, var(--primary-color, #15803d)) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(var(--primary-color-rgb, 21, 128, 61), 0.3) !important;
+  border: none !important;
+}
+
+.fb-v2-btn-primary:hover {
+  background: var(--primary-gradient-hover, var(--primary-color-dark, #166534)) !important;
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb, 21, 128, 61), 0.4) !important;
+}
+
+/* ── VS Code-Style Layout Control Bar ── */
+.fb-v2-layout-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: #f1f5f9;
+  padding: 3px 4px;
+  border-radius: 8px;
+  border: 1px solid var(--fb-border);
+  margin-right: 4px;
+}
+
+.fb-v2-layout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.fb-v2-layout-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.fb-v2-layout-btn.active {
+  background: rgba(var(--primary-color-rgb, 21, 128, 61), 0.12);
+  border-color: rgba(var(--primary-color-rgb, 21, 128, 61), 0.3);
+  color: var(--primary-color, #15803d);
+}
+
+/* ── 3-Column Layout ── */
+.fb-v2-body {
+  display: flex;
+  flex: 1;
+  height: calc(100% - 64px);
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.fb-v2-body.is-resizing {
+  user-select: none !important;
+  cursor: col-resize !important;
+}
+
+/* ── VS Code-Style Interactive Draggable Resizer Splitter ── */
+.fb-v2-resizer {
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  position: relative;
+  z-index: 20;
+  background: transparent;
+  flex-shrink: 0;
+  margin: 0 -3px;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fb-v2-resizer .fb-v2-resizer-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 2px;
+  width: 2px;
+  background-color: transparent;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.fb-v2-resizer:hover .fb-v2-resizer-line,
+.fb-v2-resizer.is-active .fb-v2-resizer-line {
+  background-color: #0ea5e9;
+  box-shadow: 0 0 8px rgba(14, 165, 233, 0.7);
+}
+
+/* ── Left Sidebar (Palette) ── */
+.fb-v2-palette {
+  background: #ffffff;
+  border-right: 1px solid var(--fb-border);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.fb-v2-palette-search {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--fb-border);
+  position: relative;
+}
+
+.fb-v2-search-input {
+  width: 100%;
+  padding: 8px 12px 8px 34px;
+  font-size: 12.5px;
+  border-radius: var(--fb-radius-md);
+  border: 1px solid var(--fb-border);
+  background: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.fb-v2-search-input:focus {
+  outline: none;
+  border-color: var(--fb-primary);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.fb-v2-palette-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.fb-v2-category-group {
+  margin-bottom: 20px;
+}
+
+.fb-v2-category-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--fb-text-light);
+  margin-bottom: 10px;
+}
+
+.fb-v2-field-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fb-v2-palette-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1px solid var(--fb-border);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fb-text-main);
+  cursor: grab;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.fb-v2-palette-item:hover {
+  border-color: var(--fb-primary);
+  background: var(--fb-primary-light);
+  color: var(--fb-primary);
+  transform: translateX(2px);
+  box-shadow: var(--fb-shadow-sm);
+}
+
+.fb-v2-item-icon {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: #f1f5f9;
+  font-size: 13px;
+}
+
+/* ── Middle Canvas ── */
+.fb-v2-canvas-wrapper {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 24px;
+  background: #f8fafc;
+  box-sizing: border-box;
+}
+
+.fb-v2-canvas-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: all 0.2s ease;
+}
+
+.fb-v2-canvas-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  padding: 12px 20px;
+  border-radius: var(--fb-radius-lg);
+  border: 1px solid var(--fb-border);
+  box-shadow: var(--fb-shadow-sm);
+}
+
+/* Section Card */
+.fb-v2-section-card {
+  background: #ffffff;
+  border-radius: var(--fb-radius-lg);
+  border: 2px solid var(--fb-border);
+  box-shadow: var(--fb-shadow-sm);
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.fb-v2-section-card.selected {
+  border-color: var(--fb-primary) !important;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12), var(--fb-shadow-md) !important;
+}
+
+.fb-v2-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: #fafafa;
+  border-bottom: 1px solid var(--fb-border);
+  cursor: pointer;
+}
+
+.fb-v2-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fb-text-main);
+}
+
+.fb-v2-section-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fb-v2-icon-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--fb-radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--fb-text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fb-v2-icon-btn:hover {
+  background: #f1f5f9;
+  color: var(--fb-text-main);
+}
+
+.fb-v2-icon-btn.danger:hover {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.fb-v2-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+  padding: 20px;
+  min-height: 100px;
+}
+
+.fb-v2-empty-section {
+  grid-column: span 12;
+  border: 2px dashed #cbd5e1;
+  border-radius: var(--fb-radius-md);
+  padding: 32px;
+  text-align: center;
+  color: var(--fb-text-muted);
+  background: #f8fafc;
+}
+
+/* Field Item in Canvas */
+.fb-v2-field-card {
+  background: #ffffff;
+  border: 1px dashed var(--fb-border);
+  border-radius: var(--fb-radius-md);
+  padding: 12px 14px;
+  position: relative;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.fb-v2-field-card:hover {
+  border-style: solid;
+  border-color: #a5b4fc;
+  background: #f8fafc;
+}
+
+.fb-v2-field-card.selected {
+  border: 2px solid var(--fb-primary);
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb, 21, 128, 61), 0.1);
+}
+
+.fb-v2-field-card.dragging,
+.fb-v2-section-card.dragging {
+  opacity: 0.4;
+  border-style: solid !important;
+  border-color: var(--primary-color, #15803d) !important;
+}
+
+.fb-v2-field-card.drag-over,
+.fb-v2-section-card.drag-over {
+  border: 2px dashed var(--primary-color, #15803d) !important;
+  background: rgba(var(--primary-color-rgb, 21, 128, 61), 0.06) !important;
+  box-shadow: 0 0 0 4px rgba(var(--primary-color-rgb, 21, 128, 61), 0.15) !important;
+  transform: translateY(-2px);
+}
+
+.fb-v2-field-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.fb-v2-field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fb-text-main);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fb-v2-required-star {
+  color: #ef4444;
+  font-weight: bold;
+}
+
+.fb-v2-field-preview-input {
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+/* ── Right Inspector Panel ── */
+.fb-v2-inspector {
+  background: #ffffff;
+  border-left: 1px solid var(--fb-border);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.fb-v2-inspector-tabs {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--fb-border);
+  background: #ffffff;
+  flex-shrink: 0;
+}
+
+.fb-v2-inspector-tab {
+  flex: 1;
+  padding: 12px 8px;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fb-text-muted);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fb-v2-inspector-tab.active {
+  color: var(--fb-primary);
+  border-bottom-color: var(--fb-primary);
+  background: #ffffff;
+  font-weight: 700;
+}
+
+.fb-v2-inspector-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 18px;
+  box-sizing: border-box;
+}
+
+.fb-v2-form-group {
+  margin-bottom: 16px;
+}
+
+.fb-v2-form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fb-text-main);
+  margin-bottom: 6px;
+}
+
+.fb-v2-input {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  border-radius: var(--fb-radius-md);
+  border: 1px solid var(--fb-border);
+  background: #ffffff;
+  color: var(--fb-text-main);
+  transition: all 0.2s ease;
+}
+
+.fb-v2-input:focus {
+  outline: none;
+  border-color: var(--fb-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.fb-v2-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+/* ── Modern Form Listing (Dashboard View) ── */
+.flv-v2-container {
+  padding: 24px 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+.flv-v2-hero {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+  border-radius: 20px;
+  padding: 32px 40px;
+  color: #ffffff;
+  margin-bottom: 28px;
+  box-shadow: 0 10px 25px -5px rgba(49, 46, 129, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flv-v2-hero-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  color: #ffffff;
+}
+
+.flv-v2-hero-subtitle {
+  font-size: 14px;
+  color: #c7d2fe;
+  margin: 0;
+}
+
+.flv-v2-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.flv-v2-stat-card {
+  background: #ffffff;
+  border-radius: var(--fb-radius-lg);
+  padding: 20px;
+  border: 1px solid var(--fb-border);
+  box-shadow: var(--fb-shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.flv-v2-stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.flv-v2-stat-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--fb-text-main);
+  line-height: 1.2;
+}
+
+.flv-v2-stat-lbl {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fb-text-muted);
+}
+
+/* ── Detail Enrichment Banner ── */
+.flv-v2-enrichment-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  background: rgba(var(--primary-color-rgb, 21, 128, 61), 0.08);
+  border: 1px solid rgba(var(--primary-color-rgb, 21, 128, 61), 0.2);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--primary-color, #15803d);
+  font-weight: 600;
+}
+
+/* ── Forms Grid ── */
+.flv-v2-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* ── Empty State ── */
+.flv-v2-empty {
+  text-align: center;
+  padding: 60px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px dashed #cbd5e1;
+}
+
+.flv-v2-empty-icon {
+  font-size: 40px;
+  color: #cbd5e1;
+  margin-bottom: 12px;
+}
+
+.flv-v2-empty h3 {
+  margin: 0;
+  font-weight: 700;
+}
+
+.flv-v2-empty p {
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* ── Card ── */
+.flv-v2-card {
+  background: #edf2fa;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.flv-v2-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+/* Status tag row */
+.flv-v2-card-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+/* Card Header: title left, status tag right */
+.flv-v2-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.flv-v2-card-tags {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* Title */
+.flv-v2-card-title {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 4px 0;
+  color: #0f172a;
+}
+
+/* Slug */
+.flv-v2-card-slug {
+  font-size: 12px;
+  color: #64748b;
+  font-family: monospace;
+  margin-bottom: 12px;
+}
+
+/* ── Metadata Pill Row ── */
+.flv-v2-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* Shared pill base */
+.flv-v2-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 8px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: default;
+  border: 1px solid transparent;
+}
+
+.flv-v2-pill .anticon {
+  font-size: 10px;
+}
+
+/* Parent form pill – linked */
+.flv-v2-pill--parent {
+  background: #eff6ff;
+  color: #3b82f6;
+  border-color: #bfdbfe;
+}
+
+.flv-v2-pill--parent .flv-v2-pill-text {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Parent form pill – no parent */
+.flv-v2-pill--no-parent {
+  background: #f8fafc;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+  font-weight: 600;
+}
+
+/* Tabs status pill */
+.flv-v2-pill--tabs-on {
+  background: #f0fdf4;
+  color: #16a34a;
+  border-color: #bbf7d0;
+}
+
+.flv-v2-pill--tabs-off {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+/* Tab count pill */
+.flv-v2-pill--tab-count {
+  background: #faf5ff;
+  color: #7c3aed;
+  border-color: #e9d5ff;
+}
+
+/* Actions count pill */
+.flv-v2-pill--actions {
+  background: #fff7ed;
+  color: #ea580c;
+  border-color: #fed7aa;
+}
+
+/* ── Tooltip Content ── */
+.flv-v2-tooltip-wrap {
+  min-width: 180px;
+}
+
+.flv-v2-tooltip-empty {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.flv-v2-tooltip-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.flv-v2-tooltip-row:last-child {
+  border-bottom: none;
+}
+
+.flv-v2-tooltip-tab-row {
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.flv-v2-tooltip-tab-row:last-child {
+  border-bottom: none;
+}
+
+.flv-v2-tooltip-label {
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.flv-v2-tooltip-badge {
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-family: monospace;
+  letter-spacing: 0.3px;
+}
+
+/* ── Card Footer ── */
+.flv-v2-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flv-v2-card-footer-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* ── Loading Spinner Wrapper ── */
+.flv-v2-loading {
+  text-align: center;
+  padding: 60px;
+}
+
+/* ── Pagination Row ── */
+.flv-v2-pagination-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+  padding-bottom: 20px;
+}
+
+/* ── Table Wrapper ── */
+.flv-v2-table-wrap {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.flv-v2-table-title {
+  font-weight: 700;
+}
+
+.flv-v2-table-slug {
+  font-family: monospace;
+  color: #64748b;
+}
+
+.flv-v2-table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── List View Page Container ── */
+.flv-v2-container {
+  padding: 24px 32px;
+}
+
+/* ── Project Info Card ── */
+.flv-v2-project-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.flv-v2-project-card-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.flv-v2-project-card-icon--primary {
+  font-size: 24px;
+  color: var(--primary-color, #15803d);
+}
+
+.flv-v2-project-card-icon--sky {
+  font-size: 24px;
+  color: #0ea5e9;
+}
+
+.flv-v2-project-card-icon--violet {
+  font-size: 24px;
+  color: #8b5cf6;
+}
+
+.flv-v2-project-card-label {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.flv-v2-project-card-value {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ── Control Toolbar ── */
+.flv-v2-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.flv-v2-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.flv-v2-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Nav tab count badge */
+.flv-v2-nav-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.flv-v2-nav-count {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #e2e8f0;
+  color: #475569;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.fb-v2-nav-tab.active .flv-v2-nav-count {
+  background: var(--primary-color, #15803d);
+  color: #ffffff;
+}
+
+/* Search input */
+.flv-v2-search-input {
+  width: 280px;
+  border-radius: 10px;
+  height: 40px;
+}
+
+/* Create button */
+.flv-v2-create-btn {
+  border-radius: 10px !important;
+  height: 40px !important;
+  padding: 0 20px !important;
+  font-weight: 700 !important;
+  background: var(--primary-gradient, var(--primary-color, #15803d)) !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(var(--primary-color-rgb, 21, 128, 61), 0.3) !important;
+}
+
+/* View toggle segmented bar */
+.flv-v2-segmented-toggle {
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.flv-v2-segmented-toggle .ant-segmented-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.flv-v2-segmented-toggle .ant-segmented-item {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  color: #64748b !important;
+  transition: all 0.2s ease !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 12px !important;
+}
+
+.flv-v2-segmented-toggle .ant-segmented-item:hover:not(.ant-segmented-item-selected) {
+  color: #1e293b !important;
+}
+
+.flv-v2-segmented-toggle .ant-segmented-item-selected {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+.flv-v2-segmented-toggle .ant-segmented-item-icon {
+  margin-right: 6px !important;
+  font-size: 14px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.flv-v2-segmented-toggle .ant-segmented-thumb {
+  background-color: #ffffff !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* ── Status Filter Dropdown ── */
+.flv-v2-status-dropdown {
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1) !important;
+  padding: 4px !important;
+}
+
+.flv-v2-status-dropdown .ant-select-item {
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  padding: 7px 10px !important;
+  color: #374151 !important;
+  transition: background 0.15s ease !important;
+}
+
+/* Hover */
+.flv-v2-status-dropdown .ant-select-item:hover {
+  background: #f1f5f9 !important;
+}
+
+/* Override Ant Design default blue selected state */
+.flv-v2-status-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background-color: #f1f5f9 !important;
+  color: #374151 !important;
+  font-weight: 600 !important;
+}
+
+/* Selected: Published → green */
+.flv-v2-status-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled):has(.anticon-check-circle) {
+  background: #dcfce7 !important;
+  color: #15803d !important;
+  font-weight: 700 !important;
+}
+
+/* Selected: Drafts → amber */
+.flv-v2-status-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled):has(.anticon-close-circle) {
+  background: #fef3c7 !important;
+  color: #b45309 !important;
+  font-weight: 700 !important;
+}
+
+/* Selected: Master Schemas → indigo */
+.flv-v2-status-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled):has(.anticon-safety-certificate) {
+  background: #ede9fe !important;
+  color: #6d28d9 !important;
+  font-weight: 700 !important;
+}
+
+/* Hide default blue checkmark tick */
+.flv-v2-status-dropdown .ant-select-item-option-state {
+  display: none !important;
+}
+
+/* ============================================================
+   Form Actions & Listing Columns Setup Modal Styling
+   ============================================================ */
+.form-actions-modal-v2 .ant-modal-content {
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.25) !important;
+}
+
+.form-actions-modal-v2 .ant-modal-title {
+  line-height: normal !important;
+}
+
+.form-actions-modal-v2 .ant-modal-close {
+  color: rgba(255, 255, 255, 0.85) !important;
+  top: 14px !important;
+  right: 18px !important;
+}
+
+.form-actions-modal-v2 .ant-modal-close .anticon {
+  color: #ffffff !important;
+  font-size: 16px !important;
+}
+
+.form-actions-modal-v2 .ant-modal-close:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 50% !important;
+}
+
+.form-actions-modal-v2 .ant-tabs {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.form-actions-modal-v2 .ant-tabs-content-holder {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.form-actions-modal-v2 .ant-tabs-content {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+}
+
+.form-actions-modal-v2 .ant-tabs-tabpane {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+}
+
+.form-actions-modal-v2 .ant-tabs-tabpane:not(.ant-tabs-tabpane-active) {
+  display: none !important;
+}
+
+.form-actions-modal-v2 .ant-tabs-nav {
+  margin-bottom: 12px !important;
+  flex-shrink: 0 !important;
+}
+
+.form-actions-modal-v2 .ant-tabs-tab {
+  padding: 8px 16px !important;
+}
+
+.form-actions-modal-v2 .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--primary-color, #15803d) !important;
+  font-weight: 700 !important;
+}
+
+.form-actions-modal-v2 .ant-tabs-ink-bar {
+  background: var(--primary-color, #15803d) !important;
+  height: 3px !important;
+  border-radius: 3px 3px 0 0 !important;
+}
+
+.form-actions-modal-v2 .sortable-column-row:hover {
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05) !important;
+}
+
+.form-actions-modal-v2 .sortable-column-row:hover .anticon-holder {
+  color: var(--primary-color, #15803d) !important;
+}
+
+/* Primary Button Hover Styles - preserve crisp white text and icon */
+.form-actions-modal-v2 .ant-btn-primary,
+.fb-v2-container .ant-btn-primary {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.form-actions-modal-v2 .ant-btn-primary:hover,
+.fb-v2-container .ant-btn-primary:hover {
+  opacity: 0.92 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 14px rgba(var(--primary-color-rgb, 21, 128, 61), 0.35) !important;
+}
+
+.form-actions-modal-v2 .ant-btn-primary:hover svg,
+.form-actions-modal-v2 .ant-btn-primary:hover .anticon,
+.fb-v2-container .ant-btn-primary:hover svg,
+.fb-v2-container .ant-btn-primary:hover .anticon {
+  filter: none !important;
+  color: #ffffff !important;
+  fill: currentColor !important;
+}
+
+.form-actions-modal-v2 .ant-modal-footer {
+  border-top: 1px solid #f1f5f9 !important;
+  padding: 12px 24px !important;
+  margin: 0 !important;
+  background: #ffffff !important;
+}
+
+/* ============================================================
+   Duplicate & Create Form Schema Modal Styling (V2)
+   ============================================================ */
+.duplicate-form-modal-v2 .ant-modal-content,
+.create-form-modal-v2 .ant-modal-content {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.25) !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+}
+
+.duplicate-form-modal-v2 .ant-modal-header,
+.create-form-modal-v2 .ant-modal-header {
+  background: var(--primary-gradient, var(--primary-color, #15803d)) !important;
+  padding: 18px 24px !important;
+  margin: 0 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 16px 16px 0 0 !important;
+}
+
+.duplicate-form-modal-v2 .ant-modal-title,
+.create-form-modal-v2 .ant-modal-title {
+  background: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  min-height: auto !important;
+  line-height: normal !important;
+  color: #ffffff !important;
+  border-radius: 0 !important;
+}
+
+.duplicate-form-modal-v2 .ant-modal-close,
+.create-form-modal-v2 .ant-modal-close {
+  top: 16px !important;
+  right: 18px !important;
+  color: #ffffff !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+.duplicate-form-modal-v2 .ant-modal-close .anticon,
+.duplicate-form-modal-v2 .ant-modal-close span,
+.create-form-modal-v2 .ant-modal-close .anticon,
+.create-form-modal-v2 .ant-modal-close span {
+  color: #ffffff !important;
+  font-size: 16px !important;
+}
+
+.duplicate-form-modal-v2 .ant-modal-close:hover,
+.create-form-modal-v2 .ant-modal-close:hover {
+  background: rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+}
+
+.duplicate-form-modal-v2 .ant-modal-body,
+.create-form-modal-v2 .ant-modal-body {
+  padding: 24px 28px !important;
+}
+
+
+/* ============================================================
+   Form Triggers Action Buttons & Side Icons
+   ============================================================ */
+.trg-icon-badge {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 10px !important;
+  background: rgba(var(--primary-color-rgb, 21, 128, 61), 0.1) !important;
+  border: 1px solid rgba(var(--primary-color-rgb, 21, 128, 61), 0.2) !important;
+  color: var(--primary-color, #15803d) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 18px !important;
+  flex-shrink: 0 !important;
+  transition: all 0.2s ease !important;
+}
+
+.trg-action-btn {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 12.5px !important;
+  height: 34px !important;
+  padding: 0 14px !important;
+  color: #1e293b !important;
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.trg-action-btn .anticon,
+.trg-action-btn svg {
+  color: var(--primary-color, #15803d) !important;
+  font-size: 14px !important;
+  transition: transform 0.2s ease !important;
+}
+
+.trg-action-btn:hover {
+  border-color: var(--primary-color, #15803d) !important;
+  color: var(--primary-color, #15803d) !important;
+  background-color: #f8fafc !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08) !important;
+  transform: translateY(-1px) !important;
+}
+
+.trg-action-btn:hover .anticon,
+.trg-action-btn:hover svg {
+  color: var(--primary-color, #15803d) !important;
+  transform: scale(1.1) !important;
+}
+
+.trg-action-btn-active {
+  background: var(--primary-gradient, var(--primary-color, #15803d)) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(var(--primary-color-rgb, 21, 128, 61), 0.25) !important;
+}
+
+.trg-action-btn-active .anticon,
+.trg-action-btn-active svg {
+  color: #ffffff !important;
+}
+
+.trg-action-btn-active:hover {
+  background: var(--primary-gradient-hover, var(--primary-color-dark, #166534)) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+}
+
+.trg-action-btn-active:hover .anticon,
+.trg-action-btn-active:hover svg {
+  color: #ffffff !important;
+}
+
+.trg-delete-btn {
+  height: 34px !important;
+  width: 34px !important;
+  border-radius: 8px !important;
+  background-color: #fff1f2 !important;
+  border: 1px solid #fecdd3 !important;
+  color: #e11d48 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.trg-delete-btn .anticon,
+.trg-delete-btn svg {
+  color: #e11d48 !important;
+  font-size: 14px !important;
+  transition: transform 0.2s ease !important;
+}
+
+.trg-delete-btn:hover {
+  background-color: #fee2e2 !important;
+  border-color: #fda4af !important;
+  color: #be123c !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(225, 29, 72, 0.15) !important;
+}
+
+.trg-delete-btn:hover .anticon,
+.trg-delete-btn:hover svg {
+  color: #be123c !important;
+  transform: scale(1.1) !important;
+}
+
+/* ============================================================
+   Form Triggers Editor Modal & Workflow Cards
+   ============================================================ */
+.trg-edit-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 40px;
+}
+
+.trg-edit-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 14px !important;
+  padding: 24px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02) !important;
+  transition: all 0.2s ease !important;
+}
+
+.trg-active-status-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 20px !important;
+  padding: 4px 14px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+.trg-status-dot {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  background: #94a3b8 !important;
+  transition: all 0.2s ease !important;
+}
+
+.trg-status-dot.active {
+  background: #16a34a !important;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2) !important;
+}
+
+.trg-events-pill-group {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+}
+
+.trg-event-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 8px 16px !important;
+  border-radius: 20px !important;
+  border: 1.5px solid #e2e8f0 !important;
+  background: #ffffff !important;
+  color: #475569 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  user-select: none !important;
+}
+
+.trg-event-pill:hover {
+  border-color: var(--primary-color, #15803d) !important;
+  color: var(--primary-color, #15803d) !important;
+  background: #f8fafc !important;
+  transform: translateY(-1px) !important;
+}
+
+.trg-event-pill.active {
+  border-color: var(--primary-color, #15803d) !important;
+  background: rgba(var(--primary-color-rgb, 21, 128, 61), 0.08) !important;
+  color: var(--primary-color, #15803d) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 4px rgba(var(--primary-color-rgb, 21, 128, 61), 0.15) !important;
+}
+
+.trg-pill-dot {
+  width: 7px !important;
+  height: 7px !important;
+  border-radius: 50% !important;
+  background: #cbd5e1 !important;
+  transition: all 0.18s ease !important;
+}
+
+.trg-event-pill.active .trg-pill-dot {
+  background: var(--primary-color, #15803d) !important;
+}
+
+.trg-section-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 20px !important;
+  padding-bottom: 16px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+}
+
+.trg-section-title-wrap {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+}
+
+.trg-step-badge {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 10px !important;
+  background: rgba(var(--primary-color-rgb, 21, 128, 61), 0.1) !important;
+  border: 1px solid rgba(var(--primary-color-rgb, 21, 128, 61), 0.25) !important;
+  color: var(--primary-color, #15803d) !important;
+  font-weight: 800 !important;
+  font-size: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.trg-section-title {
+  margin: 0 0 3px 0 !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: #1e293b !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.trg-section-subtitle {
+  font-size: 12.5px !important;
+  color: #64748b !important;
+  font-weight: 500 !important;
+}
+
+.trg-pipeline-col {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  padding: 14px 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.trg-pipeline-col label {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #475569 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-bottom: 2px !important;
+}
+
+.trg-relation-bar {
+  margin-top: 16px !important;
+  padding: 12px 18px !important;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+}
+
+.trg-relation-chip {
+  padding: 4px 12px !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  font-family: var(--font-mono, monospace) !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.trg-relation-chip-primary {
+  background: rgba(var(--primary-color-rgb, 21, 128, 61), 0.1) !important;
+  color: var(--primary-color, #15803d) !important;
+  border: 1px solid rgba(var(--primary-color-rgb, 21, 128, 61), 0.25) !important;
+}
+
+.trg-relation-chip-secondary {
+  background: #ede9fe !important;
+  color: #7c3aed !important;
+  border: 1px solid #ddd6fe !important;
+}
+
+.trg-action-block {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  padding: 18px 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+}
+
+.trg-target-select-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  padding-bottom: 14px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  flex-wrap: wrap !important;
+}
+
+.trg-formula-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: #f1f5f9 !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #334155 !important;
+}
+
+.trg-formula-fx {
+  background: var(--primary-color, #15803d) !important;
+  color: #ffffff !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  padding: 1px 5px !important;
+  border-radius: 4px !important;
+}
+
+.trg-formula-code {
+  font-family: var(--font-mono, monospace) !important;
+  color: var(--primary-color, #15803d) !important;
+  font-weight: 700 !important;
+}
+
+.trg-term-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  background: #ffffff !important;
+  padding: 10px 14px !important;
+  border-radius: 8px !important;
+  border: 1px solid #e2e8f0 !important;
+  flex-wrap: wrap !important;
+}
+
+.trg-start-pill {
+  background: var(--primary-color, #15803d) !important;
+  color: #ffffff !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  letter-spacing: 0.5px !important;
+  flex-shrink: 0 !important;
+}
+
+/* ============================================================
+   Modern Outline Action Buttons (Forms Builder)
+   ============================================================ */
+.fb-action-btns .fb-action-btn,
+.fb-action-btn,
+.ant-btn.fb-action-btn {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  cursor: pointer !important;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* 1. Edit Canvas: Purple Outline */
+.fb-action-btns .fb-action-edit-btn,
+.fb-action-edit-btn,
+.ant-btn.fb-action-edit-btn {
+  border: 1px solid rgba(124, 58, 237, 0.6) !important;
+  color: #7c3aed !important;
+  background: #ffffff !important;
+}
+
+.fb-action-btns .fb-action-edit-btn .anticon,
+.fb-action-btns .fb-action-edit-btn svg,
+.fb-action-edit-btn .anticon,
+.fb-action-edit-btn svg,
+.ant-btn.fb-action-edit-btn .anticon,
+.ant-btn.fb-action-edit-btn svg {
+  color: #7c3aed !important;
+  font-size: 14px !important;
+}
+
+.fb-action-btns .fb-action-edit-btn:hover,
+.fb-action-edit-btn:hover,
+.ant-btn.fb-action-edit-btn:hover {
+  background: rgba(124, 58, 237, 0.08) !important;
+  border-color: #7c3aed !important;
+  color: #6d28d9 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(124, 58, 237, 0.2) !important;
+}
+
+/* 2. Duplicate: Blue Outline */
+.fb-action-btns .fb-action-copy-btn,
+.fb-action-copy-btn,
+.ant-btn.fb-action-copy-btn {
+  border: 1px solid rgba(37, 99, 235, 0.6) !important;
+  color: #2563eb !important;
+  background: #ffffff !important;
+}
+
+.fb-action-btns .fb-action-copy-btn .anticon,
+.fb-action-btns .fb-action-copy-btn svg,
+.fb-action-copy-btn .anticon,
+.fb-action-copy-btn svg,
+.ant-btn.fb-action-copy-btn .anticon,
+.ant-btn.fb-action-copy-btn svg {
+  color: #2563eb !important;
+  font-size: 14px !important;
+}
+
+.fb-action-btns .fb-action-copy-btn:hover,
+.fb-action-copy-btn:hover,
+.ant-btn.fb-action-copy-btn:hover {
+  background: rgba(37, 99, 235, 0.08) !important;
+  border-color: #2563eb !important;
+  color: #1d4ed8 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.2) !important;
+}
+
+/* 3. Settings / Form Actions: Orange Outline */
+.fb-action-btns .fb-action-settings-btn,
+.fb-action-settings-btn,
+.ant-btn.fb-action-settings-btn {
+  border: 1px solid rgba(234, 88, 12, 0.6) !important;
+  color: #ea580c !important;
+  background: #ffffff !important;
+}
+
+.fb-action-btns .fb-action-settings-btn .anticon,
+.fb-action-btns .fb-action-settings-btn svg,
+.fb-action-settings-btn .anticon,
+.fb-action-settings-btn svg,
+.ant-btn.fb-action-settings-btn .anticon,
+.ant-btn.fb-action-settings-btn svg {
+  color: #ea580c !important;
+  font-size: 14px !important;
+}
+
+.fb-action-btns .fb-action-settings-btn:hover,
+.fb-action-settings-btn:hover,
+.ant-btn.fb-action-settings-btn:hover {
+  background: rgba(234, 88, 12, 0.08) !important;
+  border-color: #ea580c !important;
+  color: #c2410c !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(234, 88, 12, 0.2) !important;
+}
+
+/* 4. Triggers: Green Outline */
+.fb-action-btns .fb-action-triggers-btn,
+.fb-action-triggers-btn,
+.ant-btn.fb-action-triggers-btn {
+  border: 1px solid rgba(22, 163, 74, 0.6) !important;
+  color: #16a34a !important;
+  background: #ffffff !important;
+}
+
+.fb-action-btns .fb-action-triggers-btn .anticon,
+.fb-action-btns .fb-action-triggers-btn svg,
+.fb-action-triggers-btn .anticon,
+.fb-action-triggers-btn svg,
+.ant-btn.fb-action-triggers-btn .anticon,
+.ant-btn.fb-action-triggers-btn svg {
+  color: #16a34a !important;
+  font-size: 14px !important;
+}
+
+.fb-action-btns .fb-action-triggers-btn:hover,
+.fb-action-triggers-btn:hover,
+.ant-btn.fb-action-triggers-btn:hover {
+  background: rgba(22, 163, 74, 0.08) !important;
+  border-color: #16a34a !important;
+  color: #15803d !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(22, 163, 74, 0.2) !important;
+}
+
+/* 5. Delete: Red Outline */
+.fb-action-btns .fb-action-delete-btn,
+.fb-action-delete-btn,
+.ant-btn.fb-action-delete-btn {
+  border: 1px solid rgba(220, 38, 38, 0.6) !important;
+  color: #dc2626 !important;
+  background: #ffffff !important;
+}
+
+.fb-action-btns .fb-action-delete-btn .anticon,
+.fb-action-btns .fb-action-delete-btn svg,
+.fb-action-delete-btn .anticon,
+.fb-action-delete-btn svg,
+.ant-btn.fb-action-delete-btn .anticon,
+.ant-btn.fb-action-delete-btn svg {
+  color: #dc2626 !important;
+  font-size: 14px !important;
+}
+
+.fb-action-btns .fb-action-delete-btn:hover,
+.fb-action-delete-btn:hover,
+.ant-btn.fb-action-delete-btn:hover {
+  background: #fef2f2 !important;
+  border-color: #dc2626 !important;
+  color: #b91c1c !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(220, 38, 38, 0.2) !important;
+}
+
+.fb-action-btns .fb-action-btn:active,
+.fb-action-btn:active,
+.ant-btn.fb-action-btn:active {
+  transform: translateY(0) !important;
+}

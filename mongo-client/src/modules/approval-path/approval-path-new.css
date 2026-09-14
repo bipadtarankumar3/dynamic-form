@@ -1,0 +1,1090 @@
+/* client/src/modules/approval-path/approval-path-new.css */
+/* Modern Enterprise Design System for Approval Path Engine */
+
+/* ── 1. PAGE CONTAINER & LAYOUT ── */
+.ap-page-container {
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* ── 2. PAGE HEADER ── */
+.ap-page-header {
+  background-color: #fff;
+  background-image: radial-gradient(#fff0 1.25px, #ffffff8c 1.25px),
+    radial-gradient(70% 130% at 90% 35%, rgba(var(--primary-color-rgb, 21, 128, 61), 0.12) 0%, rgba(var(--primary-color-rgb, 21, 128, 61), 0.04) 40%, #f0f6ff00 75%),
+    radial-gradient(circle at 75% 90%, rgba(var(--primary-color-rgb, 21, 128, 61), 0.14) 0%, rgba(var(--primary-color-rgb, 21, 128, 61), 0.04) 50%),
+    linear-gradient(115deg, #fff 0%, #f7faff00 45%, rgba(var(--primary-color-rgb, 21, 128, 61), 0.08) 100%);
+  background-size: 16px 16px, 100% 100%, 100% 100%, 100% 100%;
+  border: 1px solid rgba(var(--primary-color-rgb, 21, 128, 61), 0.2);
+  border-radius: 16px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 13px 20px;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px -2px rgba(var(--primary-color-rgb, 21, 128, 61), 0.1), 0 2px 6px -1px #00000005;
+}
+
+.ap-page-header::before {
+  content: "";
+  position: absolute;
+  top: -55%;
+  right: -10%;
+  width: 650px;
+  height: 260%;
+  background: radial-gradient(ellipse at center, rgba(var(--primary-color-rgb, 21, 128, 61), 0.25) 0%, rgba(var(--primary-color-rgb, 21, 128, 61), 0.1) 45%, transparent 70%);
+  pointer-events: none;
+  transform: rotate(-12deg);
+}
+
+.ap-page-header::after {
+  content: "";
+  position: absolute;
+  bottom: -40%;
+  right: 18%;
+  width: 380px;
+  height: 200%;
+  background: radial-gradient(circle, rgba(var(--primary-color-rgb, 21, 128, 61), 0.2) 0%, rgba(var(--primary-color-rgb, 21, 128, 61), 0.05) 50%, transparent 70%);
+  pointer-events: none;
+}
+
+.ap-page-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ap-page-header-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--primary-gradient, var(--primary-color, #15803d));
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 6px 16px rgba(var(--primary-color-rgb, 21, 128, 61), 0.3);
+  flex-shrink: 0;
+}
+
+.ap-page-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 3px 0;
+  letter-spacing: -0.02em;
+}
+
+.ap-page-subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+  font-weight: 500;
+}
+
+.ap-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ap-btn-refresh {
+  border-radius: 10px !important;
+  height: 40px !important;
+  font-weight: 600 !important;
+  border-color: #e2e8f0 !important;
+  color: #334155 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 16px !important;
+  background: #ffffff !important;
+  transition: all 0.2s ease !important;
+}
+
+.ap-btn-refresh:hover {
+  border-color: var(--primary-color, #15803d) !important;
+  color: var(--primary-color, #15803d) !important;
+  background: rgba(var(--primary-color-rgb, 21, 128, 61), 0.05) !important;
+}
+
+.ap-btn-create {
+  background: var(--primary-gradient, var(--primary-color, #15803d)) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  font-size: 13.5px !important;
+  height: 40px !important;
+  padding: 0 22px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  box-shadow: 0 4px 14px rgba(var(--primary-color-rgb, 21, 128, 61), 0.25) !important;
+  transition: all 0.2s ease !important;
+}
+
+.ap-btn-create:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(var(--primary-color-rgb, 21, 128, 61), 0.35) !important;
+  opacity: 0.95 !important;
+}
+
+.ap-btn-cancel {
+  background: #fff1f2 !important;
+  color: #e11d48 !important;
+  border: 1px solid #fecdd3 !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  height: 38px !important;
+  padding: 0 18px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+.ap-btn-cancel:hover {
+  background: #ffe4e6 !important;
+  border-color: #fda4af !important;
+  color: #be123c !important;
+}
+
+.ap-btn-reset {
+  background: #f8fafc !important;
+  color: #64748b !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  height: 38px !important;
+  padding: 0 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+.ap-btn-reset:hover {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #334155 !important;
+}
+
+/* ── FILTER DRAWER (NO SCROLLBAR) ── */
+.ap-filter-drawer .ant-drawer-body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.ap-filter-drawer .ant-drawer-body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.ap-filter-drawer .ant-drawer-footer {
+  border-top: 1px solid #f1f5f9 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+/* ── 3. KPI STATS CARDS ── */
+.ap-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 1024px) {
+  .ap-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .ap-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ap-stat-card {
+  border-radius: 16px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.ap-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.ap-stat-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ap-stat-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.ap-stat-val {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.ap-stat-sub {
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ap-stat-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* Card Themes */
+.ap-stat-card--blue {
+  background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+  border-color: #bae6fd;
+}
+.ap-stat-card--blue .ap-stat-icon-box {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+.ap-stat-card--blue .ap-stat-sub {
+  color: #0284c7;
+}
+
+.ap-stat-card--green {
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+  border-color: #bbf7d0;
+}
+.ap-stat-card--green .ap-stat-icon-box {
+  background: #dcfce7;
+  color: #16a34a;
+}
+.ap-stat-card--green .ap-stat-sub {
+  color: #16a34a;
+}
+
+.ap-stat-card--orange {
+  background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+  border-color: #fde68a;
+}
+.ap-stat-card--orange .ap-stat-icon-box {
+  background: #fef3c7;
+  color: #d97706;
+}
+.ap-stat-card--orange .ap-stat-sub {
+  color: #d97706;
+}
+
+.ap-stat-card--purple {
+  background: linear-gradient(135deg, #ffffff 0%, #faf5ff 100%);
+  border-color: #e9d5ff;
+}
+.ap-stat-card--purple .ap-stat-icon-box {
+  background: #f3e8ff;
+  color: #9333ea;
+}
+.ap-stat-card--purple .ap-stat-sub {
+  color: #9333ea;
+}
+
+/* ── 4. FILTER TOOLBAR ── */
+.ap-toolbar {
+  background-color: #ffffff;
+  background-image: radial-gradient(#fff0 1.25px, #ffffff8c 1.25px),
+    radial-gradient(70% 120% at 95% 40%, rgba(var(--primary-color-rgb, 21, 128, 61), 0.08) 0%, rgba(var(--primary-color-rgb, 21, 128, 61), 0.02) 40%, #f0f6ff00 75%),
+    linear-gradient(115deg, #ffffff 0%, #f8fafc00 45%, rgba(var(--primary-color-rgb, 21, 128, 61), 0.04) 100%);
+  background-size: 16px 16px, 100% 100%, 100% 100%;
+  border: 1px solid rgba(var(--primary-color-rgb, 21, 128, 61), 0.18);
+  border-radius: 16px;
+  padding: 12px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+  gap: 16px;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 16px -2px rgba(var(--primary-color-rgb, 21, 128, 61), 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+.ap-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ap-tab-track {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.ap-pill-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 15px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  line-height: 1;
+}
+
+.ap-pill-icon {
+  font-size: 13.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ap-pill-count {
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7.5px;
+  border-radius: 9999px;
+  line-height: 1.2;
+  transition: all 0.2s ease;
+}
+
+/* 1. All Workflows Tab (Primary Dynamic Theme) */
+.ap-pill-tab--all .ap-pill-icon {
+  color: var(--primary-color, #15803d);
+}
+.ap-pill-tab--all:hover {
+  color: var(--primary-color, #15803d);
+  background: rgba(var(--primary-color-rgb, 21, 128, 61), 0.08);
+}
+.ap-pill-tab--all:hover .ap-pill-count {
+  background: rgba(var(--primary-color-rgb, 21, 128, 61), 0.16);
+  color: var(--primary-color, #15803d);
+}
+.ap-pill-tab--all.active {
+  background: var(--primary-gradient, var(--primary-color, #15803d));
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 3px 12px rgba(var(--primary-color-rgb, 21, 128, 61), 0.32);
+}
+
+/* 2. Active Tab (Emerald / Green) */
+.ap-pill-tab--active .ap-pill-icon {
+  color: #16a34a;
+}
+.ap-pill-tab--active:hover {
+  color: #15803d;
+  background: #f0fdf4;
+}
+.ap-pill-tab--active:hover .ap-pill-count {
+  background: #dcfce7;
+  color: #16a34a;
+}
+.ap-pill-tab--active.active {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 3px 12px rgba(22, 163, 74, 0.35);
+}
+
+/* 3. Drafts Tab (Amber / Orange) */
+.ap-pill-tab--draft .ap-pill-icon {
+  color: #ea580c;
+}
+.ap-pill-tab--draft:hover {
+  color: #c2410c;
+  background: #fff7ed;
+}
+.ap-pill-tab--draft:hover .ap-pill-count {
+  background: #ffedd5;
+  color: #ea580c;
+}
+.ap-pill-tab--draft.active {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 3px 12px rgba(234, 88, 12, 0.35);
+}
+
+/* 4. Inactive Tab (Slate / Charcoal) */
+.ap-pill-tab--inactive .ap-pill-icon {
+  color: #64748b;
+}
+.ap-pill-tab--inactive:hover {
+  color: #334155;
+  background: #f1f5f9;
+}
+.ap-pill-tab--inactive:hover .ap-pill-count {
+  background: #e2e8f0;
+  color: #475569;
+}
+.ap-pill-tab--inactive.active {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 3px 12px rgba(100, 116, 139, 0.35);
+}
+
+/* Shared Active State Overrides */
+.ap-pill-tab.active span,
+.ap-pill-tab.active .ap-pill-icon {
+  color: #ffffff !important;
+}
+
+.ap-pill-tab.active .ap-pill-count {
+  background: rgba(255, 255, 255, 0.28) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.ap-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ap-form-select {
+  min-width: 210px;
+}
+
+.ap-form-select .ant-select-selector {
+  border-radius: 10px !important;
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  height: 38px !important;
+  padding: 0 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+  transition: all 0.2s ease !important;
+}
+
+.ap-form-select:hover .ant-select-selector,
+.ap-form-select.ant-select-focused .ant-select-selector {
+  border-color: var(--primary-color, #15803d) !important;
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb, 21, 128, 61), 0.15) !important;
+}
+
+.ap-form-select .ant-select-selection-item {
+  line-height: 36px !important;
+  font-size: 13px !important;
+  color: #1e293b !important;
+}
+
+.ap-search-input {
+  width: 290px;
+  height: 38px !important;
+  border-radius: 10px !important;
+  border: 1px solid #cbd5e1 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  padding: 0 12px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+  transition: all 0.2s ease !important;
+}
+
+.ap-search-input:hover,
+.ap-search-input:focus,
+.ap-search-input-focused {
+  border-color: var(--primary-color, #15803d) !important;
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb, 21, 128, 61), 0.15) !important;
+}
+
+/* ── 5. TABLE CONTAINER & STYLES (MATCHING DATABASE VIEWS DESIGN) ── */
+.conf-card-table.ap-card-table,
+.ap-card-table,
+.conf-card-table {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  width: 100%;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+.ap-card-table .ant-table-wrapper,
+.ap-card-table .ant-spin-nested-loading,
+.ap-card-table .ant-spin-container,
+.ap-card-table .ant-table,
+.ap-card-table .ant-table-container,
+.ap-card-table .ant-table-content,
+.ap-card-table .ant-table-body,
+.ap-card-table table {
+  background: transparent !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+}
+
+.ap-card-table .ant-table-thead > tr > th {
+  background: #f1f6fd !important;
+  color: #475569 !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  padding: 8px 12px !important;
+  position: relative;
+}
+
+.ap-card-table .ant-table-thead > tr > th::before {
+  display: none !important;
+}
+
+/* Sorter column styles */
+.ap-card-table .ant-table-thead > tr > th.ant-table-column-sort,
+.ap-card-table .ant-table-thead > tr > th.ant-table-column-has-sorters {
+  background: #f1f6fd !important;
+}
+
+.ap-card-table .ant-table-thead > tr > th.ant-table-column-has-sorters:hover {
+  background: #e8f0fc !important;
+}
+
+.ap-card-table .ant-table-column-sorters {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 4px !important;
+}
+
+.ap-card-table .ant-table-column-title {
+  flex: 0 1 auto !important;
+  font-weight: 600 !important;
+  color: #475569 !important;
+}
+
+.ap-card-table .ant-table-column-sorter {
+  color: #94a3b8 !important;
+  font-size: 10px !important;
+}
+
+.ap-card-table .ant-table-column-sorter-up.active,
+.ap-card-table .ant-table-column-sorter-down.active {
+  color: #2563eb !important;
+}
+
+/* Actions Column Header Accent (Deeper Blue) */
+.ap-card-table .ant-table-thead > tr > th.ap-actions-header-cell {
+  background: #deebff !important;
+  color: #1e3a8a !important;
+  font-weight: 700 !important;
+  border-bottom: 1px solid #bfdbfe !important;
+}
+
+/* Table Body Rows */
+.ap-card-table .ant-table-tbody > tr > td {
+  padding: 7px 12px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  font-size: 13px !important;
+  vertical-align: middle !important;
+  height: auto !important;
+}
+
+.ap-card-table .ant-table-tbody > tr:hover > td {
+  background: #f8faff !important;
+}
+
+.ap-card-table .ant-table-tbody > tr > td.ant-table-column-sort {
+  background: transparent !important;
+}
+
+/* Workflow Row Identity */
+.ap-wf-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ap-wf-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #ffffff;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+  box-shadow: 0 3px 10px rgba(249, 115, 22, 0.25);
+}
+
+.ap-wf-avatar--active {
+  background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+  box-shadow: 0 3px 10px rgba(249, 115, 22, 0.25);
+}
+
+.ap-wf-avatar--inactive {
+  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+  box-shadow: none;
+}
+
+/* ── 6. TABLE BADGES & LABELS ── */
+.conf-index-badge {
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  display: inline-block;
+  border: 1px solid #e2e8f0;
+}
+
+.conf-slug-code {
+  color: #64748b;
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: 12.5px;
+}
+
+.conf-badge-master-yes {
+  text-transform: uppercase;
+  display: inline-block;
+  color: #16a34a !important;
+  background: #f0fdf4 !important;
+  border: 1px solid #86efac !important;
+  border-radius: 6px !important;
+  padding: 2px 9px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.2px;
+}
+
+.conf-badge-published {
+  background: #f0fdf4 !important;
+  color: #16a34a !important;
+  border: 1px dashed #4ade80 !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
+  border-radius: 6px !important;
+  padding: 2px 9px !important;
+  letter-spacing: 0.3px !important;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.conf-badge-draft {
+  background: #fffbeb !important;
+  color: #d97706 !important;
+  border: 1px solid #fde68a !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
+  border-radius: 6px !important;
+  padding: 2px 9px !important;
+  letter-spacing: 0.3px !important;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+/* ── 7. FIVE-BUTTON OUTLINE ACTIONS GROUP ── */
+.db-views-action-btns {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+
+.db-views-action-btns .conf-action-edit-btn,
+.db-views-action-btns .conf-action-preview-btn,
+.db-views-action-btns .conf-action-outline-btn,
+.db-views-action-btns .conf-action-delete-btn {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  cursor: pointer !important;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* 1. Preview (Eye): Green Outline */
+.db-views-action-btns .conf-action-preview-btn,
+.db-views-action-btns .conf-action-edit-btn {
+  background: #ffffff !important;
+  border: 1px solid rgba(22, 163, 74, 0.6) !important;
+  color: #16a34a !important;
+}
+
+.db-views-action-btns .conf-action-preview-btn .anticon,
+.db-views-action-btns .conf-action-preview-btn svg,
+.db-views-action-btns .conf-action-edit-btn .anticon,
+.db-views-action-btns .conf-action-edit-btn svg {
+  color: #16a34a !important;
+  font-size: 13.5px !important;
+}
+
+.db-views-action-btns .conf-action-preview-btn:hover,
+.db-views-action-btns .conf-action-edit-btn:hover {
+  background: rgba(22, 163, 74, 0.08) !important;
+  border-color: #16a34a !important;
+  color: #15803d !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(22, 163, 74, 0.2) !important;
+}
+
+/* 2. Edit: Purple Outline */
+.db-views-action-btns .conf-action-edit-view-btn {
+  background: #ffffff !important;
+  border: 1px solid rgba(124, 58, 237, 0.6) !important;
+  color: #7c3aed !important;
+}
+
+.db-views-action-btns .conf-action-edit-view-btn .anticon,
+.db-views-action-btns .conf-action-edit-view-btn svg {
+  color: #7c3aed !important;
+  font-size: 13.5px !important;
+}
+
+.db-views-action-btns .conf-action-edit-view-btn:hover {
+  background: rgba(124, 58, 237, 0.08) !important;
+  border-color: #7c3aed !important;
+  color: #6d28d9 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(124, 58, 237, 0.2) !important;
+}
+
+/* 3. Clone / Refresh: Orange Outline */
+.db-views-action-btns .conf-action-refresh-btn {
+  background: #ffffff !important;
+  border: 1px solid rgba(234, 88, 12, 0.6) !important;
+  color: #ea580c !important;
+}
+
+.db-views-action-btns .conf-action-refresh-btn .anticon,
+.db-views-action-btns .conf-action-refresh-btn svg {
+  color: #ea580c !important;
+  font-size: 13.5px !important;
+}
+
+.db-views-action-btns .conf-action-refresh-btn:hover {
+  background: rgba(234, 88, 12, 0.08) !important;
+  border-color: #ea580c !important;
+  color: #c2410c !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(234, 88, 12, 0.2) !important;
+}
+
+/* 4. Architecture / Flow: Blue Outline */
+.db-views-action-btns .conf-action-sql-btn {
+  background: #ffffff !important;
+  border: 1px solid rgba(37, 99, 235, 0.6) !important;
+  color: #2563eb !important;
+}
+
+.db-views-action-btns .conf-action-sql-btn .anticon,
+.db-views-action-btns .conf-action-sql-btn svg {
+  color: #2563eb !important;
+  font-size: 13.5px !important;
+}
+
+.db-views-action-btns .conf-action-sql-btn:hover {
+  background: rgba(37, 99, 235, 0.08) !important;
+  border-color: #2563eb !important;
+  color: #1d4ed8 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.2) !important;
+}
+
+/* 5. Delete: Red Outline */
+.db-views-action-btns .conf-action-delete-btn {
+  background: #ffffff !important;
+  border: 1px solid rgba(220, 38, 38, 0.6) !important;
+  color: #dc2626 !important;
+}
+
+.db-views-action-btns .conf-action-delete-btn .anticon,
+.db-views-action-btns .conf-action-delete-btn svg {
+  color: #dc2626 !important;
+  font-size: 13.5px !important;
+}
+
+.db-views-action-btns .conf-action-delete-btn:hover {
+  background: #fef2f2 !important;
+  border-color: #dc2626 !important;
+  color: #b91c1c !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(220, 38, 38, 0.2) !important;
+}
+
+.db-views-action-btns .conf-action-preview-btn:active,
+.db-views-action-btns .conf-action-edit-view-btn:active,
+.db-views-action-btns .conf-action-refresh-btn:active,
+.db-views-action-btns .conf-action-sql-btn:active,
+.db-views-action-btns .conf-action-delete-btn:active {
+  transform: translateY(0) !important;
+}
+
+/* ── 8. PAGINATION (DYNAMIC THEMED ROUNDED & CIRCULAR DESIGN) ── */
+.ap-card-table .ant-pagination,
+.ap-card-table .ant-table-pagination,
+.ap-card-table .ant-table-pagination.ant-pagination,
+.conf-card-table .ant-pagination,
+.conf-card-table .ant-table-pagination,
+.conf-card-table .ant-table-pagination.ant-pagination {
+  border-top: 1px solid rgba(var(--primary-color-rgb, 21, 128, 61), 0.12) !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  margin: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 6px 16px !important;
+  display: flex !important;
+  background: rgba(var(--primary-color-rgb, 21, 128, 61), 0.03) !important;
+  gap: 6px !important;
+}
+
+.ap-card-table .ant-pagination-total-text,
+.conf-card-table .ant-pagination-total-text {
+  margin-right: auto !important;
+  color: #64748b !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+/* Base pagination circular items (Single crisp 24px x 27px circle on the LI) */
+.ap-card-table .ant-pagination-item, .ap-card-table .ant-pagination-prev, .ap-card-table .ant-pagination-next, .conf-card-table .ant-pagination-item, .conf-card-table .ant-pagination-prev, .conf-card-table .ant-pagination-next, .ant-table-pagination .ant-pagination-item, .ant-table-pagination .ant-pagination-prev, .ant-table-pagination .ant-pagination-next, .ant-pagination .ant-pagination-item, .ant-pagination .ant-pagination-prev, .ant-pagination .ant-pagination-next {
+    aspect-ratio: 1 !important;
+    box-sizing: border-box !important;
+    border-radius: 50% !important;
+    flex-shrink: 0 !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 26px !important;
+    min-width: 26px !important;
+    max-width: 24px !important;
+    height: 24px !important;
+    min-height: 27px !important;
+    max-height: 27px !important;
+    margin: 0 2px !important;
+    padding: 0 !important;
+    line-height: 22px !important;
+    transition: all .2s !important;
+    display: inline-flex !important;
+    overflow: hidden !important;
+}
+
+/* 1. Inactive Page Number Item */
+.ap-card-table .ant-pagination-item,
+.conf-card-table .ant-pagination-item,
+.ant-pagination .ant-pagination-item {
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  color: #475569 !important;
+}
+
+.ap-card-table .ant-pagination-item:hover,
+.conf-card-table .ant-pagination-item:hover,
+.ant-pagination .ant-pagination-item:hover {
+  border-color: var(--primary-color, #15803d) !important;
+  background: rgba(var(--primary-color-rgb, 21, 128, 61), 0.08) !important;
+}
+
+/* 2. Active Page Item (Solid Dynamic Primary Color Circle) */
+.ap-card-table .ant-pagination-item-active,
+.conf-card-table .ant-pagination-item-active,
+.ant-table-pagination .ant-pagination-item-active,
+.ant-pagination .ant-pagination-item-active {
+  background: var(--primary-gradient, var(--primary-color, #15803d)) !important;
+  border: 1px solid var(--primary-color, #15803d) !important;
+  border-radius: 50% !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(var(--primary-color-rgb, 21, 128, 61), 0.3) !important;
+}
+
+/* 3. Prev & Next Arrow Buttons (Single Clean Dynamic Ring + Soft Tint) */
+.ap-card-table .ant-pagination-prev,
+.ap-card-table .ant-pagination-next,
+.conf-card-table .ant-pagination-prev,
+.conf-card-table .ant-pagination-next,
+.ant-table-pagination .ant-pagination-prev,
+.ant-table-pagination .ant-pagination-next,
+.ant-pagination .ant-pagination-prev,
+.ant-pagination .ant-pagination-next {
+  border: 1.5px solid var(--primary-color, #15803d) !important;
+  background: rgba(var(--primary-color-rgb, 21, 128, 61), 0.12) !important;
+  color: var(--primary-color, #15803d) !important;
+}
+
+.ap-card-table .ant-pagination-prev:not(.ant-pagination-disabled):hover,
+.ap-card-table .ant-pagination-next:not(.ant-pagination-disabled):hover,
+.conf-card-table .ant-pagination-prev:not(.ant-pagination-disabled):hover,
+.conf-card-table .ant-pagination-next:not(.ant-pagination-disabled):hover,
+.ant-pagination .ant-pagination-prev:not(.ant-pagination-disabled):hover,
+.ant-pagination .ant-pagination-next:not(.ant-pagination-disabled):hover {
+  background: rgba(var(--primary-color-rgb, 21, 128, 61), 0.22) !important;
+  border-color: var(--primary-color-dark, var(--primary-color, #15803d)) !important;
+  color: var(--primary-color-dark, var(--primary-color, #15803d)) !important;
+}
+
+.ap-card-table .ant-pagination-disabled,
+.conf-card-table .ant-pagination-disabled,
+.ant-table-pagination .ant-pagination-disabled,
+.ant-pagination .ant-pagination-disabled {
+  border: 1.5px solid rgba(var(--primary-color-rgb, 21, 128, 61), 0.35) !important;
+  background: rgba(var(--primary-color-rgb, 21, 128, 61), 0.08) !important;
+  color: #94a3b8 !important;
+  opacity: 0.8 !important;
+  cursor: not-allowed !important;
+}
+
+/* Clean transparent inner links / buttons (Eliminates any double ring or nested border) */
+.ap-card-table .ant-pagination-item a,
+.conf-card-table .ant-pagination-item a,
+.ant-table-pagination .ant-pagination-item a,
+.ant-pagination .ant-pagination-item a,
+.ap-card-table .ant-pagination-prev .ant-pagination-item-link,
+.ap-card-table .ant-pagination-next .ant-pagination-item-link,
+.conf-card-table .ant-pagination-prev .ant-pagination-item-link,
+.conf-card-table .ant-pagination-next .ant-pagination-item-link,
+.ant-table-pagination .ant-pagination-prev .ant-pagination-item-link,
+.ant-table-pagination .ant-pagination-next .ant-pagination-item-link,
+.ant-pagination .ant-pagination-prev .ant-pagination-item-link,
+.ant-pagination .ant-pagination-next .ant-pagination-item-link,
+.ant-pagination .ant-pagination-prev button,
+.ant-pagination .ant-pagination-next button {
+  border: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+  aspect-ratio: 1 / 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: inherit !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
+  border-radius: 50% !important;
+}
+
+.ap-card-table .ant-pagination-item-active a,
+.conf-card-table .ant-pagination-item-active a,
+.ant-table-pagination .ant-pagination-item-active a,
+.ant-pagination .ant-pagination-item-active a {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+/* Rounded Page Size Selector (e.g. 10 / page) */
+.ap-card-table .ant-pagination-options,
+.conf-card-table .ant-pagination-options,
+.ant-pagination .ant-pagination-options {
+  margin-left: 12px !important;
+}
+
+.ap-card-table .ant-pagination-options .ant-select,
+.conf-card-table .ant-pagination-options .ant-select,
+.ant-pagination .ant-pagination-options .ant-select {
+  border-radius: 8px !important;
+}
+
+.ap-card-table .ant-pagination-options .ant-select-selector,
+.conf-card-table .ant-pagination-options .ant-select-selector,
+.ant-pagination .ant-pagination-options .ant-select-selector {
+  height: 28px !important;
+  min-height: 28px !important;
+  padding: 0 10px !important;
+  border-radius: 8px !important;
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #1e293b !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.ap-card-table .ant-pagination-options .ant-select-focused .ant-select-selector,
+.conf-card-table .ant-pagination-options .ant-select-focused .ant-select-selector,
+.ant-pagination .ant-pagination-options .ant-select-focused .ant-select-selector {
+  border-color: var(--primary-color, #15803d) !important;
+  box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb, 21, 128, 61), 0.15) !important;
+}
+
+.ap-card-table .ant-pagination-options .ant-select-selection-item,
+.conf-card-table .ant-pagination-options .ant-select-selection-item,
+.ant-pagination .ant-pagination-options .ant-select-selection-item {
+  line-height: 26px !important;
+  font-size: 12px !important;
+  color: #1e293b !important;
+}
+
+
+

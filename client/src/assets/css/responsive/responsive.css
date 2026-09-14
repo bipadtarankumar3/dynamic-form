@@ -1,0 +1,196 @@
+@media screen and (max-width: 992px) {
+    .custom-main-header.ant-layout-header {
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--primary-gradient, var(--primary-color, #15803d)) !important;
+    color: #fff;
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+
+.login-form-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 0px;
+    height: calc(100vh - 80px);
+    position: relative;
+    align-items: center;
+}
+.login-left-content {
+    width: 100%;
+    height: 100vh;
+    display: none;
+}
+.login-left-sider-styles::before {
+    content: "";
+    position: inherit;
+    top: -50px;
+    left: 40%;
+    bottom: 0;
+    width: 300px;
+    height: 100vh;
+    background: #2B3420;
+    background: linear-gradient(90deg, rgba(43, 52, 32, 1) 14%, rgba(113, 176, 37, 0) 62%, rgba(113, 176, 37, 0) 70%);
+    z-index: 11;
+}
+.login-left-sider-styles {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.login-container .login-left-sider {
+    width: 100%;
+    position: absolute;
+    top: inherit;
+    right: 0;
+    z-index: 1;
+    height: 63%;
+    bottom: 0;
+}
+.login-sections {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    position: absolute;
+    z-index: 999;
+    top: 0;
+}
+.login-header {
+    padding: 15px 5px;
+    z-index: 99;
+    position: relative;
+    /* text-align: center; */
+}
+.login-header .container-fluid {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: center;
+}
+
+.home-content {
+    height: calc(100vh - 65px);
+    overflow-y: auto;
+    background-color: #f8fafc !important;
+    background-image: url("../../images/backgrounds/home-bg.jpg") !important;
+    background-repeat: no-repeat !important;
+    background-position: bottom !important;
+    background-size: cover !important;
+}
+.side-menu-wrap {
+    position: relative;
+    z-index: 999;
+}
+}
+@media screen and (max-width: 767px) {}
+@media screen and (max-width: 567px) {
+.ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-collapsed.side-menu-wrap.css-dev-only-do-not-override-36gkoj{
+
+    flex: 0 0 0px !important;
+    max-width: 0px !important;
+    min-width: 0px !important;
+    width: 0px;
+ 
+}
+.ant-layout-sider.ant-layout-sider-dark.side-menu-wrap.css-dev-only-do-not-override-36gkoj{
+
+     flex: 0 0 50px !important;
+    max-width: 230px !important;
+    min-width: 230px !important;
+    width: 230px;
+
+}
+.side-menu-wrap {
+    position: absolute;
+    z-index: 999;
+}
+.custom-main-header.ant-layout-header {
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--primary-gradient, var(--primary-color, #15803d)) !important;
+    color: #fff;
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+
+.home-content .card .card-header h5 {
+    color: #ffffff !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    font-family: Lato, Sans-serif !important;
+}
+.ant-col-12 {
+    display: block;
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+.h5, h5 {
+    font-size: 1.0rem;
+}
+.login-left-sider-styles {
+    display: none;
+}
+
+.login-left-content {
+    width: 100%;
+    height: 100vh;
+    display: none;
+}
+.login-form-box {
+    max-width: 100%;
+    background: #fff;
+    border-radius: 20px;
+    width: 100%;
+    min-height: initial;
+    border: 4px solid #659327;
+      padding:  15px 25px 25px;
+    position: relative;
+}
+.login-sections {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+.login-sections {
+    display: flex;
+    justify-content: center;
+    width: 90%;
+    align-items: center;
+    flex-direction: column;
+    margin: 0 auto;
+    position: inherit;
+}
+.login-header .container-fluid {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+.login-header ul.login-nav li {
+    display: inline-block;
+    margin-right: 0;
+    margin: 0 10px;
+}
+.login-form-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 0;
+    height: calc(100vh - 100px);
+    position: relative;
+    align-items: center;
+    justify-content: center;
+}
+.login-header ul.login-nav li a {
+    color: #fff;
+    font-size: 13px;
+}
+}
+

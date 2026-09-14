@@ -1,0 +1,93 @@
+.login-right-bubbles {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 45%;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Override the default static positioning from csr-services.css */
+.login-right-bubbles .csr-service-bubble {
+  position: absolute;
+  top: 100%;
+  /* Start off-screen at the bottom */
+  transform: translateY(0);
+  animation: floatUpContinuous linear infinite;
+  opacity: 0.9;
+}
+
+/* Individual positions and animation speeds */
+/* .login-right-bubbles .bubble-1 {
+  left: 65%;
+  animation-duration: 15s;
+  animation-delay: 0s;
+}
+
+.login-right-bubbles .bubble-2 {
+  left: 75%;
+  animation-duration: 18s;
+  animation-delay: 4s;
+}
+
+.login-right-bubbles .bubble-3 {
+  left: 60%;
+  animation-duration: 30s;
+  animation-delay: 8s;
+}
+
+.login-right-bubbles .bubble-4 {
+  left: 80%;
+  animation-duration: 20s;
+  animation-delay: 2s;
+} */
+.login-right-bubbles .bubble-1 {
+  left: 65%;
+  animation-duration: 15s;
+  animation-delay: 0s;
+}
+
+.login-right-bubbles .bubble-2 {
+  left: 75%;
+  animation-duration: 18s;
+  animation-delay: 4s;
+}
+
+.login-right-bubbles .bubble-3 {
+  left: 60%;
+  animation-duration: 22s;
+  animation-delay: 8s;
+}
+
+.login-right-bubbles .bubble-4 {
+  left: 80%;
+  animation-duration: 20s;
+  animation-delay: 2s;
+}
+@keyframes floatUpContinuous {
+  0% {
+    top: 110%;
+    opacity: 0;
+  }
+
+  5% {
+    opacity: 0.9;
+  }
+
+  95% {
+    opacity: 0.9;
+  }
+
+  100% {
+    top: -20%;
+    opacity: 0;
+  }
+}
+
+@media (max-width: 1024px) {
+  .login-right-bubbles {
+    display: none;
+  }
+}

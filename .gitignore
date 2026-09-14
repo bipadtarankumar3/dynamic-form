@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing and Coverage
+coverage/
+
+# Next.js and frontend builds
+.next/
+out/
+build/
+dist/
+dist-ssr/
+
+# Docker volumes & data
+docker-data/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Uploads & temporary files
+uploads/
+scratch/
+*.zip
+
+# Vercel & TypeScript
+.vercel/
+*.tsbuildinfo
+next-env.d.ts

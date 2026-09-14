@@ -1,0 +1,1278 @@
+{
+  "schema_version": "1.0",
+  "form_id": "user_registration",
+  "title": "User Registration",
+
+  "root_entity": {
+    "table": "users",
+    "primary_key": "user_id"
+  },
+
+  "api": {
+    "create": "/api/users",
+    "update": "/api/users/:id",
+    "get": "/api/users/:id",
+    "list": "/api/users"
+  },
+
+  "context": {
+    "roles": ["admin", "user"]
+  },
+  "sections": [
+    {
+      "section_id": "basic_info",
+      "section_label": "Personal Information",
+      "type": "general",
+      "table": "users",
+      "primary_key": "user_id",
+      "fields": [
+        {
+          "id": "name",
+          "label": "Name",
+          "type": "text",
+          "db_field": "name",
+          "data_type": "string",
+          "required": true,
+          "disabled": false,
+          "readOnly": false,
+          "ui": {
+            "placeholder": "Enter name"
+          },
+          "validation": {
+            "min_length": 3,
+            "max_length": 100,
+            "pattern": "^[a-zA-Z ]+$"
+          },
+          "messages": {
+            "required": "Name is required",
+            "min_length": "Name must be at least 3 characters",
+            "max_length": "Name cannot exceed 100 characters",
+            "pattern": "Only alphabets and spaces allowed"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin", "user"]
+          }
+        },
+
+        {
+          "id": "age",
+          "label": "Age",
+          "type": "number",
+          "number_type": "integer",
+          "db_field": "age",
+
+          "ui": {
+            "placeholder": "Enter age"
+          },
+          "required_when": {
+            "name": { "not_null": true }
+          },
+          "validation": {
+            "min": 1,
+            "max": 120
+          },
+          "messages": {
+            "required": "Age is required",
+            "min": "Age must be greater than 0",
+            "max": "Age cannot exceed 120"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin"]
+          }
+        },
+        {
+          "id": "price",
+          "label": "Price",
+          "type": "number",
+          "number_type": "decimal",
+          "db_field": "price",
+          "required": true,
+
+          "ui": {
+            "placeholder": "Enter price"
+          },
+          "disabled_when": {
+            "age": { "lt": 18 }
+          },
+          "validation": {
+            "min": 1,
+            "max": 120
+          },
+          "messages": {
+            "required": "Price is required",
+            "min": "Price must be greater than 0",
+            "max": "Price cannot exceed 120"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin"]
+          }
+        },
+        {
+          "id": "description",
+          "label": "Description",
+          "type": "textarea",
+          "db_field": "description",
+          "required": false,
+
+          "ui": {
+            "rows": 4,
+            "placeholder": "Enter description",
+            "max_length_hint": true,
+            "auto_size": {
+              "minRows": 3,
+              "maxRows": 6
+            }
+          },
+
+          "validation": {
+            "max_length": 100
+          },
+
+          "messages": {
+            "max_length": "Description cannot exceed 500 characters"
+          },
+
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin", "user"]
+          }
+        },
+        {
+          "id": "gender",
+          "label": "Gender",
+          "type": "select",
+          "db_field": "gender",
+          "required": true,
+          "ui": {
+            "placeholder": "Select gender"
+          },
+          "options": [
+            { "label": "Male", "value": "M" },
+            { "label": "Female", "value": "F" },
+            { "label": "Other", "value": "O" }
+          ],
+          "messages": {
+            "required": "Please select gender"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin", "user"]
+          }
+        },
+
+        {
+          "id": "hobbies",
+          "label": "Hobbies",
+          "type": "select",
+          "db_field": "hobbies",
+          "multiple": true,
+          "required": true,
+          "ui": {
+            "placeholder": "Select hobbies"
+          },
+          "options": [
+            { "label": "Reading", "value": "reading" },
+            { "label": "Sports", "value": "sports" },
+            { "label": "Music", "value": "music" },
+            { "label": "Travel", "value": "travel" }
+          ],
+          "validation": {
+            "min_items": 1,
+            "max_items": 5
+          },
+          "messages": {
+            "min_items": "You must select at least one hobby",
+            "max_items": "You can select a maximum of 5 hobbies"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin", "user"]
+          }
+        },
+        {
+          "id": "dob",
+          "label": "Date of Birth",
+          "type": "date",
+          "data_type": "date",
+          "db_field": "dob",
+          "required": true,
+          "validation": {
+            "min_date": "2025-12-10",
+            "max_date": "today"
+          },
+          "messages": {
+            "required": "Date of birth is required",
+            "min_date": "Date must be after today",
+            "max_date": "Date cannot be in the future"
+          }
+        },
+        {
+          "id": "employment_period",
+          "label": "Employment Period",
+          "type": "date_range",
+          "data_type": "daterange",
+          "enabled_when": {
+            "dob": { "not_null": true }
+          },
+          "act_db_field": {
+            "start": "employment_start_date",
+            "end": "employment_end_date"
+          },
+
+          "db_field": "employment_period",
+          "required": true,
+          "validation": {
+            "min_date": "dob",
+            "max_date": "today"
+          },
+          "messages": {
+            "required": "Employment period is required",
+            "range": "Invalid date range"
+          }
+        },
+        {
+          "id": "state",
+          "label": "State",
+          "type": "select",
+          "db_field": "state_id",
+          "required": true,
+          "ui": {
+            "placeholder": "Select state"
+          },
+          "options": [
+            { "label": "Reading", "value": "reading" },
+            { "label": "Sports", "value": "sports" },
+            { "label": "Music", "value": "music" },
+            { "label": "Travel", "value": "travel" }
+          ],
+          "data_source": {
+            "type": "master",
+            "name": "states"
+          },
+          "messages": {
+            "required": "State is required"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin"]
+          }
+        },
+
+        {
+          "id": "district",
+          "label": "District",
+          "type": "select",
+          "db_field": "district_id",
+          "options": [
+            { "label": "Reading", "value": "reading" },
+            { "label": "Sports", "value": "sports" },
+            { "label": "Music", "value": "music" },
+            { "label": "Travel", "value": "travel" }
+          ],
+          "ui": {
+            "placeholder": "Select district"
+          },
+          "enabled_when": {
+            "state_id": { "not_null": true }
+          },
+          "dependency": {
+            "parent": "state",
+            "parent_db_field": "state_id",
+            "clear_on_change": true,
+            "fetch_on_parent_change": true
+          },
+
+          "data_source": {
+            "type": "master",
+            "name": "districts",
+            "filters": ["state_id"]
+          },
+          "messages": {
+            "required": "District is required"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin"]
+          }
+        },
+
+        {
+          "id": "block",
+          "label": "Block",
+          "type": "select",
+          "db_field": "block_id",
+          "options": [
+            { "label": "Reading", "value": "reading" },
+            { "label": "Sports", "value": "sports" },
+            { "label": "Music", "value": "music" },
+            { "label": "Travel", "value": "travel" }
+          ],
+          "ui": {
+            "placeholder": "Select block"
+          },
+          "enabled_when": {
+            "district_id": { "not_null": true }
+          },
+          "dependency": {
+            "parent": "district",
+            "parent_db_field": "district_id",
+            "clear_on_change": true,
+            "fetch_on_parent_change": true
+          },
+
+          "data_source": {
+            "type": "master",
+            "name": "blocks",
+            "filters": ["district_id"]
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin"]
+          }
+        },
+
+        {
+          "id": "village",
+          "label": "Village",
+          "type": "select",
+          "options": [
+            { "label": "Reading", "value": "reading" },
+            { "label": "Sports", "value": "sports" },
+            { "label": "Music", "value": "music" },
+            { "label": "Travel", "value": "travel" }
+          ],
+          "db_field": "village_id",
+          "ui": {
+            "placeholder": "Select village"
+          },
+          "visible_when": {
+            "block_id": { "not_null": true }
+          },
+          "dependency": {
+            "parent": "block",
+            "parent_db_field": "block_id",
+            "clear_on_change": true,
+            "fetch_on_parent_change": true
+          },
+
+          "data_source": {
+            "type": "master",
+            "name": "villages",
+            "filters": ["block_id"]
+          },
+          "permissions": {
+            "visible": ["admin"],
+            "editable": ["admin"]
+          }
+        },
+
+        {
+          "id": "tags",
+          "label": "Tags",
+          "type": "select",
+          "db_field": "tags",
+          "multiple": true,
+          "ui": {
+            "placeholder": "Select tags"
+          },
+          "data_source": {
+            "type": "api",
+            "url": "/api/tags",
+            "value_key": "tag_id",
+            "label_key": "tag_name"
+          },
+          "validation": {
+            "max_items": 5
+          },
+          "messages": {
+            "max_items": "You can select up to 5 tags"
+          },
+          "permissions": {
+            "visible": ["admin"],
+            "editable": ["admin"]
+          }
+        },
+
+        {
+          "id": "profile_photo",
+          "label": "Profile Photo",
+          "type": "file",
+          "db_field": "profile_photo",
+          "required": true,
+
+          "ui": {
+            "placeholder": "Upload profile photo"
+          },
+          "file": {
+            "multiple": false,
+            "max_size_mb": 5,
+            "allowed_types": ["image/jpeg", "image/png"],
+            "upload_path": "users/profile"
+          },
+
+          "validation": {
+            "min_items": 1,
+            "max_items": 2
+          },
+
+          "messages": {
+            "required": "Profile photo is required",
+            "min_items": "Please upload a profile photo",
+            "max_items": "Only one profile photo is allowed",
+            "file_size": "File size must be under 5MB",
+            "file_type": "Only JPG or PNG files are allowed"
+          },
+
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin", "user"]
+          }
+        }
+      ]
+    },
+    {
+      "section_id": "profile_info",
+      "section_label": "Profile Information",
+      "type": "general",
+      "table": "user_profiles",
+      "primary_key": "profile_id",
+      "relation": {
+        "type": "one_to_one",
+        "parent_table": "users",
+        "parent_key": "user_id",
+        "foreign_key": "user_id"
+      },
+      "fields": [
+        {
+          "id": "name",
+          "label": "Name",
+          "type": "text",
+          "db_field": "name",
+          "data_type": "string",
+          "required": true,
+          "disabled": false,
+          "readOnly": false,
+          "ui": {
+            "placeholder": "Enter name"
+          },
+          "validation": {
+            "min_length": 3,
+            "max_length": 100,
+            "pattern": "^[a-zA-Z ]+$"
+          },
+          "messages": {
+            "required": "Name is required",
+            "min_length": "Name must be at least 3 characters",
+            "max_length": "Name cannot exceed 100 characters",
+            "pattern": "Only alphabets and spaces allowed"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin", "user"]
+          }
+        },
+
+        {
+          "id": "age",
+          "label": "Age",
+          "type": "number",
+          "number_type": "integer",
+          "db_field": "age",
+
+          "ui": {
+            "placeholder": "Enter age"
+          },
+          "required_when": {
+            "name": { "not_null": true }
+          },
+          "validation": {
+            "min": 1,
+            "max": 120
+          },
+          "messages": {
+            "required": "Age is required",
+            "min": "Age must be greater than 0",
+            "max": "Age cannot exceed 120"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin"]
+          }
+        },
+        {
+          "id": "price",
+          "label": "Price",
+          "type": "number",
+          "number_type": "decimal",
+          "db_field": "price",
+          "required": true,
+
+          "ui": {
+            "placeholder": "Enter price"
+          },
+          "disabled_when": {
+            "age": { "lt": 18 }
+          },
+          "validation": {
+            "min": 1,
+            "max": 120
+          },
+          "messages": {
+            "required": "Price is required",
+            "min": "Price must be greater than 0",
+            "max": "Price cannot exceed 120"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin"]
+          }
+        },
+        {
+          "id": "description",
+          "label": "Description",
+          "type": "textarea",
+          "db_field": "description",
+          "required": false,
+
+          "ui": {
+            "rows": 4,
+            "placeholder": "Enter description",
+            "max_length_hint": true,
+            "auto_size": {
+              "minRows": 3,
+              "maxRows": 6
+            }
+          },
+
+          "validation": {
+            "max_length": 100
+          },
+
+          "messages": {
+            "max_length": "Description cannot exceed 500 characters"
+          },
+
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin", "user"]
+          }
+        },
+        {
+          "id": "gender",
+          "label": "Gender",
+          "type": "select",
+          "db_field": "gender",
+          "required": true,
+          "ui": {
+            "placeholder": "Select gender"
+          },
+          "options": [
+            { "label": "Male", "value": "M" },
+            { "label": "Female", "value": "F" },
+            { "label": "Other", "value": "O" }
+          ],
+          "messages": {
+            "required": "Please select gender"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin", "user"]
+          }
+        },
+
+        {
+          "id": "hobbies",
+          "label": "Hobbies",
+          "type": "select",
+          "db_field": "hobbies",
+          "multiple": true,
+          "required": true,
+          "ui": {
+            "placeholder": "Select hobbies"
+          },
+          "options": [
+            { "label": "Reading", "value": "reading" },
+            { "label": "Sports", "value": "sports" },
+            { "label": "Music", "value": "music" },
+            { "label": "Travel", "value": "travel" }
+          ],
+          "validation": {
+            "min_items": 1,
+            "max_items": 5
+          },
+          "messages": {
+            "min_items": "You must select at least one hobby",
+            "max_items": "You can select a maximum of 5 hobbies"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin", "user"]
+          }
+        },
+        {
+          "id": "dob",
+          "label": "Date of Birth",
+          "type": "date",
+          "data_type": "date",
+          "db_field": "dob",
+          "required": true,
+          "validation": {
+            "min_date": "2025-12-10",
+            "max_date": "today"
+          },
+          "messages": {
+            "required": "Date of birth is required",
+            "min_date": "Date must be after today",
+            "max_date": "Date cannot be in the future"
+          }
+        },
+        {
+          "id": "employment_period",
+          "label": "Employment Period",
+          "type": "date_range",
+          "data_type": "daterange",
+          "enabled_when": {
+            "dob": { "not_null": true }
+          },
+          "act_db_field": {
+            "start": "employment_start_date",
+            "end": "employment_end_date"
+          },
+
+          "db_field": "employment_period",
+          "required": true,
+          "validation": {
+            "min_date": "dob",
+            "max_date": "today"
+          },
+          "messages": {
+            "required": "Employment period is required",
+            "range": "Invalid date range"
+          }
+        },
+        {
+          "id": "state",
+          "label": "State",
+          "type": "select",
+          "db_field": "state_id",
+          "required": true,
+          "ui": {
+            "placeholder": "Select state"
+          },
+          "options": [
+            { "label": "Reading", "value": "reading" },
+            { "label": "Sports", "value": "sports" },
+            { "label": "Music", "value": "music" },
+            { "label": "Travel", "value": "travel" }
+          ],
+          "data_source": {
+            "type": "master",
+            "name": "states"
+          },
+          "messages": {
+            "required": "State is required"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin"]
+          }
+        },
+
+        {
+          "id": "district",
+          "label": "District",
+          "type": "select",
+          "db_field": "district_id",
+          "options": [
+            { "label": "Reading", "value": "reading" },
+            { "label": "Sports", "value": "sports" },
+            { "label": "Music", "value": "music" },
+            { "label": "Travel", "value": "travel" }
+          ],
+          "ui": {
+            "placeholder": "Select district"
+          },
+          "enabled_when": {
+            "state_id": { "not_null": true }
+          },
+          "dependency": {
+            "parent": "state",
+            "parent_db_field": "state_id",
+            "clear_on_change": true,
+            "fetch_on_parent_change": true
+          },
+
+          "data_source": {
+            "type": "master",
+            "name": "districts",
+            "filters": ["state_id"]
+          },
+          "messages": {
+            "required": "District is required"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin"]
+          }
+        },
+
+        {
+          "id": "block",
+          "label": "Block",
+          "type": "select",
+          "db_field": "block_id",
+          "options": [
+            { "label": "Reading", "value": "reading" },
+            { "label": "Sports", "value": "sports" },
+            { "label": "Music", "value": "music" },
+            { "label": "Travel", "value": "travel" }
+          ],
+          "ui": {
+            "placeholder": "Select block"
+          },
+          "enabled_when": {
+            "district_id": { "not_null": true }
+          },
+          "dependency": {
+            "parent": "district",
+            "parent_db_field": "district_id",
+            "clear_on_change": true,
+            "fetch_on_parent_change": true
+          },
+
+          "data_source": {
+            "type": "master",
+            "name": "blocks",
+            "filters": ["district_id"]
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin"]
+          }
+        },
+
+        {
+          "id": "village",
+          "label": "Village",
+          "type": "select",
+          "options": [
+            { "label": "Reading", "value": "reading" },
+            { "label": "Sports", "value": "sports" },
+            { "label": "Music", "value": "music" },
+            { "label": "Travel", "value": "travel" }
+          ],
+          "db_field": "village_id",
+          "ui": {
+            "placeholder": "Select village"
+          },
+          "visible_when": {
+            "block_id": { "not_null": true }
+          },
+          "dependency": {
+            "parent": "block",
+            "parent_db_field": "block_id",
+            "clear_on_change": true,
+            "fetch_on_parent_change": true
+          },
+
+          "data_source": {
+            "type": "master",
+            "name": "villages",
+            "filters": ["block_id"]
+          },
+          "permissions": {
+            "visible": ["admin"],
+            "editable": ["admin"]
+          }
+        },
+
+        {
+          "id": "tags",
+          "label": "Tags",
+          "type": "select",
+          "db_field": "tags",
+          "multiple": true,
+          "ui": {
+            "placeholder": "Select tags"
+          },
+          "data_source": {
+            "type": "api",
+            "url": "/api/tags",
+            "value_key": "tag_id",
+            "label_key": "tag_name"
+          },
+          "validation": {
+            "max_items": 5
+          },
+          "messages": {
+            "max_items": "You can select up to 5 tags"
+          },
+          "permissions": {
+            "visible": ["admin"],
+            "editable": ["admin"]
+          }
+        },
+
+        {
+          "id": "profile_photo",
+          "label": "Profile Photo",
+          "type": "file",
+          "db_field": "profile_photo",
+          "required": true,
+
+          "ui": {
+            "placeholder": "Upload profile photo"
+          },
+          "file": {
+            "multiple": false,
+            "max_size_mb": 5,
+            "allowed_types": ["image/jpeg", "image/png"],
+            "upload_path": "users/profile"
+          },
+
+          "validation": {
+            "min_items": 1,
+            "max_items": 2
+          },
+
+          "messages": {
+            "required": "Profile photo is required",
+            "min_items": "Please upload a profile photo",
+            "max_items": "Only one profile photo is allowed",
+            "file_size": "File size must be under 5MB",
+            "file_type": "Only JPG or PNG files are allowed"
+          },
+
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin", "user"]
+          }
+        }
+      ]
+    },
+    {
+      "section_id": "family_members",
+      "section_label": "Family Members",
+      "type": "add_more",
+      "table": "family_members",
+      "primary_key": "family_member_id",
+
+      "relation": {
+        "type": "one_to_many",
+        "parent_table": "users",
+        "parent_key": "user_id",
+        "foreign_key": "user_id"
+      },
+      "fields": [
+        {
+          "id": "name",
+          "label": "Name",
+          "type": "text",
+          "db_field": "name",
+          "data_type": "string",
+          "required": true,
+          "disabled": false,
+          "readOnly": false,
+          "ui": {
+            "placeholder": "Enter name"
+          },
+          "validation": {
+            "min_length": 3,
+            "max_length": 100,
+            "pattern": "^[a-zA-Z ]+$"
+          },
+          "messages": {
+            "required": "Name is required",
+            "min_length": "Name must be at least 3 characters",
+            "max_length": "Name cannot exceed 100 characters",
+            "pattern": "Only alphabets and spaces allowed"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin", "user"]
+          }
+        },
+
+        {
+          "id": "age",
+          "label": "Age",
+          "type": "number",
+          "number_type": "integer",
+          "db_field": "age",
+
+          "ui": {
+            "placeholder": "Enter age"
+          },
+          "required_when": {
+            "name": { "not_null": true }
+          },
+          "validation": {
+            "min": 1,
+            "max": 120
+          },
+          "messages": {
+            "required": "Age is required",
+            "min": "Age must be greater than 0",
+            "max": "Age cannot exceed 120"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin"]
+          }
+        },
+        {
+          "id": "price",
+          "label": "Price",
+          "type": "number",
+          "number_type": "decimal",
+          "db_field": "price",
+          "required": true,
+
+          "ui": {
+            "placeholder": "Enter price"
+          },
+          "disabled_when": {
+            "age": { "lt": 18 }
+          },
+          "validation": {
+            "min": 1,
+            "max": 120
+          },
+          "messages": {
+            "required": "Price is required",
+            "min": "Price must be greater than 0",
+            "max": "Price cannot exceed 120"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin"]
+          }
+        },
+        {
+          "id": "description",
+          "label": "Description",
+          "type": "textarea",
+          "db_field": "description",
+          "required": false,
+
+          "ui": {
+            "rows": 4,
+            "placeholder": "Enter description",
+            "max_length_hint": true,
+            "auto_size": {
+              "minRows": 3,
+              "maxRows": 6
+            }
+          },
+
+          "validation": {
+            "max_length": 100
+          },
+
+          "messages": {
+            "max_length": "Description cannot exceed 500 characters"
+          },
+
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin", "user"]
+          }
+        },
+        {
+          "id": "gender",
+          "label": "Gender",
+          "type": "select",
+          "db_field": "gender",
+          "required": true,
+          "ui": {
+            "placeholder": "Select gender"
+          },
+          "options": [
+            { "label": "Male", "value": "M" },
+            { "label": "Female", "value": "F" },
+            { "label": "Other", "value": "O" }
+          ],
+          "messages": {
+            "required": "Please select gender"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin", "user"]
+          }
+        },
+
+        {
+          "id": "hobbies",
+          "label": "Hobbies",
+          "type": "select",
+          "db_field": "hobbies",
+          "multiple": true,
+          "required": true,
+          "ui": {
+            "placeholder": "Select hobbies"
+          },
+          "options": [
+            { "label": "Reading", "value": "reading" },
+            { "label": "Sports", "value": "sports" },
+            { "label": "Music", "value": "music" },
+            { "label": "Travel", "value": "travel" }
+          ],
+          "validation": {
+            "min_items": 1,
+            "max_items": 5
+          },
+          "messages": {
+            "min_items": "You must select at least one hobby",
+            "max_items": "You can select a maximum of 5 hobbies"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin", "user"]
+          }
+        },
+        {
+          "id": "dob",
+          "label": "Date of Birth",
+          "type": "date",
+          "data_type": "date",
+          "db_field": "dob",
+          "required": true,
+          "validation": {
+            "min_date": "2025-12-10",
+            "max_date": "today"
+          },
+          "messages": {
+            "required": "Date of birth is required",
+            "min_date": "Date must be after today",
+            "max_date": "Date cannot be in the future"
+          }
+        },
+        {
+          "id": "employment_period",
+          "label": "Employment Period",
+          "type": "date_range",
+          "data_type": "daterange",
+          "enabled_when": {
+            "dob": { "not_null": true }
+          },
+          "act_db_field": {
+            "start": "employment_start_date",
+            "end": "employment_end_date"
+          },
+
+          "db_field": "employment_period",
+          "required": true,
+          "validation": {
+            "min_date": "dob",
+            "max_date": "today"
+          },
+          "messages": {
+            "required": "Employment period is required",
+            "range": "Invalid date range"
+          }
+        },
+        {
+          "id": "state",
+          "label": "State",
+          "type": "select",
+          "db_field": "state_id",
+          "required": true,
+          "ui": {
+            "placeholder": "Select state"
+          },
+          "options": [
+            { "label": "Reading", "value": "reading" },
+            { "label": "Sports", "value": "sports" },
+            { "label": "Music", "value": "music" },
+            { "label": "Travel", "value": "travel" }
+          ],
+          "data_source": {
+            "type": "master",
+            "name": "states"
+          },
+          "messages": {
+            "required": "State is required"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin"]
+          }
+        },
+
+        {
+          "id": "district",
+          "label": "District",
+          "type": "select",
+          "db_field": "district_id",
+          "options": [
+            { "label": "Reading", "value": "reading" },
+            { "label": "Sports", "value": "sports" },
+            { "label": "Music", "value": "music" },
+            { "label": "Travel", "value": "travel" }
+          ],
+          "ui": {
+            "placeholder": "Select district"
+          },
+          "enabled_when": {
+            "state_id": { "not_null": true }
+          },
+          "dependency": {
+            "parent": "state",
+            "parent_db_field": "state_id",
+            "clear_on_change": true,
+            "fetch_on_parent_change": true
+          },
+
+          "data_source": {
+            "type": "master",
+            "name": "districts",
+            "filters": ["state_id"]
+          },
+          "messages": {
+            "required": "District is required"
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin"]
+          }
+        },
+
+        {
+          "id": "block",
+          "label": "Block",
+          "type": "select",
+          "db_field": "block_id",
+          "options": [
+            { "label": "Reading", "value": "reading" },
+            { "label": "Sports", "value": "sports" },
+            { "label": "Music", "value": "music" },
+            { "label": "Travel", "value": "travel" }
+          ],
+          "ui": {
+            "placeholder": "Select block"
+          },
+          "enabled_when": {
+            "district_id": { "not_null": true }
+          },
+          "dependency": {
+            "parent": "district",
+            "parent_db_field": "district_id",
+            "clear_on_change": true,
+            "fetch_on_parent_change": true
+          },
+
+          "data_source": {
+            "type": "master",
+            "name": "blocks",
+            "filters": ["district_id"]
+          },
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin"]
+          }
+        },
+
+        {
+          "id": "village",
+          "label": "Village",
+          "type": "select",
+          "options": [
+            { "label": "Reading", "value": "reading" },
+            { "label": "Sports", "value": "sports" },
+            { "label": "Music", "value": "music" },
+            { "label": "Travel", "value": "travel" }
+          ],
+          "db_field": "village_id",
+          "ui": {
+            "placeholder": "Select village"
+          },
+          "visible_when": {
+            "block_id": { "not_null": true }
+          },
+          "dependency": {
+            "parent": "block",
+            "parent_db_field": "block_id",
+            "clear_on_change": true,
+            "fetch_on_parent_change": true
+          },
+
+          "data_source": {
+            "type": "master",
+            "name": "villages",
+            "filters": ["block_id"]
+          },
+          "permissions": {
+            "visible": ["admin"],
+            "editable": ["admin"]
+          }
+        },
+
+        {
+          "id": "tags",
+          "label": "Tags",
+          "type": "select",
+          "db_field": "tags",
+          "multiple": true,
+          "ui": {
+            "placeholder": "Select tags"
+          },
+          "data_source": {
+            "type": "api",
+            "url": "/api/tags",
+            "value_key": "tag_id",
+            "label_key": "tag_name"
+          },
+          "validation": {
+            "max_items": 5
+          },
+          "messages": {
+            "max_items": "You can select up to 5 tags"
+          },
+          "permissions": {
+            "visible": ["admin"],
+            "editable": ["admin"]
+          }
+        },
+
+        {
+          "id": "profile_photo",
+          "label": "Profile Photo",
+          "type": "file",
+          "db_field": "profile_photo",
+          "required": true,
+
+          "ui": {
+            "placeholder": "Upload profile photo"
+          },
+          "file": {
+            "multiple": false,
+            "max_size_mb": 5,
+            "allowed_types": ["image/jpeg", "image/png"],
+            "upload_path": "users/profile"
+          },
+
+          "validation": {
+            "min_items": 1,
+            "max_items": 2
+          },
+
+          "messages": {
+            "required": "Profile photo is required",
+            "min_items": "Please upload a profile photo",
+            "max_items": "Only one profile photo is allowed",
+            "file_size": "File size must be under 5MB",
+            "file_type": "Only JPG or PNG files are allowed"
+          },
+
+          "permissions": {
+            "visible": ["admin", "user"],
+            "editable": ["admin", "user"]
+          }
+        }
+      ]
+    }
+  ]
+}

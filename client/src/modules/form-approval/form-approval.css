@@ -1,0 +1,991 @@
+/* client/src/modules/form-approval/form-approval.css */
+
+/* ── Keyframe Animations ────────────────────────────────────── */
+@keyframes activePulseRing {
+  0% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.6), 0 4px 14px rgba(99, 102, 241, 0.35);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(99, 102, 241, 0), 0 4px 14px rgba(99, 102, 241, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0), 0 4px 14px rgba(99, 102, 241, 0.35);
+  }
+}
+
+@keyframes activePulseRingOrange {
+  0% {
+    box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.6), 0 4px 14px rgba(234, 88, 12, 0.35);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(234, 88, 12, 0), 0 4px 14px rgba(234, 88, 12, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(234, 88, 12, 0), 0 4px 14px rgba(234, 88, 12, 0.35);
+  }
+}
+
+/* ── Card Containers ─────────────────────────────────────────── */
+.fap-card {
+  border-radius: 14px !important;
+  margin-top: 16px !important;
+  overflow: hidden !important;
+  transition: all 0.2s ease !important;
+}
+
+.fap-card-loading {
+  border-radius: 12px !important;
+  margin-top: 16px !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.fap-card-body {
+  padding: 20px 24px;
+}
+
+.fap-empty-card {
+  border-radius: 12px !important;
+  margin-top: 16px !important;
+  border: 1px dashed #cbd5e1 !important;
+}
+
+.fap-empty-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.fap-empty-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fap-empty-icon {
+  color: #ffffff;
+  font-size: 22px;
+}
+
+.fap-empty-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.fap-empty-desc {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.fap-empty-link {
+  color: #6366f1;
+  font-weight: 600;
+}
+
+.fap-empty-code {
+  background: #f1f5f9;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* ── Alert Banners ───────────────────────────────────────────── */
+.fap-alert-approved {
+  border-radius: 10px !important;
+  margin-bottom: 14px !important;
+  background: #f0fdf4 !important;
+  border-color: #bbf7d0 !important;
+}
+
+.fap-alert-approved-text {
+  font-weight: 600;
+  color: #15803d;
+}
+
+.fap-alert-info-modal {
+  margin-bottom: 14px !important;
+  border-radius: 8px !important;
+}
+
+.fap-alert-info-text {
+  font-size: 13px;
+}
+
+/* ── Panel Header ────────────────────────────────────────────── */
+.fap-header {
+  padding: 16px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.fap-header--approved {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+}
+
+.fap-header--rejected {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+.fap-header--resend {
+  background: linear-gradient(135deg, #ea580c, #c2410c);
+}
+
+.fap-header--default {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+}
+
+.fap-header-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fap-header-icon {
+  color: #ffffff;
+  font-size: 20px;
+}
+
+.fap-header-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.fap-header-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.fap-header-refresh-btn {
+  color: #ffffff !important;
+}
+
+/* ── User Chip ───────────────────────────────────────────────── */
+.fap-user-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fap-user-chip-avatar {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+}
+
+.fap-user-chip-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.fap-user-chip-email {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* ── Stepper Tracker ─────────────────────────────────────────── */
+.fap-stepper-box {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 24px 20px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.fap-stepper-row {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  width: 100%;
+}
+
+.fap-stepper-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  text-align: center;
+  padding: 0 6px;
+}
+
+.fap-stepper-line {
+  position: absolute;
+  top: 24px;
+  left: -50%;
+  right: 50%;
+  height: 3px;
+  background: #e2e8f0;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.fap-stepper-line--completed {
+  background: #16a34a;
+}
+
+.fap-stepper-line--active {
+  background: linear-gradient(90deg, #16a34a, #6366f1);
+}
+
+.fap-circle-wrapper {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 10px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fap-circle {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.fap-circle--completed {
+  width: 38px;
+  height: 38px;
+  background: #16a34a;
+  color: #ffffff;
+  font-size: 18px;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+  border: 3px solid #ffffff;
+}
+
+.fap-circle--resend {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #ea580c, #c2410c);
+  color: #ffffff;
+  font-size: 22px;
+  border: 3.5px solid #ffffff;
+  animation: activePulseRingOrange 2s infinite !important;
+}
+
+.fap-circle--rejected {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: #ffffff;
+  font-size: 22px;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+  border: 3.5px solid #ffffff;
+}
+
+.fap-circle--active {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 800;
+  border: 3.5px solid #ffffff;
+  animation: activePulseRing 2s infinite !important;
+}
+
+.fap-circle--waiting {
+  width: 36px;
+  height: 36px;
+  background: #f8fafc;
+  border: 2px solid #cbd5e1;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.fap-node-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.fap-node-title--active {
+  font-size: 14px;
+  font-weight: 800;
+  color: #4338ca;
+}
+
+.fap-node-title--completed {
+  color: #15803d;
+}
+
+.fap-node-title--resend {
+  color: #c2410c;
+}
+
+.fap-node-title--rejected {
+  color: #991b1b;
+}
+
+.fap-node-title--waiting {
+  color: #475569;
+}
+
+.fap-node-user {
+  font-size: 11px;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 4px;
+}
+
+.fap-node-user--active {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.fap-node-user--inactive {
+  color: #64748b;
+  font-weight: 400;
+}
+
+.fap-stepper-status-completed {
+  font-size: 10px;
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.fap-stepper-status-waiting {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.fap-stepper-tag-active {
+  font-weight: 800 !important;
+  font-size: 10px !important;
+  border-radius: 12px !important;
+  padding: 1px 8px !important;
+  margin: 0 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Stage 1: Assign Approvers ────────────────────────────────── */
+.fap-step-assign-wrapper {
+  margin-bottom: 20px;
+}
+
+.fap-step-assign-title {
+  font-weight: 700;
+  font-size: 13px;
+  color: #374151;
+  margin-bottom: 12px;
+}
+
+.fap-step-assign-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fap-step-assign-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.fap-step-num-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.fap-step-assign-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 5px;
+}
+
+.fap-select-full {
+  width: 100%;
+}
+
+.fap-save-btn-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.fap-btn-save-approvers {
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  height: 38px !important;
+  background: #f1f5f9 !important;
+  border-color: #6366f1 !important;
+  color: #6366f1 !important;
+}
+
+/* ── Stage 2: Send for Approval ──────────────────────────────── */
+.fap-divider-stage2 {
+  margin: 8px 0 16px !important;
+}
+
+.fap-stage2-badge {
+  font-size: 12px;
+  color: #6366f1;
+  font-weight: 700;
+}
+
+.fap-saved-approvers-box {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+
+.fap-saved-approvers-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0369a1;
+  margin-bottom: 8px;
+}
+
+.fap-saved-approvers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fap-saved-approvers-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fap-step-tag {
+  font-size: 11px !important;
+  min-width: 56px !important;
+  text-align: center !important;
+}
+
+.fap-role-text {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.fap-field-box {
+  margin-bottom: 12px;
+}
+
+.fap-field-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.fap-field-required {
+  color: #dc2626;
+}
+
+.fap-error-text {
+  color: #dc2626;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.fap-textarea-custom {
+  border-radius: 8px !important;
+  font-size: 13px !important;
+}
+
+.fap-btn-row-right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.fap-btn-send {
+  background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  height: 42px !important;
+  padding-inline: 28px !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35) !important;
+}
+
+/* ── Routing Approver Box ────────────────────────────────────── */
+.fap-routing-box {
+  background: #fafafa;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+
+.fap-routing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.fap-routing-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fap-routing-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fap-routing-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.fap-routing-block {
+  display: block;
+}
+
+.fap-btn-pullback {
+  border-radius: 6px !important;
+  font-weight: 700 !important;
+  height: 28px !important;
+  font-size: 11px !important;
+  color: #b45309 !important;
+  border-color: #fde68a !important;
+  background: #fffbeb !important;
+  box-shadow: 0 1px 3px rgba(180, 83, 9, 0.08) !important;
+}
+
+.fap-arrow-next {
+  color: #94a3b8;
+  font-size: 16px;
+}
+
+/* ── Approver Action Box ─────────────────────────────────────── */
+.fap-action-box {
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.fap-action-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0369a1;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fap-action-btn-group {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.fap-btn-reject {
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  height: 40px !important;
+}
+
+.fap-btn-resend-action {
+  background: #f59e0b !important;
+  border-color: #f59e0b !important;
+  color: #ffffff !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  height: 40px !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25) !important;
+}
+
+.fap-btn-forward {
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+  color: #ffffff !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  height: 40px !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important;
+}
+
+.fap-btn-review {
+  background: #7c3aed !important;
+  border-color: #7c3aed !important;
+  color: #ffffff !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  height: 40px !important;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25) !important;
+}
+
+.fap-btn-approve {
+  background: linear-gradient(135deg, #16a34a, #15803d) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  height: 40px !important;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3) !important;
+}
+
+/* ── Rejection / Paused Alert Box ────────────────────────────── */
+.fap-rejection-box {
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+
+.fap-rejection-box--resend {
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
+  border: 1.5px solid #fed7aa;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.06);
+}
+
+.fap-rejection-box--rejected {
+  background: linear-gradient(135deg, #fef2f2, #fff1f2);
+  border: 1.5px solid #fecaca;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.05);
+}
+
+.fap-rejection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.fap-rejection-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fap-rejection-title {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.fap-rejection-title--resend {
+  color: #9a3412;
+}
+
+.fap-rejection-title--rejected {
+  color: #991b1b;
+}
+
+.fap-rejection-subtitle--resend {
+  font-size: 12px;
+  color: #c2410c;
+}
+
+.fap-rejection-subtitle--rejected {
+  font-size: 12px;
+  color: #b91c1c;
+}
+
+.fap-rejection-tag {
+  font-weight: 700 !important;
+  border-radius: 12px !important;
+  padding: 2px 10px !important;
+  font-size: 12px !important;
+}
+
+.fap-rejection-remarks {
+  background: #ffffff;
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #475569;
+  margin-bottom: 16px;
+}
+
+.fap-rejection-action-bar {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.fap-rejection-action-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.fap-rejection-action-desc {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.fap-btn-edit-data {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  height: 38px !important;
+}
+
+.fap-btn-reopen {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  height: 38px !important;
+  border-color: #6366f1 !important;
+  color: #6366f1 !important;
+}
+
+.fap-btn-resend-gradient {
+  background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  height: 38px !important;
+  padding-inline: 18px !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+}
+
+/* ── Process Track Cards ─────────────────────────────────────── */
+.fap-track-card {
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.fap-track-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.fap-track-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 12px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.fap-track-step-name {
+  font-weight: 800;
+  font-size: 13px;
+  color: #1e293b;
+}
+
+.fap-track-date {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.fap-track-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  font-size: 12px;
+  color: #334155;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.fap-track-actor-label {
+  color: #475569;
+}
+
+.fap-track-actor-name {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.fap-track-remarks {
+  background: #ffffff;
+  border-radius: 0 8px 8px 0;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #334155;
+  margin-bottom: 10px;
+}
+
+.fap-track-footer {
+  font-size: 11px;
+  color: #94a3b8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+/* ── Modals Styling ──────────────────────────────────────────── */
+.fap-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fap-modal-header-icon {
+  color: #6366f1;
+}
+
+.fap-modal-header-icon--warning {
+  color: #b45309;
+  font-size: 20px;
+}
+
+.fap-modal-btn-confirm {
+  background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+}
+
+.fap-modal-btn-pullback {
+  background: linear-gradient(135deg, #d97706, #b45309) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+}
+
+.fap-modal-body-pad {
+  padding: 12px 0;
+}
+
+.fap-modal-body-top {
+  padding-top: 8px;
+}
+
+.fap-modal-desc-text {
+  color: #334155;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.fap-modal-field-title {
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 12px;
+  color: #475569;
+}
+
+.fap-modal-field-title-bold {
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.fap-assigned-modal-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+
+.fap-assigned-modal-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.fap-assigned-modal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fap-assigned-modal-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.fap-assigned-modal-user {
+  font-weight: 600;
+}
+
+.fap-assigned-modal-role {
+  color: #94a3b8;
+}
+
+.fap-collapse-track {
+  background: #fafafa !important;
+  border-radius: 10px !important;
+  border: 1px solid #f1f5f9 !important;
+}
+
+.fap-collapse-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fap-collapse-title-text {
+  font-weight: 700;
+  font-size: 13px;
+  color: #374151;
+}
+
+.fap-collapse-tag {
+  font-size: 11px !important;
+  border-radius: 10px !important;
+  margin-left: 4px !important;
+}

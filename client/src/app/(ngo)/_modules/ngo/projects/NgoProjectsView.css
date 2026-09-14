@@ -1,0 +1,812 @@
+/* NgoProjectsView.css - Modern Premium Design for NGO Projects Dashboard */
+
+.open-rfp-container,
+.projects-container {
+  padding: 4px 0 24px 0;
+  max-width: 100%;
+  min-height: 85vh;
+  animation: rfpFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes rfpFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Slim Hero Header Bar --- */
+.open-rfp-hero {
+  background-color: #ffffff;
+  background-image: radial-gradient(#fff0 1.25px, #ffffff8c 1.25px),
+    radial-gradient(70% 130% at 90% 35%, rgba(var(--primary-color-rgb, 21, 128, 61), 0.12) 0%, rgba(var(--primary-color-rgb, 21, 128, 61), 0.04) 40%, #f0f6ff00 75%),
+    radial-gradient(circle at 75% 90%, rgba(var(--primary-color-rgb, 21, 128, 61), 0.14) 0%, rgba(var(--primary-color-rgb, 21, 128, 61), 0.04) 50%),
+    linear-gradient(115deg, #ffffff 0%, #f7faff00 45%, rgba(var(--primary-color-rgb, 21, 128, 61), 0.08) 100%);
+  background-size: 16px 16px, 100% 100%, 100% 100%, 100% 100%;
+  border: 1px solid rgba(var(--primary-color-rgb, 21, 128, 61), 0.2);
+  border-radius: 16px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 14px 22px;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px -2px rgba(var(--primary-color-rgb, 21, 128, 61), 0.1), 0 2px 6px -1px #00000005;
+}
+
+.open-rfp-hero::before {
+  content: "";
+  position: absolute;
+  top: -55%;
+  right: -10%;
+  width: 650px;
+  height: 260%;
+  background: radial-gradient(ellipse at center, rgba(var(--primary-color-rgb, 21, 128, 61), 0.25) 0%, rgba(var(--primary-color-rgb, 21, 128, 61), 0.1) 45%, transparent 70%);
+  pointer-events: none;
+  transform: rotate(-12deg);
+}
+
+.open-rfp-hero::after {
+  content: "";
+  position: absolute;
+  bottom: -40%;
+  right: 18%;
+  width: 380px;
+  height: 200%;
+  background: radial-gradient(circle, rgba(var(--primary-color-rgb, 21, 128, 61), 0.2) 0%, rgba(var(--primary-color-rgb, 21, 128, 61), 0.05) 50%, transparent 70%);
+  pointer-events: none;
+}
+
+.open-rfp-hero-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.open-rfp-hero-icon {
+  background: var(--primary-gradient, var(--primary-color, #15803d));
+  color: #fff;
+  width: 48px;
+  height: 48px;
+  box-shadow: 0 6px 16px rgba(var(--primary-color-rgb), .3);
+  border-radius: 14px;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  display: flex;
+}
+
+.open-rfp-hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.open-rfp-hero-title {
+  color: #0f172a;
+  letter-spacing: -.02em;
+  margin: 0 0 3px !important;
+  font-size: 22px !important;
+  font-weight: 800 !important;
+}
+
+.open-rfp-hero-desc {
+  color: #64748b !important;
+  margin: 0;
+  font-size: 13px !important;
+  font-weight: 500;
+}
+
+.open-rfp-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.rfp-hero-btn-refresh {
+  border-radius: 8px !important;
+  height: 36px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  border: 1.5px solid #cbd5e1 !important;
+  color: #475569 !important;
+  background: #ffffff !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 16px !important;
+  transition: all 0.2s ease !important;
+}
+
+.rfp-hero-btn-refresh:hover {
+  border-color: var(--primary-color, #059669) !important;
+  color: var(--primary-color, #059669) !important;
+  background: rgba(var(--primary-color-rgb, 5, 150, 105), 0.04) !important;
+}
+
+/* Stats Row */
+.open-rfp-stats-row {
+  margin-bottom: 20px !important;
+}
+
+/* Premium Stat Cards — Full Border, Tinted Background, Large Icon */
+.rfp-stat-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px 24px;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.rfp-stat-card::before {
+  display: none;
+}
+
+/* ---- Total Projects (Blue theme) ---- */
+.rfp-stat-card--total {
+  border: 1.5px solid #60a5fa !important;
+  background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%);
+}
+
+.rfp-stat-card--total:hover {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 8px 28px rgba(59, 130, 246, 0.16);
+  transform: translateY(-3px);
+}
+
+/* ---- Active / Ongoing Projects (Green theme) ---- */
+.rfp-stat-card--active {
+  border: 1.5px solid #4ade80 !important;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+}
+
+.rfp-stat-card--active:hover {
+  border-color: #22c55e !important;
+  box-shadow: 0 8px 28px rgba(34, 197, 94, 0.16);
+  transform: translateY(-3px);
+}
+
+/* ---- Beneficiaries Reach (Orange / Amber theme) ---- */
+.rfp-stat-card--beneficiaries {
+  border: 1.5px solid #fb923c !important;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffffff 100%);
+}
+
+.rfp-stat-card--beneficiaries:hover {
+  border-color: #f97316 !important;
+  box-shadow: 0 8px 28px rgba(249, 115, 22, 0.16);
+  transform: translateY(-3px);
+}
+
+/* Icon — large tinted container */
+.rfp-stat-card-icon {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  transition: transform 0.25s ease;
+  background: transparent;
+  border: none;
+}
+
+.rfp-stat-card:hover .rfp-stat-card-icon {
+  transform: scale(1.12);
+}
+
+.rfp-stat-card--total .rfp-stat-card-icon {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.rfp-stat-card--active .rfp-stat-card-icon {
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.08);
+}
+
+.rfp-stat-card--beneficiaries .rfp-stat-card-icon {
+  color: #ea580c;
+  background: rgba(234, 88, 12, 0.08);
+}
+
+/* Body text group */
+.rfp-stat-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.rfp-stat-card-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #475569;
+  letter-spacing: 0.1px;
+}
+
+.rfp-stat-card-value {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  color: #0f172a;
+}
+
+.rfp-stat-card-sub {
+  font-size: 12px;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-top: 1px;
+}
+
+/* --- Toolbar Card & Controls --- */
+.open-rfp-toolbar-card {
+  border-radius: 16px !important;
+  margin-bottom: 22px !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid #e2e8f0 !important;
+  background: #ffffff !important;
+  overflow: hidden !important;
+}
+
+/* Antd Search input custom overrides */
+.open-rfp-search-input.ant-input-search,
+.open-rfp-search-input .ant-input-group-wrapper {
+  border-radius: 50px !important;
+  overflow: hidden !important;
+  border: 1.5px solid #cbd5e1 !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.open-rfp-search-input.ant-input-search:focus-within,
+.open-rfp-search-input .ant-input-group-wrapper:focus-within {
+  border-color: var(--primary-color, #059669) !important;
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb, 5, 150, 105), 0.12) !important;
+}
+
+.open-rfp-search-input .ant-input-wrapper {
+  display: flex !important;
+  border-radius: 50px !important;
+  overflow: hidden !important;
+}
+
+.open-rfp-search-input .ant-input-affix-wrapper {
+  border-radius: 50px 0 0 50px !important;
+  border: none !important;
+  padding: 8px 20px !important;
+  background: #ffffff !important;
+  transition: all 0.2s ease !important;
+  box-shadow: none !important;
+}
+
+.open-rfp-search-input .ant-input-affix-wrapper:focus,
+.open-rfp-search-input .ant-input-affix-wrapper-focused,
+.open-rfp-search-input .ant-input-affix-wrapper:focus-within {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.open-rfp-search-input .ant-input {
+  font-size: 13.5px !important;
+  color: #1e293b !important;
+}
+
+.open-rfp-search-input .ant-input::placeholder {
+  color: #94a3b8 !important;
+}
+
+.open-rfp-search-input .ant-btn-primary {
+  background: var(--primary-gradient, var(--primary-color, #059669)) !important;
+  border-color: var(--primary-color, #059669) !important;
+  border-radius: 0 50px 50px 0 !important;
+  height: 100% !important;
+  padding: 0 20px !important;
+  min-width: 52px !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+}
+
+.open-rfp-search-input .ant-input-group-addon button {
+  margin-left: -45px !important;
+}
+
+.open-rfp-search-input .ant-btn-primary:hover {
+  background: var(--primary-gradient-hover, var(--primary-color-dark, #047857)) !important;
+  border-color: var(--primary-color-dark, #047857) !important;
+}
+
+/* --- Segmented Pill Tab Track & Controls --- */
+.rfp-tab-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  padding: 5px;
+  border-radius: 50px;
+  border: 1px solid #e2e8f0;
+}
+
+.rfp-pill-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  border-radius: 30px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  user-select: none;
+}
+
+.rfp-pill-tab:hover {
+  color: #1e293b;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.rfp-pill-icon {
+  font-size: 14.5px;
+  transition: transform 0.2s ease;
+}
+
+.rfp-pill-tab:hover .rfp-pill-icon {
+  transform: scale(1.1);
+}
+
+.rfp-pill-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+  background: #e2e8f0;
+  color: #475569;
+  transition: all 0.25s ease;
+}
+
+/* Active States */
+.rfp-pill-tab--all.active {
+  background: rgba(var(--primary-color-rgb, 5, 150, 105), 0.1);
+  color: var(--primary-color, #047857);
+  border-color: rgba(var(--primary-color-rgb, 5, 150, 105), 0.4);
+  box-shadow: 0 2px 8px rgba(var(--primary-color-rgb, 5, 150, 105), 0.15);
+}
+
+.rfp-pill-tab--all.active .rfp-pill-icon {
+  color: var(--primary-color, #059669);
+}
+
+.rfp-pill-tab--all.active .rfp-pill-count {
+  background: rgba(var(--primary-color-rgb, 5, 150, 105), 0.15);
+  color: var(--primary-color, #065f46);
+}
+
+.rfp-pill-tab--active.active {
+  background: #f0fdf4;
+  color: #15803d;
+  border-color: #86efac;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.1);
+}
+
+.rfp-pill-tab--active.active .rfp-pill-icon {
+  color: #16a34a;
+}
+
+.rfp-pill-tab--active.active .rfp-pill-count {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.rfp-pill-tab--completed.active {
+  background: #f1f5f9;
+  color: #334155;
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(100, 116, 139, 0.1);
+}
+
+.rfp-pill-tab--completed.active .rfp-pill-icon {
+  color: #475569;
+}
+
+.rfp-pill-tab--completed.active .rfp-pill-count {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+/* Refresh Button */
+.rfp-btn-refresh {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 50% !important;
+  border: 1.5px solid rgba(var(--primary-color-rgb, 5, 150, 105), 0.35) !important;
+  background: rgba(var(--primary-color-rgb, 5, 150, 105), 0.08) !important;
+  color: var(--primary-color, #059669) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  font-size: 16px !important;
+}
+
+.rfp-btn-refresh:hover {
+  background: var(--primary-gradient, var(--primary-color, #059669)) !important;
+  border-color: var(--primary-color, #059669) !important;
+  color: #ffffff !important;
+  transform: rotate(180deg);
+  box-shadow: 0 4px 14px rgba(var(--primary-color-rgb, 5, 150, 105), 0.3) !important;
+}
+
+/* View Mode Toggle Button */
+.view-mode-btn-group {
+  display: inline-flex;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.view-mode-btn {
+  border: none !important;
+  background: transparent !important;
+  border-radius: 8px !important;
+  height: 34px !important;
+  padding: 0 12px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #64748b !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.view-mode-btn.active {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* ==========================================================================
+   PROJECT ITEM CARD DESIGN
+   ========================================================================== */
+
+.rfp-item-card {
+  border-radius: 18px !important;
+  border: 1px solid #e2e8f0 !important;
+  height: 100%;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  background: #ffffff;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.rfp-item-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(var(--primary-color-rgb, 5, 150, 105), 0.25) !important;
+  border-color: var(--primary-color, #a7f3d0) !important;
+}
+
+/* Card Header Status Row */
+.rfp-card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 8px;
+}
+
+.rfp-status-pill {
+  border-radius: 20px !important;
+  padding: 4px 12px !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid transparent !important;
+}
+
+.rfp-status-pill.active {
+  background: #f0fdf4 !important;
+  color: #16a34a !important;
+  border-color: #86efac !important;
+}
+
+.rfp-status-pill.completed {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  border-color: #cbd5e1 !important;
+}
+
+.rfp-status-pill.draft {
+  background: #fffbeb !important;
+  color: #d97706 !important;
+  border-color: #fde68a !important;
+}
+
+.rfp-category-chip {
+  background: #eff6ff;
+  color: #2563eb;
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #bfdbfe;
+}
+
+/* Card Main Title */
+.rfp-card-title-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.rfp-card-icon-avatar {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 10px;
+  background: rgba(var(--primary-color-rgb, 5, 150, 105), 0.1);
+  color: var(--primary-color, #059669);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  border: 1px solid rgba(var(--primary-color-rgb, 5, 150, 105), 0.25);
+}
+
+.rfp-card-title {
+  margin: 0 !important;
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  font-size: 15.5px !important;
+  line-height: 1.4 !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s ease;
+  word-break: break-word;
+}
+
+.rfp-item-card:hover .rfp-card-title {
+  color: var(--primary-color, #059669) !important;
+}
+
+/* Card Information Box */
+.rfp-info-card-box {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Beneficiaries Highlight */
+.rfp-budget-highlight {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rfp-budget-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.rfp-budget-val {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--primary-color, #059669);
+  letter-spacing: -0.2px;
+}
+
+.rfp-info-row {
+  display: flex;
+  align-items: center;
+  font-size: 12.5px;
+  color: #475569;
+  justify-content: space-between;
+}
+
+.rfp-info-row-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rfp-info-icon {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.rfp-info-label {
+  color: #64748b;
+}
+
+.rfp-info-val {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Card Action Footer Buttons */
+.rfp-card-footer {
+  margin-top: auto;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.rfp-btn-details {
+  border-radius: 10px !important;
+  height: 40px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  border-color: #cbd5e1 !important;
+  color: #334155 !important;
+  background: #ffffff !important;
+  transition: all 0.2s ease !important;
+  width: 100% !important;
+}
+
+.rfp-btn-details:hover {
+  border-color: var(--primary-color, #059669) !important;
+  color: var(--primary-color, #059669) !important;
+  background: rgba(var(--primary-color-rgb, 5, 150, 105), 0.06) !important;
+}
+
+/* Pagination Section */
+.rfp-pagination-wrapper {
+  margin-top: 24px;
+  padding: 12px 0;
+  background: transparent !important;
+  border-radius: 0 !important;
+  border: none !important;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  box-shadow: none !important;
+}
+
+.rfp-pagination-wrapper .ant-pagination {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rfp-pagination-wrapper .ant-pagination-item {
+  border-radius: 50% !important;
+  font-weight: 600;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  transition: all 0.2s ease;
+}
+
+.rfp-pagination-wrapper .ant-pagination-item-active {
+  background: var(--primary-gradient, var(--primary-color, #059669)) !important;
+  border-color: var(--primary-color, #059669) !important;
+  box-shadow: 0 2px 6px rgba(var(--primary-color-rgb, 5, 150, 105), 0.3) !important;
+}
+
+.rfp-pagination-wrapper .ant-pagination-item-active a {
+  color: #ffffff !important;
+}
+
+.rfp-pagination-wrapper .ant-pagination-prev .ant-pagination-item-link,
+.rfp-pagination-wrapper .ant-pagination-next .ant-pagination-item-link {
+  border-radius: 50% !important;
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Table Card Customization */
+.projects-table-card {
+  border-radius: 16px !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04) !important;
+  overflow: hidden !important;
+}
+
+.projects-table-card .ant-table-thead>tr>th {
+  background: #f8fafc !important;
+  color: #475569 !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.projects-table-card .ant-table-tbody>tr>td {
+  border-bottom: 1px solid #f1f5f9 !important;
+  font-size: 13.5px !important;
+}
+
+.projects-table-card .ant-table-tbody>tr:hover>td {
+  background: rgba(var(--primary-color-rgb, 5, 150, 105), 0.03) !important;
+}
+
+/* Table Action Button - Green Square Icon */
+.tbl-action-btn-view {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  border: 1.5px solid #86efac !important;
+  background: #ffffff !important;
+  color: #16a34a !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer !important;
+}
+
+.tbl-action-btn-view:hover {
+  background: #f0fdf4 !important;
+  border-color: #22c55e !important;
+  color: #15803d !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25) !important;
+}
+
+.tbl-action-btn-view:active {
+  transform: scale(0.95);
+}

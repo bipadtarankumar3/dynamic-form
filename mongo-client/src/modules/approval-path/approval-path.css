@@ -1,0 +1,654 @@
+/* client/src/modules/approval-path/approval-path.css */
+/* Modern Enterprise Approval Workflow Studio & Pipeline Theme */
+
+/* ── 1. FULLSCREEN MODAL OVERRIDES & HIGH Z-INDEX ── */
+.approval-wizard-fullscreen-modal,
+.approval-flow-fullscreen-modal {
+  z-index: 1200 !important;
+}
+
+/* Ensure all Ant Design Select dropdowns, Popovers, and Drawers appear above the modal */
+.ant-select-dropdown,
+.ant-picker-dropdown,
+.ant-dropdown,
+.ant-popover,
+.ant-tooltip,
+.approval-select-popup {
+  z-index: 1500 !important;
+}
+
+.approval-wizard-fullscreen-modal .ant-modal-mask,
+.approval-flow-fullscreen-modal .ant-modal-mask {
+  z-index: 1199 !important;
+  background: rgba(15, 23, 42, 0.65) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+.approval-wizard-fullscreen-modal .ant-modal-wrap,
+.approval-flow-fullscreen-modal .ant-modal-wrap {
+  z-index: 1200 !important;
+  position: fixed !important;
+  inset: 0 !important;
+  overflow: hidden !important;
+}
+
+.approval-wizard-fullscreen-modal .ant-modal,
+.approval-flow-fullscreen-modal .ant-modal {
+  max-width: 100vw !important;
+  width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  height: 100vh !important;
+}
+
+.approval-wizard-fullscreen-modal .ant-modal-content,
+.approval-flow-fullscreen-modal .ant-modal-content {
+  border-radius: 0 !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  background: #f8fafc !important;
+  box-shadow: none !important;
+}
+
+.approval-wizard-fullscreen-modal .ant-modal-body,
+.approval-flow-fullscreen-modal .ant-modal-body {
+  padding: 0 !important;
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+}
+
+/* ── 2. STUDIO VIEWPORT & HEADER ── */
+.approval-studio-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-height: 100vh;
+  width: 100vw;
+  max-width: 100vw;
+  overflow: hidden;
+  background: #f8fafc;
+  position: relative;
+  z-index: 10;
+}
+
+.approval-studio-header {
+  flex-shrink: 0;
+  background: #ffffff;
+  border-bottom: 1.5px solid #e2e8f0;
+  padding: 12px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  z-index: 20;
+  gap: 16px;
+}
+
+.approval-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.approval-back-btn {
+  background: #f1f5f9;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.approval-back-btn:hover {
+  background: #e2e8f0;
+}
+
+.approval-header-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.approval-header-subtitle {
+  font-size: 11px;
+  color: #64748b;
+  display: block;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── 1-LINE TOP RIGHT STEPPER ── */
+.approval-stepper-wrap {
+  flex-shrink: 0;
+  min-width: 340px;
+  max-width: 440px;
+}
+
+.approval-stepper-wrap .ant-steps {
+  align-items: center;
+}
+
+.approval-stepper-wrap .ant-steps-item {
+  padding-bottom: 0 !important;
+}
+
+.approval-stepper-wrap .ant-steps-item-title {
+  white-space: nowrap !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 24px !important;
+  padding-right: 8px !important;
+}
+
+.approval-stepper-wrap .ant-steps-item-description {
+  display: none !important;
+}
+
+/* ── 3. SCROLLABLE STUDIO BODY ── */
+.approval-studio-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 32px 32px 32px;
+}
+
+.approval-studio-body::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.approval-studio-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.approval-studio-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ── 4. STUDIO CARDS ── */
+.approval-card-main {
+  border-radius: 16px;
+  border: 1.5px solid #e2e8f0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+  background: #ffffff;
+}
+
+.approval-card-section-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.approval-card-section-desc {
+  margin: 4px 0 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.approval-form-label {
+  color: #1e293b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.approval-form-input {
+  border-radius: 8px;
+}
+
+/* ── 5. PARADIGM CHOICE CARDS ── */
+.paradigm-section-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.paradigm-card {
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.paradigm-card:hover {
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+}
+
+.paradigm-card.active-normal {
+  border-color: #3b82f6;
+  background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.12);
+}
+
+.paradigm-card.active-matrix {
+  border-color: #9333ea;
+  background: linear-gradient(180deg, #faf5ff 0%, #ffffff 100%);
+  box-shadow: 0 6px 20px rgba(147, 51, 234, 0.12);
+}
+
+.paradigm-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+}
+
+.paradigm-icon-box.normal-active {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.paradigm-icon-box.matrix-active {
+  background: #9333ea;
+  color: #ffffff;
+}
+
+.paradigm-icon-box.inactive {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.paradigm-card-heading {
+  font-weight: 800;
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.paradigm-card-subheading {
+  font-size: 11px;
+}
+
+.paradigm-card-desc {
+  margin: 8px 0 12px 0;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* ── 6. SETTINGS STRIP ── */
+.approval-settings-strip {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.approval-settings-text-title {
+  font-size: 13px;
+  color: #1e293b;
+  font-weight: 700;
+  display: block;
+}
+
+.approval-settings-text-desc {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* ── 7. NORMAL FLOW CARDS & STAGES ── */
+.normal-initiators-card {
+  border-radius: 16px;
+  border: 1.5px solid #bfdbfe;
+  background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);
+  margin-bottom: 20px;
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.05);
+}
+
+.normal-steps-card {
+  border-radius: 16px;
+  border: 1.5px solid #fed7aa;
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.05);
+}
+
+.normal-stage-item {
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+  position: relative;
+}
+
+.normal-stage-badge {
+  position: absolute;
+  top: -10px;
+  left: 18px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  border-radius: 6px;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* ── 8. MATRIX TABLE & DRAWER ── */
+.matrix-row-hover:hover {
+  background-color: #faf5ff !important;
+}
+
+.matrix-condition-row {
+  background: #faf5ff;
+  border: 1px solid #e9d5ff;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.matrix-stage-level-row {
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.matrix-stage-level-badge {
+  position: absolute;
+  top: -9px;
+  left: 14px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  border-radius: 6px;
+  padding: 1px 8px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+/* ── 9. PIPELINE FLOW NODES (FLOW MODAL & PREVIEW) ── */
+.pipeline-track-container {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 8px 4px 16px 4px;
+}
+
+.pipeline-node {
+  flex: 1 1 0;
+  min-width: 220px;
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  position: relative;
+  transition: all 0.25s ease;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.pipeline-node:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.pipeline-node-trigger {
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 60%);
+  border: 1.5px solid #bbf7d0;
+}
+
+.pipeline-node-criteria {
+  background: linear-gradient(180deg, #faf5ff 0%, #ffffff 60%);
+  border: 1.5px solid #e9d5ff;
+}
+
+.pipeline-node-level {
+  background: linear-gradient(180deg, #fffbeb 0%, #ffffff 60%);
+  border: 1.5px solid #fde68a;
+}
+
+.pipeline-node-complete {
+  flex: 0 0 180px;
+  background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 60%);
+  border: 1.5px solid #a7f3d0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.pipeline-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e1;
+  font-size: 20px;
+  padding: 0 2px;
+}
+
+/* Branch Tab Pills */
+.branch-pill-btn {
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  padding: 0 16px !important;
+  height: 38px !important;
+  line-height: 36px !important;
+  border-color: #e2e8f0 !important;
+  color: #475569 !important;
+  transition: all 0.2s ease !important;
+}
+
+.branch-pill-btn:hover {
+  color: #7c3aed !important;
+  border-color: #d8b4fe !important;
+}
+
+.branch-pill-active {
+  background: linear-gradient(135deg, #9333ea, #7c3aed) !important;
+  color: #ffffff !important;
+  border-color: #9333ea !important;
+  box-shadow: 0 4px 14px rgba(147, 51, 234, 0.3) !important;
+}
+
+/* ── 10. STICKY BOTTOM FOOTER BAR ── */
+.approval-studio-footer {
+  flex-shrink: 0;
+  background: #ffffff;
+  border-top: 1.5px solid #e2e8f0;
+  padding: 12px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.03);
+  z-index: 100;
+}
+
+.approval-btn-cancel {
+  border-radius: 8px;
+  font-weight: 700;
+  padding: 0 20px;
+}
+
+.approval-btn-draft {
+  border-radius: 8px;
+  font-weight: 700;
+  border-color: #fde68a;
+  background: #fffbeb;
+  color: #d97706;
+  padding: 0 20px;
+}
+
+.approval-btn-next {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  border-color: #4f46e5;
+  padding: 0 28px;
+  font-weight: 800;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+  color: #ffffff;
+}
+
+.approval-btn-activate {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-color: #10b981;
+  padding: 0 30px;
+  font-weight: 800;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+  color: #ffffff;
+}
+
+/* ── 11. RESPONSIVE BREAKPOINTS ── */
+/* ── 12. VERIFICATION STAT TILES & FULL WIDTH LAYOUT ── */
+.approval-verify-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.approval-stat-tile {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+}
+
+.approval-stat-tile:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.approval-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.approval-stat-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.approval-stat-value {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.approval-step-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #92400e;
+  box-shadow: 0 1px 4px rgba(245, 158, 11, 0.1);
+}
+
+@media (max-width: 768px) {
+  .approval-verify-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+@media (max-width: 992px) {
+  .approval-studio-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 20px;
+  }
+  .approval-stepper-wrap {
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+  }
+  .approval-studio-body {
+    padding: 16px 20px;
+  }
+  .approval-studio-footer {
+    padding: 12px 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .approval-studio-header {
+    padding: 10px 14px;
+  }
+  .approval-header-title {
+    font-size: 14px;
+  }
+  .approval-studio-body {
+    padding: 12px 14px;
+  }
+  .approval-studio-footer {
+    padding: 10px 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .approval-btn-cancel,
+  .approval-btn-draft,
+  .approval-btn-next,
+  .approval-btn-activate {
+    padding: 0 14px;
+    font-size: 12px;
+  }
+}
