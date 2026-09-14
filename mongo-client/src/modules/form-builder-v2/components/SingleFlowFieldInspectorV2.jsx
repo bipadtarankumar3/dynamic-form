@@ -24,16 +24,15 @@ export default function SingleFlowFieldInspectorV2({ field, onUpdateField, allFi
     try {
       const res = await privateHttpClient.get(`configurator/form-schemas/table-columns/${encodeURIComponent(tbl)}`);
       let cols = [];
-      if (res?.data?.columns && Array.isArray(res.data.columns)) {
-        cols = res.data.columns.map((c) => (typeof c === 'string' ? c : c.column_name)).filter(Boolean);
-      } else if (res?.data?.fields && Array.isArray(res.data.fields)) {
-        cols = res.data.fields.map((f) => f.db_field || f.column_name).filter(Boolean);
+      const rawCols = res?.data?.data || res?.data?.columns || res?.data?.fields || (Array.isArray(res?.data) ? res.data : []);
+      if (Array.isArray(rawCols) && rawCols.length > 0) {
+        cols = rawCols.map((c) => (typeof c === 'string' ? c : (c.column_name || c.db_field || c.name || c.key))).filter(Boolean);
         if (!cols.includes('id')) cols.unshift('id');
       }
 
       if (cols.length === 0) {
         const foundForm = masterForms.find(
-          (m) => (m.table_name || `t_frm_${m.slug}`)?.toLowerCase() === key || m.slug?.toLowerCase() === key
+          (m) => (m.table_name || `t_frm_${m.slug}`)?.toLowerCase() === key || m.slug?.toLowerCase() === key || `v_${m.slug}`?.toLowerCase() === key
         );
         if (foundForm?.fields) {
           cols = foundForm.fields.map((f) => f.db_field).filter(Boolean);
@@ -1226,11 +1225,11 @@ export default function SingleFlowFieldInspectorV2({ field, onUpdateField, allFi
                   onChange={async (tableName) => {
                     // Try to find metadata from loaded form schemas
                     const selectedForm = masterForms.find(
-                      (m) => (m.table_name || `t_frm_${m.slug}`) === tableName || m.slug === tableName
+                      (m) => (m.table_name || `t_frm_${m.slug}`) === tableName || m.slug === tableName || `v_${m.slug}` === tableName
                     );
                     const pk = selectedForm?.primary_key || 'id';
                     // Derive a friendly name from the table name
-                    const name = selectedForm?.slug || tableName.replace(/^t_frm_/, '').replace(/^t_/, '');
+                    const name = selectedForm?.slug || tableName.replace(/^v_/, '').replace(/^t_frm_/, '').replace(/^t_/, '');
 
                     // Fetch columns for the newly chosen table
                     const cols = await fetchColumnsForTable(tableName);
@@ -1359,7 +1358,15 @@ export default function SingleFlowFieldInspectorV2({ field, onUpdateField, allFi
                 {(() => {
                   const currentTable = field.data_source?.table_name || (field.data_source?.name ? `t_${field.data_source.name}` : '');
                   const activeCols = Array.from(new Set((currentTable && tableColumnsMap[currentTable.toLowerCase()]) || []));
-                  const currentLabelKey = field.data_source?.label_key || 'name';
+                  let currentLabelKey = field.data_source?.label_key;
+
+                  if (!currentLabelKey || (currentLabelKey === 'name' && activeCols.length > 0 && !activeCols.includes('name'))) {
+                    const matched = activeCols.find((c) => c.toLowerCase().endsWith('_name') || c.toLowerCase().includes('name') || c.toLowerCase().includes('title')) ||
+                      activeCols.find((c) => c !== 'id' && !c.endsWith('_id')) ||
+                      activeCols[0];
+                    if (matched) currentLabelKey = matched;
+                  }
+                  if (!currentLabelKey) currentLabelKey = 'name';
 
                   const labelKeyOptions = activeCols.length > 0
                     ? activeCols.map((c) => ({

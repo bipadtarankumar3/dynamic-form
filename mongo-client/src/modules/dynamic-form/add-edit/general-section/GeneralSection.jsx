@@ -118,13 +118,21 @@ const GeneralSection = forwardRef(
         const res = await dynamicMasterDetailsAPI({
           master: masterName,
           filters,
+          table_name: ds?.table_name,
+          label_key: ds?.label_key,
+          primary_key: ds?.primary_key || ds?.value_key,
         });
 
         const rawData = res?.data?.data || [];
-        const formattedData = rawData.map((opt) => ({
-          ...opt,
-          value: opt?.value !== null && opt?.value !== undefined ? String(opt.value) : opt?.value,
-        }));
+        const formattedData = rawData.map((opt) => {
+          const val = opt?.value !== undefined && opt?.value !== null ? opt.value : (opt?.id || opt?._id);
+          const lbl = opt?.label || (ds?.label_key && opt?.[ds.label_key]) || opt?.name || opt?.state_name || opt?.title || String(val);
+          return {
+            ...opt,
+            value: val !== null && val !== undefined ? String(val) : "",
+            label: lbl,
+          };
+        });
 
         setOptions((prev) => ({
           ...prev,

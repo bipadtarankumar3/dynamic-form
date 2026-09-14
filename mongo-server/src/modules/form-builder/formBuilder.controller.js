@@ -111,7 +111,9 @@ const formBuilderController = {
         $or: [
           { "root_entity.table": cleanTable },
           { slug: cleanTable },
+          { slug: cleanTable.replace(/^v_/, "") },
           { slug: cleanTable.replace(/^t_frm_/, "") },
+          { slug: cleanTable.replace(/^t_/, "") },
         ],
       });
 
@@ -168,7 +170,7 @@ const formBuilderController = {
         });
       }
 
-      return res.status(200).json({ success: true, data: columns });
+      return res.status(200).json({ success: true, data: columns, columns });
     } catch (e) {
       return res.status(500).json({ success: false, message: e.message });
     }

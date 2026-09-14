@@ -137,37 +137,218 @@ const dynamicFormController = {
   },
 
   // ================================================================
-  // MASTER DETAILS — return master dropdown options for a given master_slug
+  // MASTER DETAILS — return master dropdown options for a given master_slug, view, table, or form
   // ================================================================
   masterDetails: async (req, res) => {
     try {
-      const { master_slug, search, page = 1, limit = 100 } = req.body;
-      if (!master_slug) return res.status(400).json({ success: false, message: "master_slug is required" });
+      const {
+        master,
+        master_slug,
+        master_name,
+        table_name,
+        name,
+        slug,
+        filters = {},
+        search,
+        page = 1,
+        limit = 500,
+        label_key,
+        primary_key,
+      } = req.body;
 
-      const masterSchema = await MasterSchema.findOne({ slug: master_slug, deleted_at: null }).lean();
-      if (!masterSchema) return res.status(404).json({ success: false, message: `Master "${master_slug}" not found` });
-
-      const labelField = masterSchema.label_field || "name";
-
-      const query = { master_slug, deleted_at: null, is_active: true };
-      if (search) {
-        query[`data.${labelField}`] = { $regex: search, $options: "i" };
+      const masterKey = (master || master_slug || master_name || table_name || name || slug || "").trim();
+      if (!masterKey) {
+        return res.status(400).json({ success: false, message: "master identifier is required" });
       }
 
-      const skip = (Number(page) - 1) * Number(limit);
-      const [records, total] = await Promise.all([
-        MasterData.find(query).skip(skip).limit(Number(limit)).lean(),
-        MasterData.countDocuments(query),
-      ]);
+      const db = mongoose.connection.db;
 
-      const data = records.map(r => ({
-        value: r._id.toString(),
-        label: r.data?.[labelField] || r.data?.name || String(r._id),
-        ...r.data,
-        _id: r._id,
-      }));
+      // Normalize candidate names: e.g. "v_state", "state", "t_state", "t_frm_state"
+      const cleanSlug = masterKey.replace(/^v_/, "").replace(/^t_frm_/, "").replace(/^t_/, "");
+      const candidates = Array.from(new Set([
+        masterKey,
+        `v_${cleanSlug}`,
+        cleanSlug,
+        `t_frm_${cleanSlug}`,
+        `t_${cleanSlug}`,
+      ]));
 
-      return res.json({ success: true, total, data });
+      // 1. Check if a MongoDB collection or view directly exists for any candidate (e.g. "v_state")
+      let matchedCollection = null;
+      for (const cand of candidates) {
+        const exists = await db.listCollections({ name: cand }).toArray();
+        if (exists.length > 0) {
+          matchedCollection = cand;
+          break;
+        }
+      }
+
+      if (matchedCollection) {
+        const query = {};
+        if (search) {
+          query.$or = [
+            { state_name: { $regex: search, $options: "i" } },
+            { name: { $regex: search, $options: "i" } },
+            { title: { $regex: search, $options: "i" } },
+            { label: { $regex: search, $options: "i" } },
+          ];
+        }
+        if (filters && typeof filters === "object") {
+          for (const [k, v] of Object.entries(filters)) {
+            if (v !== undefined && v !== null && v !== "") {
+              query[k] = v;
+            }
+          }
+        }
+
+        const skip = (Number(page) - 1) * Number(limit);
+        const [records, total] = await Promise.all([
+          db.collection(matchedCollection).find(query).skip(skip).limit(Number(limit)).toArray(),
+          db.collection(matchedCollection).countDocuments(query),
+        ]);
+
+        const data = records.map((r) => {
+          const val = r.id || r._id || r.value;
+          let lbl = r[label_key] || r.label;
+          if (!lbl) {
+            const keyCandidates = [
+              label_key,
+              "name",
+              "title",
+              `${cleanSlug}_name`,
+              "state_name",
+              "display_name",
+              "label",
+              "code",
+            ].filter(Boolean);
+            for (const k of keyCandidates) {
+              if (r[k] !== undefined && r[k] !== null) {
+                lbl = r[k];
+                break;
+              }
+            }
+          }
+          if (!lbl) {
+            const foundKey = Object.keys(r).find(
+              (k) =>
+                !["_id", "id", "status", "created_by", "updated_by", "created_at", "updated_at", "__v"].includes(k) &&
+                (k.endsWith("_name") || k.includes("name") || k.endsWith("_title") || k.includes("title"))
+            );
+            if (foundKey) lbl = r[foundKey];
+          }
+          if (!lbl) lbl = String(val);
+
+          return {
+            ...r,
+            value: String(val),
+            label: String(lbl),
+            id: String(val),
+            _id: r._id ? String(r._id) : String(val),
+          };
+        });
+
+        return res.json({ success: true, total, data });
+      }
+
+      // 2. Check if it corresponds to a Dynamic Form (in Form / FormData collections)
+      const form = await Form.findOne({
+        $or: [
+          { slug: masterKey },
+          { slug: cleanSlug },
+          { title: new RegExp(`^${cleanSlug}$`, "i") },
+        ],
+        deleted_at: null,
+      }).lean();
+
+      if (form) {
+        const query = { form_slug: form.slug, deleted_at: null };
+        if (filters && typeof filters === "object") {
+          for (const [k, v] of Object.entries(filters)) {
+            if (v !== undefined && v !== null && v !== "") {
+              query[`data.${k}`] = v;
+            }
+          }
+        }
+
+        let detectedLabelField = label_key;
+        if (!detectedLabelField) {
+          const cols = (form.table_columns || []).map((c) => c.key);
+          detectedLabelField =
+            cols.find((c) => c === "name" || c.endsWith("_name") || c.includes("name") || c.endsWith("_title") || c.includes("title")) ||
+            "name";
+        }
+
+        if (search) {
+          query[`data.${detectedLabelField}`] = { $regex: search, $options: "i" };
+        }
+
+        const skip = (Number(page) - 1) * Number(limit);
+        const [records, total] = await Promise.all([
+          FormData.find(query).skip(skip).limit(Number(limit)).lean(),
+          FormData.countDocuments(query),
+        ]);
+
+        const data = records.map((r) => {
+          const recData = r.data || {};
+          const val = r._id;
+          const lbl =
+            recData[label_key] ||
+            recData[detectedLabelField] ||
+            recData.name ||
+            recData[`${form.slug}_name`] ||
+            recData.state_name ||
+            recData.title ||
+            String(val);
+
+          return {
+            ...recData,
+            value: String(val),
+            label: String(lbl),
+            id: String(val),
+            _id: String(val),
+          };
+        });
+
+        return res.json({ success: true, total, data });
+      }
+
+      // 3. Fallback: Check MasterSchema / MasterData
+      const masterSchema = await MasterSchema.findOne({
+        $or: [{ slug: masterKey }, { slug: cleanSlug }],
+        deleted_at: null,
+      }).lean();
+
+      if (masterSchema) {
+        const labelField = label_key || masterSchema.label_field || "name";
+        const query = { master_slug: masterSchema.slug, deleted_at: null, is_active: true };
+        if (search) {
+          query[`data.${labelField}`] = { $regex: search, $options: "i" };
+        }
+        if (filters && typeof filters === "object") {
+          for (const [k, v] of Object.entries(filters)) {
+            if (v !== undefined && v !== null && v !== "") {
+              query[`data.${k}`] = v;
+            }
+          }
+        }
+
+        const skip = (Number(page) - 1) * Number(limit);
+        const [records, total] = await Promise.all([
+          MasterData.find(query).skip(skip).limit(Number(limit)).lean(),
+          MasterData.countDocuments(query),
+        ]);
+
+        const data = records.map((r) => ({
+          value: r._id.toString(),
+          label: r.data?.[labelField] || r.data?.name || String(r._id),
+          ...r.data,
+          _id: r._id,
+        }));
+
+        return res.json({ success: true, total, data });
+      }
+
+      return res.status(404).json({ success: false, message: `Master/Table/View "${masterKey}" not found` });
     } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
   },
 
