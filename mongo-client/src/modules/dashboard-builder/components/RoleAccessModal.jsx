@@ -41,15 +41,20 @@ const RoleAccessModal = ({
     if (open) {
       const normalized = (Array.isArray(currentRoles) ? currentRoles : []).map((r) => {
         if (typeof r === 'object' && r !== null) {
-          const matched = roles.find((rl) => String(rl.id) === String(r.role_id || r.id));
+          const rId = r.role_id || r._id || r.id || r.slug;
+          const matched = roles.find(
+            (rl) => String(rl._id || rl.id || rl.role_id || rl.slug) === String(rId)
+          );
           return {
-            role_id: r.role_id || r.id,
-            role_name: r.role_name || r.name || matched?.name || `Role #${r.role_id || r.id}`,
+            role_id: rId,
+            role_name: r.role_name || r.name || matched?.name || `Role #${rId}`,
             data_scope: r.data_scope || 'all',
             master_field: r.master_field || (r.data_scope === 'master_scoped' ? 'unit_id' : null),
           };
         } else {
-          const matched = roles.find((rl) => String(rl.id) === String(r));
+          const matched = roles.find(
+            (rl) => String(rl._id || rl.id || rl.role_id || rl.slug) === String(r)
+          );
           return {
             role_id: r,
             role_name: matched?.name || `Role #${r}`,
@@ -71,8 +76,10 @@ const RoleAccessModal = ({
       return;
     }
 
-    const matched = roles.find((r) => String(r.id) === String(selectedRoleId));
-    const roleName = matched?.name || `Role #${selectedRoleId}`;
+    const matched = roles.find(
+      (r) => String(r._id || r.id || r.role_id || r.slug) === String(selectedRoleId)
+    );
+    const roleName = matched?.name || matched?.slug || `Role #${selectedRoleId}`;
 
     const existingIndex = roleConfigs.findIndex(
       (rc) => String(rc.role_id) === String(selectedRoleId)
@@ -133,7 +140,7 @@ const RoleAccessModal = ({
 
   // Roles available to add (not yet in list)
   const availableToAdd = roles.filter(
-    (r) => !roleConfigs.some((rc) => String(rc.role_id) === String(r.id))
+    (r) => !roleConfigs.some((rc) => String(rc.role_id) === String(r._id || r.id || r.role_id || r.slug))
   );
 
   return (
@@ -214,10 +221,13 @@ const RoleAccessModal = ({
               filterOption={(input, option) =>
                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
               }
-              options={availableToAdd.map((r) => ({
-                label: r.name,
-                value: r.id,
-              }))}
+              options={availableToAdd.map((r, idx) => {
+                const val = r._id || r.id || r.role_id || r.slug || `role_${idx}`;
+                return {
+                  label: r.name || r.slug || val,
+                  value: val,
+                };
+              })}
             />
           </div>
 

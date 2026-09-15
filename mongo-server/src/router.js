@@ -39,6 +39,13 @@ router.use("/configurator/database-views", require("./modules/database-view/data
 router.use("/settings", require("./modules/settings/settings.route"));
 router.use("/configurator/settings", require("./modules/settings/settings.route"));
 
+// Pivot Dashboard & Data Widgets
+router.use("/pivot", require("./modules/pivot/pivot.route"));
+
+// Custom Dashboards & Dashboard Builder
+router.use("/custom-dashboards", require("./modules/dashboard/dashboardBuilder.route"));
+router.use("/configurator/custom-dashboards", require("./modules/dashboard/dashboardBuilder.route"));
+
 // Public endpoints
 router.use("/public", require("./modules/public/public.route"));
 

@@ -216,20 +216,20 @@ const DashboardBuilderManager = () => {
     if (typeof roleOrObj === 'object') {
       if (roleOrObj.role_name) return roleOrObj.role_name;
       if (roleOrObj.name) return roleOrObj.name;
-      const id = roleOrObj.role_id ?? roleOrObj.id;
+      const id = roleOrObj._id ?? roleOrObj.id ?? roleOrObj.role_id ?? roleOrObj.slug;
       if (id !== undefined && id !== null) {
-        const matched = roles.find((r) => String(r.id || r.role_id) === String(id));
-        return matched ? (matched.name || matched.role_name) : `Role #${id}`;
+        const matched = roles.find((r) => String(r._id || r.id || r.role_id || r.slug) === String(id));
+        return matched ? (matched.name || matched.role_name || matched.slug) : `Role #${id}`;
       }
       return 'Unknown Role';
     }
-    const matched = roles.find((r) => String(r.id || r.role_id) === String(roleOrObj));
-    return matched ? (matched.name || matched.role_name) : `Role #${roleOrObj}`;
+    const matched = roles.find((r) => String(r._id || r.id || r.role_id || r.slug) === String(roleOrObj));
+    return matched ? (matched.name || matched.role_name || matched.slug) : `Role #${roleOrObj}`;
   };
 
   const getRoleId = (roleOrObj, fallbackIndex) => {
     if (typeof roleOrObj === 'object' && roleOrObj !== null) {
-      return roleOrObj.role_id ?? roleOrObj.id ?? fallbackIndex;
+      return roleOrObj._id ?? roleOrObj.id ?? roleOrObj.role_id ?? roleOrObj.slug ?? fallbackIndex;
     }
     return roleOrObj ?? fallbackIndex;
   };
@@ -239,12 +239,12 @@ const DashboardBuilderManager = () => {
       (d.tdb_name || '').toLowerCase().includes(search.toLowerCase()) ||
       (d.tdb_description || '').toLowerCase().includes(search.toLowerCase());
 
-    const assignedRoles = parseRoles(d.tdb_roles);
+    const assignedRoles = parseRoles(d.tdb_roles || d.roles);
     const matchesRole =
       roleFilter === 'all' ||
       assignedRoles.some((r) => {
         if (typeof r === 'object' && r !== null) {
-          const id = r.role_id ?? r.id;
+          const id = r._id ?? r.id ?? r.role_id ?? r.slug;
           return String(id) === String(roleFilter);
         }
         return String(r) === String(roleFilter);
@@ -344,11 +344,14 @@ const DashboardBuilderManager = () => {
               className="conf-role-select"
             >
               <Option value="all">All Roles</Option>
-              {roles.map((r) => (
-                <Option key={r.id} value={r.id}>
-                  {r.name}
-                </Option>
-              ))}
+              {roles.map((r, idx) => {
+                const roleValue = r._id || r.id || r.role_id || r.slug || `role_${idx}`;
+                return (
+                  <Option key={roleValue} value={roleValue}>
+                    {r.name || r.slug || roleValue}
+                  </Option>
+                );
+              })}
             </Select>
           </div>
 
