@@ -7,51 +7,50 @@ const mongoose = require("mongoose");
 const formBuilderController = {
 
   // -------------------------------------------------------
-  // GET ALL DATABASE TABLES (Collections / Tables for Form Builder)
+  // GET ALL DATABASE TABLES (Form schemas + Master schemas for dropdowns)
   // -------------------------------------------------------
   getAllDatabaseTables: async (req, res) => {
     try {
-      const db = mongoose.connection.db;
-      const collections = await db.listCollections().toArray();
-      const collectionNames = new Set(
-        collections
-          .map((c) => c.name)
-          .filter((name) => !name.startsWith("system."))
-      );
+      const MasterSchema = require("../../models/MasterSchema.model");
 
-      // Also gather known entity table names from existing Form schemas
-      const existingForms = await Form.find({ deleted_at: null }).select("slug root_entity");
-      existingForms.forEach((f) => {
-        if (f.root_entity?.table) collectionNames.add(f.root_entity.table);
-        if (f.slug) collectionNames.add(`t_frm_${f.slug}`);
-      });
+      // ── 1. Master schemas (State, District, Block, etc.) ──────────────
+      const masters = await MasterSchema.find({ deleted_at: null, is_active: true })
+        .select("name slug label_field fields")
+        .sort({ name: 1 })
+        .lean();
 
-      // Default system tables/collections to offer
-      const standardTables = [
-        "t_frm_implementation_partner",
-        "t_users",
-        "t_roles",
-        "t_permissions",
-        "t_menus",
-        "t_settings",
-        "formdatas",
-        "databaseviews",
-      ];
-      standardTables.forEach((t) => collectionNames.add(t));
+      const masterTables = masters.map((m) => ({
+        table_name:   m.slug,                   // used as the key by the inspector
+        label:        `${m.name} (Master)`,
+        value:        m.slug,
+        display_name: m.name,
+        source_type:  "master",                 // tells the runtime to query masterdatas
+        label_field:  m.label_field || "name",
+        primary_key:  "_id",
+      }));
 
-      const tables = Array.from(collectionNames)
-        .sort()
-        .map((name) => ({
-          table_name: name,
-          label: name,
-          value: name,
-        }));
+      // ── 2. Form schemas (Project, Employee, etc.) ──────────────────────
+      const forms = await Form.find({ deleted_at: null })
+        .select("title slug table_columns sections root_entity is_master")
+        .sort({ title: 1 })
+        .lean();
 
-      return res.status(200).json({ success: true, data: tables });
+      const formTables = forms.map((f) => ({
+        table_name:   f.slug,
+        label:        f.is_master ? `${f.title} (Master Form)` : `${f.title} (Form)`,
+        value:        f.slug,
+        display_name: f.title,
+        source_type:  "form",                   // tells the runtime to query formdatas
+        primary_key:  "_id",
+      }));
+
+      const data = [...masterTables, ...formTables];
+      return res.status(200).json({ success: true, data });
     } catch (e) {
       return res.status(500).json({ success: false, message: e.message });
     }
   },
+
 
   // -------------------------------------------------------
   // GET MASTER FORMS (All active forms with their fields)
@@ -423,26 +422,43 @@ async function ensureFormMongoView(form, userId) {
     const viewSlug = `v_${form.slug}`;
     const viewName = `${form.title} View`;
 
+    const projectFields = {
+      _id: 1,
+      id: "$_id",
+      form_slug: 1,
+      created_at: 1,
+      updated_at: 1,
+      status: 1,
+      created_by: 1,
+      updated_by: 1,
+      data: "$data",
+    };
+
+    // 1. Extract all field keys from sections
+    (form.sections || []).forEach((sec) => {
+      (sec.fields || []).forEach((fld) => {
+        const key = fld.db_field || fld.column_name || fld.id;
+        if (key && !projectFields[key]) {
+          projectFields[key] = `$data.${key}`;
+        }
+      });
+    });
+
+    // 2. Extract from table_columns if defined
+    (form.table_columns || []).forEach((col) => {
+      if (!col.key || col.checked === false) return;
+      if (col.key === "id") {
+        projectFields["id"] = "$_id";
+      } else if (["_id", "created_at", "updated_at", "status", "created_by", "updated_by", "form_slug"].includes(col.key)) {
+        projectFields[col.key] = 1;
+      } else if (!projectFields[col.key]) {
+        projectFields[col.key] = `$data.${col.key}`;
+      }
+    });
+
     const pipeline = [
       { $match: { form_slug: form.slug, deleted_at: null } },
-      {
-        $project: {
-          _id: 1,
-          created_at: 1,
-          status: 1,
-          ...(form.table_columns || []).reduce((acc, col) => {
-            if (!col.key || col.checked === false) return acc;
-            if (col.key === "id") {
-              acc["id"] = "$_id";
-            } else if (["_id", "created_at", "updated_at", "status", "created_by", "updated_by", "form_slug"].includes(col.key)) {
-              acc[col.key] = 1;
-            } else {
-              acc[col.key] = `$data.${col.key}`;
-            }
-            return acc;
-          }, {}),
-        },
-      },
+      { $project: projectFields },
     ];
 
     const collections = await mongoose.connection.db.listCollections({ name: viewSlug }).toArray();

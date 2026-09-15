@@ -130,7 +130,7 @@ export default function FormSettingsViewV2({
                 </label>
                 <Input
                   size="large"
-                  value={schema.table_name || `t_frm_${schema.slug}`}
+                  value={schema.table_name || schema.slug}
                   disabled
                   style={{ borderRadius: 8, background: '#f8fafc', color: '#64748b', fontWeight: 500 }}
                 />
@@ -144,43 +144,64 @@ export default function FormSettingsViewV2({
                 </label>
                 <Select
                   size="large"
-                  value={schema.modal_size || '1400'}
-                  onChange={(val) => onUpdateSchema({ modal_size: val })}
-                  style={{ width: '100%' }}
+                  value={schema.dialog_width || 'medium'}
+                  style={{ width: '100%', borderRadius: 8 }}
+                  onChange={(val) => onUpdateSchema({ dialog_width: val })}
                   options={[
-                    { label: 'Small (800px)', value: '800' },
-                    { label: 'Medium (1000px)', value: '1000' },
-                    { label: 'Large (1200px)', value: '1200' },
-                    { label: 'Extra Large (1400px - Recommended)', value: '1400' },
-                    { label: 'Full Width (1600px)', value: '1600' },
+                    { value: 'small', label: 'Small (500px)' },
+                    { value: 'medium', label: 'Medium (750px)' },
+                    { value: 'large', label: 'Large (1000px)' },
+                    { value: 'full', label: 'Full Width (1200px)' },
                   ]}
                 />
               </div>
 
               <div>
                 <label style={{ fontSize: 13, fontWeight: 600, color: '#334155', display: 'block', marginBottom: 6 }}>
-                  Parent Master Form (Hierarchy)
+                  Layout Mode
                 </label>
                 <Select
                   size="large"
-                  showSearch
+                  value={schema.layout || 'vertical'}
+                  style={{ width: '100%', borderRadius: 8 }}
+                  onChange={(val) => onUpdateSchema({ layout: val })}
+                  options={[
+                    { value: 'vertical', label: 'Vertical (Labels on top)' },
+                    { value: 'horizontal', label: 'Horizontal (Labels left)' },
+                    { value: 'inline', label: 'Inline (Compact)' },
+                  ]}
+                />
+              </div>
+            </div>
+
+            {/* Parent Form Relationship */}
+            <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #f1f5f9' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <LinkOutlined style={{ color: '#2563eb', fontSize: 16 }} />
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#1e293b' }}>
+                  Parent Form Relationship (One-to-Many)
+                </span>
+              </div>
+              <div style={{ fontSize: 12, color: '#64748b', marginBottom: 12 }}>
+                Link this form as a child to another form. A <code>parent_id</code> column will automatically be managed.
+              </div>
+
+              <div style={{ maxWidth: 400 }}>
+                <Select
+                  size="large"
                   allowClear
-                  placeholder="Search and Select Parent Form"
+                  showSearch
+                  placeholder="Select Parent Form..."
                   style={{ width: '100%' }}
-                  optionFilterProp="label"
-                  filterOption={(input, option) =>
-                    String(option?.label || '').toLowerCase().includes(input.toLowerCase()) ||
-                    String(option?.value || '').toLowerCase().includes(input.toLowerCase())
-                  }
                   value={schema.parent_form_id ? String(schema.parent_form_id) : undefined}
                   onChange={async (val) => {
                     const parentFormId = val ? String(val) : null;
                     onUpdateSchema({ parent_form_id: parentFormId });
 
-                    // Auto create column and sync FOREIGN KEY on backend
+                    // Auto sync parent foreign key on backend
                     const formId = schema?.id || schema?.form_id;
                     const slug = schema?.slug;
-                    const tableName = schema?.table_name || (slug ? `t_frm_${slug}` : null);
+                    const tableName = schema?.table_name || slug || null;
 
                     if (formId || slug || tableName) {
                       try {

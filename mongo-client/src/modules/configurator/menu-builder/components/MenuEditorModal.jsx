@@ -272,14 +272,17 @@ export default function MenuEditorModal({
                 rules={[{ required: true, message: 'Please select a parent menu' }]}
               >
                 <Select placeholder="Select parent root menu..." size="middle" allowClear style={{ borderRadius: 8 }}>
-                  {internalRootMenus.map((rm) => (
-                    <Option key={rm.id} value={rm.id}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <FolderOutlined style={{ color: '#15803d' }} />
-                        <span>{rm.label} ({rm.url || 'Folder'})</span>
-                      </span>
-                    </Option>
-                  ))}
+                  {internalRootMenus.map((rm) => {
+                    const rmId = rm.id || rm._id;
+                    return (
+                      <Option key={rmId} value={rmId}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <FolderOutlined style={{ color: '#15803d' }} />
+                          <span>{rm.label} ({rm.url || 'Folder'})</span>
+                        </span>
+                      </Option>
+                    );
+                  })}
                 </Select>
               </Form.Item>
             </Col>

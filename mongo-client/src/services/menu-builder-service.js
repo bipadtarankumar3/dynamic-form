@@ -7,7 +7,12 @@ const API_BASE = '/configurator/menus';
  */
 export const fetchAllMenus = async () => {
   const res = await privateHttpClient.get(API_BASE);
-  return res.data?.data || [];
+  const items = res.data?.data || [];
+  return items.map((m) => ({
+    ...m,
+    id: m.id ? String(m.id) : (m._id ? String(m._id) : ''),
+    parent_id: m.parent_id ? String(m.parent_id) : null,
+  }));
 };
 
 /**

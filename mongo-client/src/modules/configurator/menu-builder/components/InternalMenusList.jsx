@@ -47,17 +47,18 @@ export default function InternalMenusList({
         </div>
       ) : (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onRootDragEnd}>
-          <SortableContext items={internalRootMenus.map((r) => r.id)} strategy={verticalListSortingStrategy}>
+          <SortableContext items={internalRootMenus.map((r) => r.id || r._id)} strategy={verticalListSortingStrategy}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {internalRootMenus.map((root) => {
-                const subs = getSubMenus(root.id);
-                const isExpanded = expandedKeys.includes(root.id);
+              {internalRootMenus.map((root, idx) => {
+                const rootId = root.id || root._id || `root_${idx}`;
+                const subs = getSubMenus(rootId);
+                const isExpanded = expandedKeys.includes(rootId);
                 const hasSubs = subs.length > 0;
 
                 return (
                   <SortableRootMenuItem
-                    key={root.id}
-                    root={root}
+                    key={rootId}
+                    root={{ ...root, id: rootId }}
                     subs={subs}
                     isExpanded={isExpanded}
                     hasSubs={hasSubs}

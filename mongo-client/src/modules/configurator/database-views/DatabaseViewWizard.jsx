@@ -551,11 +551,14 @@ export default function DatabaseViewWizard({ initialData = null, onClose = () =>
 
     return {
       view_name: viewInfo.view_name,
+      view_slug: viewInfo.database_view_name,
       database_view_name: viewInfo.database_view_name,
+      base_collection: selectedBaseTable ? "formdatas" : "formdatas",
+      form_slug: selectedBaseTable,
+      base_table: selectedBaseTable,
       description: viewInfo.description,
       schema_name: viewInfo.schema_name,
       view_type: viewInfo.view_type,
-      base_table: selectedBaseTable,
       many_to_one: activeManyToOne,
       child_tables: activeChildTables,
       user_audit: activeUserAudit,
@@ -648,7 +651,7 @@ export default function DatabaseViewWizard({ initialData = null, onClose = () =>
       const configObj = buildConfigObject();
       const res = await privateHttpClient.post(API_BASE, configObj);
       if (res.data?.success) {
-        message.success(`PostgreSQL View "${configObj.database_view_name}" created successfully!`);
+        message.success(`Database View "${configObj.view_slug || configObj.database_view_name}" saved successfully!`);
         onSuccess();
       }
     } catch (err) {
@@ -1378,6 +1381,7 @@ export default function DatabaseViewWizard({ initialData = null, onClose = () =>
               loading={loading}
               handleCreateView={handleCreateView}
               setCurrentStep={setCurrentStep}
+              buildConfigObject={buildConfigObject}
             />
           )}
         </Card>

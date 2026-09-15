@@ -40,7 +40,7 @@ export const normalizeSchema = (raw) => {
   const id = raw.id;
   const title = raw.title || raw.name || 'Untitled Form';
   const slug = raw.slug || 'untitled_form';
-  const table_name = raw.table_name || `t_frm_${slug}`;
+  const table_name = raw.table_name || slug;
   const is_master = !!raw.is_master;
   const is_draft = raw.is_draft !== undefined ? !!raw.is_draft : true;
   const parent_form_id = raw.parent_form_id;

@@ -34,7 +34,12 @@ const menuController = {
   listMenus: async (req, res) => {
     try {
       const menus = await Menu.find({ deleted_at: null }).sort({ order: 1 }).lean();
-      return res.json({ success: true, count: menus.length, data: menus });
+      const mapped = menus.map((m) => ({
+        ...m,
+        id: m._id ? m._id.toString() : m.id,
+        parent_id: m.parent_id ? m.parent_id.toString() : null,
+      }));
+      return res.json({ success: true, count: mapped.length, data: mapped });
     } catch (e) {
       return res.status(500).json({ success: false, message: e.message });
     }
@@ -57,7 +62,12 @@ const menuController = {
         allowed_roles: allowed_roles || [],
         created_by: userId,
       });
-      return res.status(201).json({ success: true, message: "Menu created", data: menu });
+      const data = {
+        ...menu.toObject(),
+        id: menu._id.toString(),
+        parent_id: menu.parent_id ? menu.parent_id.toString() : null,
+      };
+      return res.status(201).json({ success: true, message: "Menu created", data });
     } catch (e) {
       return res.status(500).json({ success: false, message: e.message });
     }
@@ -69,11 +79,16 @@ const menuController = {
       const { label, icon, image, url, parent_id, order, module_key, is_configurator, is_active, allowed_roles } = req.body;
       const menu = await Menu.findByIdAndUpdate(
         id,
-        { label, icon, image, url, parent_id, order, module_key, is_configurator, is_active, allowed_roles },
+        { label, icon, image, url, parent_id: parent_id || null, order, module_key, is_configurator, is_active, allowed_roles },
         { new: true }
       );
       if (!menu) return res.status(404).json({ success: false, message: "Menu not found" });
-      return res.json({ success: true, message: "Menu updated", data: menu });
+      const data = {
+        ...menu.toObject(),
+        id: menu._id.toString(),
+        parent_id: menu.parent_id ? menu.parent_id.toString() : null,
+      };
+      return res.json({ success: true, message: "Menu updated", data });
     } catch (e) {
       return res.status(500).json({ success: false, message: e.message });
     }

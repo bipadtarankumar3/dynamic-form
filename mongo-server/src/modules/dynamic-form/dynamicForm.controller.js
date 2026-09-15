@@ -119,6 +119,114 @@ function cleanRecordData(rawData) {
   return data;
 }
 
+// Automatically enrich records with resolved labels for master/select dropdown references
+async function enrichWithMasterLabels(flattenedRecords, form) {
+  if (!Array.isArray(flattenedRecords) || flattenedRecords.length === 0 || !form) {
+    return flattenedRecords;
+  }
+
+  try {
+    const masterFields = [];
+    const fields = [];
+    (form.sections || []).forEach((sec) => {
+      (sec.fields || []).forEach((f) => fields.push(f));
+    });
+    (form.table_columns || []).forEach((c) => fields.push(c));
+
+    for (const f of fields) {
+      const fieldKey = f.db_field || f.column_name || f.key || f.id;
+      const isMaster =
+        f.type === "select" ||
+        f.data_source?.type === "master" ||
+        f.options_source === "master" ||
+        f.dataSource?.type === "master" ||
+        f.data_source?.name ||
+        f.data_source?.table_name;
+
+      if (fieldKey && isMaster && !masterFields.some((m) => m.fieldKey === fieldKey)) {
+        const masterKey =
+          f.data_source?.name ||
+          f.data_source?.table_name ||
+          f.data_source?.slug ||
+          f.dataSource?.name ||
+          f.dataSource?.table_name ||
+          f.options_source_table ||
+          fieldKey;
+        const labelKey = f.data_source?.label_key || f.dataSource?.label_key || "name";
+        masterFields.push({ fieldKey, masterKey, labelKey });
+      }
+    }
+
+    if (masterFields.length === 0) return flattenedRecords;
+
+    for (const { fieldKey, masterKey, labelKey } of masterFields) {
+      const ids = Array.from(
+        new Set(
+          flattenedRecords
+            .map((r) => r[fieldKey])
+            .filter((v) => v !== undefined && v !== null && v !== "" && typeof v === "string")
+        )
+      );
+
+      if (ids.length === 0) continue;
+
+      const cleanSlug = masterKey.replace(/^v_/, "").replace(/^t_frm_/, "").replace(/^t_/, "");
+      const idObjectIds = ids.filter((id) => mongoose.Types.ObjectId.isValid(id)).map((id) => new mongoose.Types.ObjectId(id));
+
+      const [formDataDocs, masterDataDocs] = await Promise.all([
+        FormData.find({
+          _id: { $in: [...idObjectIds, ...ids] },
+          deleted_at: null,
+        }).lean(),
+        MasterData.find({
+          _id: { $in: [...idObjectIds, ...ids] },
+          deleted_at: null,
+        }).lean(),
+      ]);
+
+      const labelMap = {};
+
+      const resolveDocLabel = (doc) => {
+        const data = doc.data || {};
+        let lbl = doc[labelKey] || data[labelKey] || doc.name || data.name || doc.title || data.title || doc[`${cleanSlug}_name`] || data[`${cleanSlug}_name`] || doc.state_name || data.state_name || doc.district_name || data.district_name || doc.fy_name || data.fy_name || doc.label || data.label;
+        if (!lbl) {
+          const foundK = Object.keys(data).find((k) => k.endsWith("_name") || k.includes("name") || k.endsWith("_title") || k.includes("title"));
+          if (foundK) lbl = data[foundK];
+        }
+        return lbl;
+      };
+
+      formDataDocs.forEach((doc) => {
+        const idStr = doc._id.toString();
+        const lbl = resolveDocLabel(doc);
+        if (lbl) labelMap[idStr] = lbl;
+      });
+
+      masterDataDocs.forEach((doc) => {
+        const idStr = doc._id.toString();
+        const lbl = resolveDocLabel(doc);
+        if (lbl) labelMap[idStr] = lbl;
+      });
+
+      flattenedRecords.forEach((record) => {
+        const val = record[fieldKey];
+        if (val && labelMap[String(val)]) {
+          const labelVal = labelMap[String(val)];
+          record[`${labelKey}_${fieldKey}`] = labelVal;
+          record[`${fieldKey}_name`] = labelVal;
+          record[`name_${fieldKey}`] = labelVal;
+          record[`${fieldKey}_label`] = labelVal;
+          record[`${fieldKey}_${labelKey}`] = labelVal;
+        }
+      });
+    }
+  } catch (err) {
+    console.warn("Warning enriching records with master labels:", err.message);
+  }
+
+  return flattenedRecords;
+}
+
 const dynamicFormController = {
 
   // ================================================================
@@ -209,7 +317,8 @@ const dynamicFormController = {
 
         const data = records.map((r) => {
           const val = r.id || r._id || r.value;
-          let lbl = r[label_key] || r.label;
+          const recData = r.data || {};
+          let lbl = r[label_key] || recData[label_key] || r.label || recData.label;
           if (!lbl) {
             const keyCandidates = [
               label_key,
@@ -217,13 +326,19 @@ const dynamicFormController = {
               "title",
               `${cleanSlug}_name`,
               "state_name",
+              "district_name",
+              "fy_name",
               "display_name",
               "label",
               "code",
             ].filter(Boolean);
             for (const k of keyCandidates) {
-              if (r[k] !== undefined && r[k] !== null) {
+              if (r[k] !== undefined && r[k] !== null && r[k] !== "") {
                 lbl = r[k];
+                break;
+              }
+              if (recData[k] !== undefined && recData[k] !== null && recData[k] !== "") {
+                lbl = recData[k];
                 break;
               }
             }
@@ -231,14 +346,21 @@ const dynamicFormController = {
           if (!lbl) {
             const foundKey = Object.keys(r).find(
               (k) =>
-                !["_id", "id", "status", "created_by", "updated_by", "created_at", "updated_at", "__v"].includes(k) &&
+                !["_id", "id", "status", "created_by", "updated_by", "created_at", "updated_at", "__v", "data", "form_slug"].includes(k) &&
                 (k.endsWith("_name") || k.includes("name") || k.endsWith("_title") || k.includes("title"))
             );
             if (foundKey) lbl = r[foundKey];
           }
+          if (!lbl && Object.keys(recData).length > 0) {
+            const foundDataKey = Object.keys(recData).find(
+              (k) => (k.endsWith("_name") || k.includes("name") || k.endsWith("_title") || k.includes("title"))
+            );
+            if (foundDataKey) lbl = recData[foundDataKey];
+          }
           if (!lbl) lbl = String(val);
 
           return {
+            ...recData,
             ...r,
             value: String(val),
             label: String(lbl),
@@ -571,6 +693,9 @@ const dynamicFormController = {
         };
       });
 
+      // Enrich flattened records with human-readable labels for master fields (e.g. state_name)
+      const enrichedRecords = await enrichWithMasterLabels(flattenedRecords, form);
+
       // Ensure table_columns has columns if not specified
       let tableColumns = form.table_columns || [];
       if (tableColumns.length === 0 && form.sections?.length > 0) {
@@ -604,8 +729,8 @@ const dynamicFormController = {
         total,
         page: currentPage,
         pageSize: limitVal,
-        data: flattenedRecords,
-        rows: flattenedRecords,
+        data: enrichedRecords,
+        rows: enrichedRecords,
       });
     } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
   },
@@ -651,11 +776,13 @@ const dynamicFormController = {
         responseData[rootPK] = idStr;
       }
 
+      const [enrichedData] = await enrichWithMasterLabels([responseData], form);
+
       return res.json({
         success: true,
         status: true,
         schema: form,
-        data: responseData,
+        data: enrichedData || responseData,
       });
     } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
   },
@@ -712,11 +839,13 @@ const dynamicFormController = {
         responseData[rootPK] = idStr;
       }
 
+      const [enrichedData] = await enrichWithMasterLabels([responseData], form);
+
       return res.json({
         success: true,
         status: true,
         schema: form,
-        data: responseData,
+        data: enrichedData || responseData,
       });
     } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
   },

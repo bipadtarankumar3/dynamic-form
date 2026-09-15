@@ -457,13 +457,13 @@ export default function InspectorPanelV2({
                   onChange={(e) => {
                     const val = e.target.value;
                     const autoDb = val.toLowerCase().trim().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '');
-                    const autoTbl = `t_${autoDb}`;
+                    const autoTbl = autoDb;
                     const currentSlug = selectedSection.slug || '';
                     const currentTbl = selectedSection.table_name || '';
                     const prevAutoDb = (selectedSection.section_label || '').toLowerCase().trim().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '');
 
                     const isSlugAuto = !currentSlug || currentSlug.startsWith('sec_') || currentSlug.startsWith('section_') || currentSlug.startsWith('general_') || currentSlug === prevAutoDb || !selectedSection._is_slug_manual;
-                    const isTblAuto = !currentTbl || currentTbl.startsWith('t_sub_') || currentTbl === `t_${prevAutoDb}`;
+                    const isTblAuto = !currentTbl || currentTbl.startsWith('t_sub_') || currentTbl.startsWith('sub_') || currentTbl === `t_${prevAutoDb}` || currentTbl === prevAutoDb;
 
                     onUpdateSection({
                       ...selectedSection,
@@ -513,11 +513,11 @@ export default function InspectorPanelV2({
                   style={{ width: '100%' }}
                   value={selectedSection.type || 'general'}
                   onChange={(val) => {
-                    const autoDb = (selectedSection.section_label || '').toLowerCase().trim().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '_').replace(/_+/g, '_');
+                    const autoDb = (selectedSection.section_label || '').toLowerCase().trim().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '');
                     onUpdateSection({
                       ...selectedSection,
                       type: val,
-                      table_name: selectedSection.table_name || `t_${autoDb || 'sub_table'}`,
+                      table_name: selectedSection.table_name || `${autoDb || 'sub_table'}`,
                     });
                   }}
                   options={[
@@ -556,7 +556,7 @@ export default function InspectorPanelV2({
                         const formatted = e.target.value.toLowerCase().replace(/\s+/g, '_');
                         onUpdateSection({ ...selectedSection, table_name: formatted });
                       }}
-                      placeholder="t_sub_table_name"
+                      placeholder="documents_section"
                     />
                     {subTableNameError ? (
                       <div style={{ fontSize: 11, color: '#ef4444', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -564,7 +564,7 @@ export default function InspectorPanelV2({
                       </div>
                     ) : (
                       <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 3 }}>
-                        PostgreSQL table name (e.g. <code>t_project_members</code>)
+                        Database collection / sub-table name (e.g. <code>documents_section</code>)
                       </div>
                     )}
                   </div>
@@ -841,7 +841,7 @@ export default function InspectorPanelV2({
                       onUpdateFormMeta({
                         title: newTitle,
                         slug: autoSlug,
-                        table_name: `t_frm_${autoSlug}`,
+                        table_name: autoSlug,
                       });
                     } else {
                       onUpdateFormMeta({ title: newTitle });
@@ -877,7 +877,7 @@ export default function InspectorPanelV2({
                     const newSlug = e.target.value.toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_');
                     onUpdateFormMeta({
                       slug: newSlug,
-                      table_name: `t_frm_${newSlug}`,
+                      table_name: newSlug,
                     });
                   }}
                 />
@@ -889,7 +889,7 @@ export default function InspectorPanelV2({
                   <span style={{ fontSize: 11, color: '#64748b' }} className="italic">Form slug is locked once published.</span>
                 ) : (
                   <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 3 }}>
-                    Unique identifier for PostgreSQL tables and routing
+                    Unique identifier for views/tables and routing
                   </div>
                 )}
               </div>
@@ -1227,7 +1227,7 @@ export default function InspectorPanelV2({
                   className="fb-v2-input"
                   value={selectedField.table_name || ''}
                   onChange={(e) => updateFieldWrapper('table_name', e.target.value)}
-                  placeholder="t_sub_table_name"
+                  placeholder="sub_table_name"
                 />
               </div>
             )}

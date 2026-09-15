@@ -102,7 +102,7 @@ export default function CreateFormModalV2({ open, onClose, onCreateForm, existin
     setTitle(val);
     const autoSlug = slugify(val);
     setSlug(autoSlug);
-    form.setFieldsValue({ slug: autoSlug, table_name: `t_frm_${autoSlug}` });
+    form.setFieldsValue({ slug: autoSlug, table_name: autoSlug });
   };
 
   const handleTableSelect = async (selectedTable) => {
@@ -125,7 +125,7 @@ export default function CreateFormModalV2({ open, onClose, onCreateForm, existin
       message.error(duplicateWarning);
       return;
     }
-    const tableName = values.table_name || `t_frm_${slugify(values.title)}`;
+    const tableName = values.table_name || slugify(values.title);
     let generatedFields = [
       {
         id: `fld_${Date.now()}`,

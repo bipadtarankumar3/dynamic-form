@@ -32,7 +32,6 @@ const FormSchema = new mongoose.Schema({
   deleted_at:           { type: Date, default: null },
 }, { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } });
 
-FormSchema.index({ slug: 1 });
 FormSchema.index({ is_master: 1 });
 FormSchema.index({ deleted_at: 1 });
 

@@ -18,7 +18,7 @@ export default function PublicMenusList({
   return (
     <div style={{ paddingTop: '6px' }}>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onPublicDragEnd}>
-        <SortableContext items={publicMenus.map((p) => p.id)} strategy={verticalListSortingStrategy}>
+        <SortableContext items={publicMenus.map((p) => p.id || p._id)} strategy={verticalListSortingStrategy}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {publicMenus.length === 0 ? (
               <div
@@ -44,14 +44,17 @@ export default function PublicMenusList({
                 </Button>
               </div>
             ) : (
-              publicMenus.map((pub) => (
-                <SortablePublicMenuItem
-                  key={pub.id}
-                  pub={pub}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                />
-              ))
+              publicMenus.map((pub, idx) => {
+                const pubId = pub.id || pub._id || `pub_${idx}`;
+                return (
+                  <SortablePublicMenuItem
+                    key={pubId}
+                    pub={{ ...pub, id: pubId }}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                  />
+                );
+              })
             )}
           </div>
         </SortableContext>

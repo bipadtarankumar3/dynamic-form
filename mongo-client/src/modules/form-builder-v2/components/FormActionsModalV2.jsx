@@ -211,6 +211,7 @@ export default function FormActionsModalV2({
 
   // View & Table Columns State
   const [dbViews, setDbViews] = useState([]);
+  const [dbTables, setDbTables] = useState([]);
   const [loadingViews, setLoadingViews] = useState(false);
   const [selectedView, setSelectedView] = useState('');
   const [tableColumns, setTableColumns] = useState([]);
@@ -235,17 +236,23 @@ export default function FormActionsModalV2({
 
     cols.push({ key: 'id', label: 'ID', checked: true, sortable: true, align: 'left' });
     seen.add('id');
+    seen.add('_id');
 
-    const sections = sch.sections || sch.tabs || sch.definition?.sections || [];
-    for (const sec of sections) {
-      if (sec.type === 'add_more') continue;
-      const fields = typeof sec.fields === 'string' ? JSON.parse(sec.fields || '[]') : (sec.fields || []);
-      for (const f of fields) {
-        const colKey = f.column_name || f.db_field;
+    // Section Fields
+    for (const sec of sch.sections || []) {
+      for (const f of sec.fields || []) {
+        const colKey = f.db_field || f.column_name || f.id;
         if (!colKey || seen.has(colKey)) continue;
         seen.add(colKey);
 
-        const isMaster = f.data_source?.type === 'master' || f.dataSource?.type === 'master';
+        const isMaster =
+          f.type === 'select' ||
+          f.data_source?.type === 'master' ||
+          f.options_source === 'master' ||
+          f.data_source?.name ||
+          f.data_source?.table_name ||
+          f.data_source?.slug;
+
         const rawLabel = f.label || colKey.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
         cols.push({
@@ -290,24 +297,63 @@ export default function FormActionsModalV2({
 
   const isBaseTableSource = (sourceName) => {
     if (!sourceName) return false;
-    const baseTbl = schema.table_name || `t_frm_${schema.slug}`;
-    return sourceName === baseTbl || sourceName.startsWith('t_frm_');
+    const baseTbl = schema.slug;
+    return sourceName === baseTbl || sourceName === `t_frm_${schema.slug}` || sourceName === schema.table_name;
   };
 
-  const fetchColumnsForView = async (viewNameOrSlug, viewsList = dbViews) => {
+  const fetchColumnsForView = async (viewNameOrSlug, viewsList = dbViews, tablesList = dbTables) => {
     if (!viewNameOrSlug) return [];
+    const cleanSlug = viewNameOrSlug.replace(/^v_/, '').replace(/^t_frm_/, '').replace(/^t_/, '');
+
+    // 1. If it matches a saved database view with columns / selected_fields
     const matchedView = (viewsList || []).find(
-      (v) => v.database_view_name === viewNameOrSlug || v.view_slug === viewNameOrSlug || v.view_name === viewNameOrSlug
+      (v) => v.database_view_name === viewNameOrSlug || v.view_slug === viewNameOrSlug || v.view_name === viewNameOrSlug || v.id === viewNameOrSlug || v._id === viewNameOrSlug
     );
-    const identifier = matchedView ? matchedView.id : viewNameOrSlug;
+    if (matchedView?.configuration?.selected_fields?.length > 0) {
+      return matchedView.configuration.selected_fields.map((f) => {
+        const cName = f.alias || f.field;
+        return {
+          key: cName,
+          label: f.alias || f.field.replace(/_/g, ' ').replace(/\b\w/g, (ch) => ch.toUpperCase()),
+          checked: true,
+          sortable: true,
+          align: 'left',
+          is_custom_view: true,
+        };
+      });
+    }
+
+    // 2. Try fetching from schema tables API (resolves any form or collection schema)
+    try {
+      const schemaRes = await privateHttpClient.get(`configurator/database-views/schema/tables/${cleanSlug}`);
+      if (schemaRes.data?.success && Array.isArray(schemaRes.data.data?.columns) && schemaRes.data.data.columns.length > 0) {
+        return schemaRes.data.data.columns
+          .filter((c) => c.column_name !== '_id' && c.column_name !== 'form_slug')
+          .map((c) => {
+            const cName = c.column_name || c.field;
+            return {
+              key: cName,
+              label: c.label || cName.replace(/_/g, ' ').replace(/\b\w/g, (ch) => ch.toUpperCase()),
+              checked: true,
+              sortable: true,
+              align: 'left',
+            };
+          }).filter((c) => !!c.key);
+      }
+    } catch (tErr) {
+      console.warn('[FormActionsModal] Table schema notice:', tErr.message);
+    }
+
+    // 3. Try querying preview for this view
+    const identifier = matchedView ? (matchedView.view_slug || matchedView._id || matchedView.id) : viewNameOrSlug;
     try {
       const previewRes = await privateHttpClient.get(`configurator/database-views/${identifier}/preview?limit=1`);
-      if (previewRes.data?.success && Array.isArray(previewRes.data.columns)) {
+      if (previewRes.data?.success && Array.isArray(previewRes.data.columns) && previewRes.data.columns.length > 0) {
         return previewRes.data.columns.map((c) => {
           const cName = c.column_name || c.field || (typeof c === 'string' ? c : '');
           return {
             key: cName,
-            label: cName.replace(/_/g, ' ').replace(/\b\w/g, (ch) => ch.toUpperCase()),
+            label: c.alias || c.label || cName.replace(/_/g, ' ').replace(/\b\w/g, (ch) => ch.toUpperCase()),
             checked: true,
             sortable: true,
             align: 'left',
@@ -316,27 +362,34 @@ export default function FormActionsModalV2({
         }).filter((c) => !!c.key);
       }
     } catch (pErr) {
-      console.warn('[FormActionsModal] View preview error:', pErr.message);
+      console.warn('[FormActionsModal] View preview notice:', pErr.message);
     }
+
     return [];
   };
 
-  /* Fetch available views from PostgreSQL database-views API and discover joined view columns */
+  /* Fetch available views and tables from MongoDB API and discover joined view columns */
   useEffect(() => {
     if (open && schema?.slug) {
-      const fetchViews = async () => {
+      const fetchViewsAndTables = async () => {
         try {
           setLoadingViews(true);
-          const res = await privateHttpClient.get('configurator/database-views');
-          const viewsList = res.data?.success && Array.isArray(res.data.data) ? res.data.data : [];
+          const [viewsRes, tablesRes] = await Promise.all([
+            privateHttpClient.get('configurator/database-views').catch(() => ({ data: { data: [] } })),
+            privateHttpClient.get('configurator/database-views/schema/tables').catch(() => ({ data: { data: [] } })),
+          ]);
+
+          const viewsList = viewsRes.data?.success && Array.isArray(viewsRes.data.data) ? viewsRes.data.data : [];
+          const tablesList = tablesRes.data?.success && Array.isArray(tablesRes.data.data) ? tablesRes.data.data : [];
           setDbViews(viewsList);
+          setDbTables(tablesList);
 
           const defaultView = schema.view_name || schema.view_slug || `v_${schema.slug}`;
           setSelectedView(defaultView);
 
           if (!isBaseTableSource(defaultView)) {
             // Database View Source is a View -> load ONLY view columns
-            const viewCols = await fetchColumnsForView(defaultView, viewsList);
+            const viewCols = await fetchColumnsForView(defaultView, viewsList, tablesList);
             if (viewCols.length > 0) {
               if (Array.isArray(schema.table_columns) && schema.table_columns.length > 0) {
                 const viewColKeys = new Set(viewCols.map((c) => c.key));
@@ -366,7 +419,7 @@ export default function FormActionsModalV2({
           setLoadingViews(false);
         }
       };
-      fetchViews();
+      fetchViewsAndTables();
     }
   }, [open, schema?.slug]);
 
@@ -419,20 +472,21 @@ export default function FormActionsModalV2({
   }, [allFormFields]);
 
   const viewSelectOptions = useMemo(() => {
-    const opts = [];
+    const viewOptions = [];
+    const tableOptions = [];
     const seenValues = new Set();
 
     if (schema?.slug) {
       const defaultAutoViewVal = `v_${schema.slug}`;
-      opts.push({
+      viewOptions.push({
         label: `⭐ Default Auto View (${defaultAutoViewVal})`,
         value: defaultAutoViewVal,
       });
       seenValues.add(defaultAutoViewVal);
 
-      const baseTblVal = schema.table_name || `t_frm_${schema.slug}`;
-      opts.push({
-        label: `📁 Base Table (${baseTblVal})`,
+      const baseTblVal = schema.slug;
+      tableOptions.push({
+        label: `📁 Base Table (${schema.title || schema.slug})`,
         value: baseTblVal,
       });
       seenValues.add(baseTblVal);
@@ -442,15 +496,40 @@ export default function FormActionsModalV2({
       const val = v.database_view_name || v.view_slug;
       if (val && !seenValues.has(val)) {
         seenValues.add(val);
-        opts.push({
-          label: `📊 ${v.view_name} (${val})`,
+        viewOptions.push({
+          label: `📊 ${v.view_name || val} (${val})`,
           value: val,
         });
       }
     });
 
-    return opts;
-  }, [schema?.slug, schema?.table_name, dbViews]);
+    (dbTables || []).forEach((t) => {
+      const val = t.table_name || t.slug;
+      if (val && !seenValues.has(val)) {
+        seenValues.add(val);
+        tableOptions.push({
+          label: `📁 ${t.display_name || t.table_name} (${val})`,
+          value: val,
+        });
+      }
+    });
+
+    const groups = [];
+    if (viewOptions.length > 0) {
+      groups.push({
+        label: 'Database Views',
+        options: viewOptions,
+      });
+    }
+    if (tableOptions.length > 0) {
+      groups.push({
+        label: 'Form Tables & Collections',
+        options: tableOptions,
+      });
+    }
+
+    return groups;
+  }, [schema?.slug, schema?.title, schema?.table_name, dbViews, dbTables]);
 
   /* Filter columns by search */
   const filteredColumns = useMemo(() => {
@@ -604,7 +683,7 @@ export default function FormActionsModalV2({
         setTableColumns([...tableColumns, ...newCols]);
       }
     } else {
-      const viewCols = await fetchColumnsForView(selectedView, dbViews);
+      const viewCols = await fetchColumnsForView(selectedView, dbViews, dbTables);
       const existingKeys = new Set(tableColumns.map((c) => c.key));
       const newCols = viewCols.filter((c) => !existingKeys.has(c.key));
       if (newCols.length > 0) {
@@ -620,7 +699,7 @@ export default function FormActionsModalV2({
       const defaultCols = buildDefaultColumns(schema);
       setTableColumns(defaultCols);
     } else {
-      const viewCols = await fetchColumnsForView(val, dbViews);
+      const viewCols = await fetchColumnsForView(val, dbViews, dbTables);
       if (viewCols.length > 0) {
         // Map existing properties if user had customized label/checked/align/sortable for these view columns
         const existingMap = new Map(tableColumns.map((tc) => [tc.key, tc]));

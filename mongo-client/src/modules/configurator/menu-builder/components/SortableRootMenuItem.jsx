@@ -214,15 +214,18 @@ export default function SortableRootMenuItem({
             }}
           >
             <DndContext collisionDetection={closestCenter} onDragEnd={(e) => onSubDragEnd(root.id, e)}>
-              <SortableContext items={subs.map((s) => s.id)} strategy={verticalListSortingStrategy}>
-                {subs.map((sub) => (
-                  <SortableSubMenuItem
-                    key={sub.id}
-                    sub={sub}
-                    onEdit={onEdit}
-                    onDelete={onDelete}
-                  />
-                ))}
+              <SortableContext items={subs.map((s) => s.id || s._id)} strategy={verticalListSortingStrategy}>
+                {subs.map((sub, sIdx) => {
+                  const subId = sub.id || sub._id || `sub_${sIdx}`;
+                  return (
+                    <SortableSubMenuItem
+                      key={subId}
+                      sub={{ ...sub, id: subId }}
+                      onEdit={onEdit}
+                      onDelete={onDelete}
+                    />
+                  );
+                })}
               </SortableContext>
             </DndContext>
           </div>

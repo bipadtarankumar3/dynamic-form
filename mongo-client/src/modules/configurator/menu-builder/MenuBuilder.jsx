@@ -309,7 +309,7 @@ export default function MenuBuilder() {
       };
 
       if (editingMenu) {
-        await updateMenu(editingMenu.id, payload);
+        await updateMenu(editingMenu.id || editingMenu._id, payload);
         message.success('Menu updated successfully');
       } else {
         await createMenu(payload);

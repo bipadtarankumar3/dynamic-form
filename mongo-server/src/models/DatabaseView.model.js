@@ -20,7 +20,6 @@ const DatabaseViewSchema = new mongoose.Schema({
   deleted_at:           { type: Date, default: null },
 }, { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } });
 
-DatabaseViewSchema.index({ view_slug: 1 });
 DatabaseViewSchema.index({ form_slug: 1 });
 
 module.exports = mongoose.model("DatabaseView", DatabaseViewSchema);

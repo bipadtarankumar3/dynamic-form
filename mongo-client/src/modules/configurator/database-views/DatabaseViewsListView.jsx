@@ -406,7 +406,7 @@ export default function DatabaseViewsListView() {
         <Table
           dataSource={filteredViews}
           columns={columns}
-          rowKey="id"
+          rowKey={(record) => record.id ?? record.view_slug ?? record.database_view_name}
           loading={loading}
           pagination={{ pageSize: 10, showSizeChanger: true }}
           scroll={{ x: true }}
