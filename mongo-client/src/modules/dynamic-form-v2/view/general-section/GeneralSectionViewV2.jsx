@@ -186,7 +186,7 @@ const GeneralSectionViewV2 = ({ section, data, isActiveKey, form_slug }) => {
       return pathStr;
     }
 
-    const apiBaseUrl = process.env.NEXT_PUBLIC_PUBLIC_API_URL || "http://localhost:6003/api/v1";
+    const apiBaseUrl = process.env.NEXT_PUBLIC_PUBLIC_API_URL || "http://localhost:5001/api/v1";
 
     if (/^https?:\/\//i.test(pathStr)) {
       return pathStr
@@ -194,14 +194,17 @@ const GeneralSectionViewV2 = ({ section, data, isActiveKey, form_slug }) => {
         .replace(/\/static\/uploads\//g, "/static/");
     }
 
-    const cleanRel = pathStr.replace(/^\/?(uploads\/)?/, "");
+    const cleanRel = pathStr.replace(/^\/?(uploads\/|api\/v1\/static\/)?/, "");
     return `${apiBaseUrl}/static/${cleanRel}`;
   };
 
   const renderFiles = (field) => {
-    let files = data?.documents?.[field?.db_field];
+    let files = (typeof data?.documents === "object" && !Array.isArray(data?.documents) ? data?.documents?.[field?.db_field] : null);
     if (!files || (Array.isArray(files) && files.length === 0) || files === "NA" || files === "[]") {
       files = data?.[field?.db_field];
+    }
+    if (!files || (Array.isArray(files) && files.length === 0) || files === "NA" || files === "[]") {
+      files = data?.documents;
     }
 
     if (!files || files === "NA" || files === "[]" || files === "null") {

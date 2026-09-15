@@ -40,6 +40,41 @@ const getActionLabel = (action, row) => {
   return "";
 };
 
+const getRecordCellValue = (record, colKey) => {
+  if (!record || !colKey) return undefined;
+  if (record[colKey] !== undefined && record[colKey] !== null) return record[colKey];
+
+  const trimmed = String(colKey).trim();
+  if (record[trimmed] !== undefined && record[trimmed] !== null) return record[trimmed];
+
+  const snake = trimmed.toLowerCase().replace(/\s+/g, "_");
+  if (record[snake] !== undefined && record[snake] !== null) return record[snake];
+
+  const title = snake.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  if (record[title] !== undefined && record[title] !== null) return record[title];
+
+  // Check ID fields
+  if (snake === "id" || snake === "_id") {
+    return record.id || record._id || record.Id || record.ID;
+  }
+
+  // Check master label variations (e.g. state -> state_name, name_state, state_label)
+  if (record[`${snake}_name`] !== undefined && record[`${snake}_name`] !== null) return record[`${snake}_name`];
+  if (record[`name_${snake}`] !== undefined && record[`name_${snake}`] !== null) return record[`name_${snake}`];
+  if (record[`${snake}_label`] !== undefined && record[`${snake}_label`] !== null) return record[`${snake}_label`];
+
+  // Case & separator insensitive search across record keys
+  const normTarget = trimmed.toLowerCase().replace(/[\s_]/g, "");
+  const foundKey = Object.keys(record).find(
+    (k) => k.toLowerCase().trim().replace(/[\s_]/g, "") === normTarget
+  );
+  if (foundKey && record[foundKey] !== undefined && record[foundKey] !== null) {
+    return record[foundKey];
+  }
+
+  return undefined;
+};
+
 const GeneralTableRenderV2 = ({
   columns = [],
   data = [],
@@ -588,19 +623,23 @@ const GeneralTableRenderV2 = ({
         key: col.key,
         align: col.align || "left",
         sorter: col.sortable !== false ? (a, b) => {
-          const valA = a[col.key] ?? "";
-          const valB = b[col.key] ?? "";
+          const valA = getRecordCellValue(a, col.key) ?? "";
+          const valB = getRecordCellValue(b, col.key) ?? "";
           if (typeof valA === "number" && typeof valB === "number") {
             return valA - valB;
           }
           return String(valA).localeCompare(String(valB));
         } : false,
         render: (cellVal, record, index) => {
+          const resolvedVal = (cellVal !== undefined && cellVal !== null && cellVal !== "")
+            ? cellVal
+            : getRecordCellValue(record, col.key);
+
           const value = col.getValue
             ? col.getValue(record)
             : col.render
-            ? col.render(cellVal, record, index)
-            : cellVal;
+            ? col.render(resolvedVal, record, index)
+            : resolvedVal;
 
           if (value === null || value === undefined || value === "" || value === "-") {
             return <span className="text-slate-300 font-normal italic">—</span>;

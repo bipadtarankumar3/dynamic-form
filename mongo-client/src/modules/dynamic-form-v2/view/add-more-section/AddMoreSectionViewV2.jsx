@@ -139,7 +139,7 @@ const AddMoreSectionViewV2 = ({ data = [], section, isActiveKey, allData = {} })
       return pathStr;
     }
 
-    const apiBaseUrl = process.env.NEXT_PUBLIC_PUBLIC_API_URL || "http://localhost:6003/api/v1";
+    const apiBaseUrl = process.env.NEXT_PUBLIC_PUBLIC_API_URL || "http://localhost:5001/api/v1";
 
     if (/^https?:\/\//i.test(pathStr)) {
       return pathStr
@@ -147,7 +147,7 @@ const AddMoreSectionViewV2 = ({ data = [], section, isActiveKey, allData = {} })
         .replace(/\/static\/uploads\//g, "/static/");
     }
 
-    const cleanRel = pathStr.replace(/^\/?(uploads\/)?/, "");
+    const cleanRel = pathStr.replace(/^\/?(uploads\/|api\/v1\/static\/)?/, "");
     return `${apiBaseUrl}/static/${cleanRel}`;
   };
 
@@ -157,7 +157,17 @@ const AddMoreSectionViewV2 = ({ data = [], section, isActiveKey, allData = {} })
       files = row?.[field.db_field];
     }
     if (!files || (Array.isArray(files) && files.length === 0) || files === "NA" || files === "[]") {
-      files = allData?.documents?.[field.db_field] || data?.documents?.[field.db_field];
+      files = row?.documents;
+    }
+    if (!files || (Array.isArray(files) && files.length === 0) || files === "NA" || files === "[]") {
+      files = (typeof allData?.documents === "object" && !Array.isArray(allData?.documents) ? allData?.documents?.[field.db_field] : null) ||
+              (typeof data?.documents === "object" && !Array.isArray(data?.documents) ? data?.documents?.[field.db_field] : null);
+    }
+    if (!files || (Array.isArray(files) && files.length === 0) || files === "NA" || files === "[]") {
+      files = allData?.[field.db_field] || data?.[field.db_field];
+    }
+    if (!files || (Array.isArray(files) && files.length === 0) || files === "NA" || files === "[]") {
+      files = allData?.documents || data?.documents;
     }
 
     if (!files || files === "NA" || files === "[]" || files === "null") return "NA";

@@ -1,6 +1,8 @@
 // mongo-server/server.js
 require("dotenv").config();
 
+const path = require("path");
+const fs = require("fs");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -10,7 +12,10 @@ const mongoose = require("mongoose");
 const app = express();
 
 // ---- Security & Logging ----
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginEmbedderPolicy: false,
+}));
 app.use(cors({
   origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(",") : "*",
   credentials: true,
@@ -33,6 +38,17 @@ const connectDB = async () => {
     process.exit(1);
   }
 };
+
+// ---- Static Files ----
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+app.use(["/api/v1/static", "/static", "/uploads"], (req, res, next) => {
+  res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  next();
+}, express.static(uploadsDir));
 
 // ---- Routes ----
 app.use(["/api/v1/admin", "/api/v1"], require("./src/router"));

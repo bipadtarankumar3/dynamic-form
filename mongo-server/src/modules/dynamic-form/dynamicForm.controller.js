@@ -1,5 +1,5 @@
-// mongo-server/src/modules/dynamic-form/dynamicForm.controller.js
-// Core dynamic form engine — handles add, edit, list, details, view, schema-details, master-details
+const path = require("path");
+const fs = require("fs");
 const Form = require("../../models/Form.model");
 const FormData = require("../../models/FormData.model");
 const MasterSchema = require("../../models/MasterSchema.model");
@@ -8,6 +8,7 @@ const User = require("../../models/User.model");
 const Role = require("../../models/Role.model");
 const AuditLog = require("../../models/AuditLog.model");
 const DatabaseView = require("../../models/DatabaseView.model");
+const Document = require("../../models/Document.model");
 const mongoose = require("mongoose");
 
 // ---- Helpers ----
@@ -25,8 +26,8 @@ async function resolveMasterOptions(field) {
   return masterData.map(d => ({ value: d._id.toString(), label: d.data?.[labelField] || d.data?.name || String(d._id) }));
 }
 
-// Extract and flatten form fields from section payloads or root payload
-function extractFormData(form, reqBody, files = []) {
+// Extract and flatten form fields from section payloads or root payload, organizing uploaded files into uploads/<form_slug>/<record_id>/
+function extractFormData(form, reqBody, files = [], formSlug = null, recordId = null, userId = null) {
   const resultData = {};
   const rootPK = form.root_entity?.primary_key || "id";
   const internalKeys = new Set([
@@ -63,9 +64,9 @@ function extractFormData(form, reqBody, files = []) {
     } else if (section.type === "add_more" && secData) {
       const addMoreKey = section.slug || section.section_id || section.id;
       if (Array.isArray(secData)) {
-        resultData[addMoreKey] = secData;
+        resultData[addMoreKey] = secData.map((row) => (typeof row === "object" && row !== null ? { ...row } : row));
       } else if (typeof secData === "object") {
-        resultData[addMoreKey] = Object.values(secData);
+        resultData[addMoreKey] = Object.values(secData).map((row) => (typeof row === "object" && row !== null ? { ...row } : row));
       }
     }
   }
@@ -90,12 +91,119 @@ function extractFormData(form, reqBody, files = []) {
     }
   }
 
-  // 4. Attach any uploaded files
-  if (files && Array.isArray(files)) {
+  // 4. Attach any uploaded files & move to uploads/<form_slug>/<record_id>/
+  if (files && Array.isArray(files) && files.length > 0) {
+    const slug = formSlug || form.slug || "documents";
+    const recId = recordId ? String(recordId) : "general";
+    const rootUploadsDir = path.join(__dirname, "../../../uploads");
+    const targetFolder = path.join(rootUploadsDir, slug, recId);
+
+    if (!fs.existsSync(targetFolder)) {
+      fs.mkdirSync(targetFolder, { recursive: true });
+    }
+
     files.forEach((file) => {
-      const match = file.fieldname.match(/\[([^\]]+)\]$/);
-      const fieldKey = match ? match[1] : file.fieldname;
-      resultData[fieldKey] = file.filename || file.originalname;
+      const fileName = file.filename || file.originalname;
+      const targetFilePath = path.join(targetFolder, fileName);
+
+      // Move file from temp upload location if needed
+      if (file.path && fs.existsSync(file.path) && file.path !== targetFilePath) {
+        try {
+          fs.renameSync(file.path, targetFilePath);
+        } catch (e) {
+          try {
+            fs.copyFileSync(file.path, targetFilePath);
+            fs.unlinkSync(file.path);
+          } catch (_) {}
+        }
+      } else if (file.buffer) {
+        try {
+          fs.writeFileSync(targetFilePath, file.buffer);
+        } catch (_) {}
+      }
+
+      // Relative path: e.g. "project/6aa97b41ab918e7ff2019fe1/filename.ext"
+      const relativePath = `${slug}/${recId}/${fileName}`;
+
+      // Check if fieldname is like: sectionKey[0][fieldKey] or sec_xxx[0][fieldKey]
+      const nestedMatch = file.fieldname.match(/^([^\[]+)\[(\d+)\]\[([^\]]+)\]/);
+      if (nestedMatch) {
+        const rawSecKey = nestedMatch[1];
+        const rowIndex = parseInt(nestedMatch[2], 10);
+        const fieldKey = nestedMatch[3];
+
+        // Find matching section in form schema
+        const sec = (form.sections || []).find(
+          (s) =>
+            s.section_id === rawSecKey ||
+            s.id === rawSecKey ||
+            s.slug === rawSecKey ||
+            s.table_name === rawSecKey
+        );
+        const targetSecKey = sec?.slug || sec?.section_id || sec?.id || rawSecKey;
+
+        if (!Array.isArray(resultData[targetSecKey])) {
+          resultData[targetSecKey] = [];
+        }
+        while (resultData[targetSecKey].length <= rowIndex) {
+          resultData[targetSecKey].push({});
+        }
+        if (!resultData[targetSecKey][rowIndex] || typeof resultData[targetSecKey][rowIndex] !== "object") {
+          resultData[targetSecKey][rowIndex] = {};
+        }
+
+        resultData[targetSecKey][rowIndex][fieldKey] = relativePath;
+        // Also provide flat field fallback
+        if (resultData[fieldKey] === undefined) {
+          resultData[fieldKey] = relativePath;
+        }
+
+        // Save metadata to Document collection
+        Document.create({
+          form_slug: slug,
+          record_id: recId,
+          section_slug: targetSecKey || null,
+          field_key: fieldKey,
+          row_id: resultData[targetSecKey]?.[rowIndex]?.id || null,
+          doc_title: file.originalname || fileName,
+          original_name: file.originalname || fileName,
+          file_name: fileName,
+          file_path: relativePath,
+          file_size: file.size || (fs.existsSync(targetFilePath) ? fs.statSync(targetFilePath).size : 0),
+          mime_type: file.mimetype || "",
+          doc_ext: path.extname(fileName || ""),
+          doc_purpose: fieldKey || "document",
+          created_by: userId || null,
+          updated_by: userId || null,
+        }).catch((err) => {
+          console.warn("[Document Model Warning] Failed to log document record:", err.message);
+        });
+      } else {
+        const match = file.fieldname.match(/\[([^\]]+)\]$/);
+        const fieldKey = match ? match[1] : file.fieldname;
+        resultData[fieldKey] = relativePath;
+
+        // Save metadata to Document collection
+        Document.create({
+          form_slug: slug,
+          record_id: recId,
+          section_slug: null,
+          field_key: fieldKey,
+          row_id: null,
+          doc_title: file.originalname || fileName,
+          original_name: file.originalname || fileName,
+          file_name: fileName,
+          file_path: relativePath,
+          file_size: file.size || (fs.existsSync(targetFilePath) ? fs.statSync(targetFilePath).size : 0),
+          mime_type: file.mimetype || "",
+          doc_ext: path.extname(fileName || ""),
+          doc_purpose: fieldKey || "document",
+          created_by: userId || null,
+          updated_by: userId || null,
+        }).catch((err) => {
+          console.warn("[Document Model Warning] Failed to log document record:", err.message);
+        });
+      }
     });
   }
 
@@ -301,10 +409,42 @@ const dynamicFormController = {
             { label: { $regex: search, $options: "i" } },
           ];
         }
-        if (filters && typeof filters === "object") {
-          for (const [k, v] of Object.entries(filters)) {
+
+        let parsedFilters = filters;
+        if (typeof parsedFilters === "string") {
+          try { parsedFilters = JSON.parse(parsedFilters); } catch (_) { parsedFilters = {}; }
+        }
+
+        if (parsedFilters && typeof parsedFilters === "object") {
+          for (let [k, v] of Object.entries(parsedFilters)) {
             if (v !== undefined && v !== null && v !== "") {
-              query[k] = v;
+              if (typeof v === "object" && !Array.isArray(v) && (v.value !== undefined || v.id !== undefined || v._id !== undefined)) {
+                v = v.value !== undefined ? v.value : (v.id || v._id);
+              }
+              const cleanK = k.replace(/_id$/, "");
+              const isOid = mongoose.isValidObjectId(v);
+              const valCandidates = Array.isArray(v)
+                ? v.flatMap(item => (typeof item === "object" ? [item.value || item.id || item._id] : [item]))
+                : isOid
+                ? [v, new mongoose.Types.ObjectId(v), String(v)]
+                : [v];
+
+              const orBranches = [
+                { [k]: { $in: valCandidates } },
+                { [`data.${k}`]: { $in: valCandidates } },
+              ];
+              if (cleanK !== k) {
+                orBranches.push({ [cleanK]: { $in: valCandidates } });
+                orBranches.push({ [`data.${cleanK}`]: { $in: valCandidates } });
+              }
+              const withIdKey = `${cleanK}_id`;
+              if (withIdKey !== k) {
+                orBranches.push({ [withIdKey]: { $in: valCandidates } });
+                orBranches.push({ [`data.${withIdKey}`]: { $in: valCandidates } });
+              }
+
+              query.$and = query.$and || [];
+              query.$and.push({ $or: orBranches });
             }
           }
         }
@@ -384,10 +524,41 @@ const dynamicFormController = {
 
       if (form) {
         const query = { form_slug: form.slug, deleted_at: null };
-        if (filters && typeof filters === "object") {
-          for (const [k, v] of Object.entries(filters)) {
+        let parsedFilters = filters;
+        if (typeof parsedFilters === "string") {
+          try { parsedFilters = JSON.parse(parsedFilters); } catch (_) { parsedFilters = {}; }
+        }
+
+        if (parsedFilters && typeof parsedFilters === "object") {
+          for (let [k, v] of Object.entries(parsedFilters)) {
             if (v !== undefined && v !== null && v !== "") {
-              query[`data.${k}`] = v;
+              if (typeof v === "object" && !Array.isArray(v) && (v.value !== undefined || v.id !== undefined || v._id !== undefined)) {
+                v = v.value !== undefined ? v.value : (v.id || v._id);
+              }
+              const cleanK = k.replace(/_id$/, "");
+              const isOid = mongoose.isValidObjectId(v);
+              const valCandidates = Array.isArray(v)
+                ? v.flatMap(item => (typeof item === "object" ? [item.value || item.id || item._id] : [item]))
+                : isOid
+                ? [v, new mongoose.Types.ObjectId(v), String(v)]
+                : [v];
+
+              const orBranches = [
+                { [`data.${k}`]: { $in: valCandidates } },
+                { [k]: { $in: valCandidates } },
+              ];
+              if (cleanK !== k) {
+                orBranches.push({ [`data.${cleanK}`]: { $in: valCandidates } });
+                orBranches.push({ [cleanK]: { $in: valCandidates } });
+              }
+              const withIdKey = `${cleanK}_id`;
+              if (withIdKey !== k) {
+                orBranches.push({ [`data.${withIdKey}`]: { $in: valCandidates } });
+                orBranches.push({ [withIdKey]: { $in: valCandidates } });
+              }
+
+              query.$and = query.$and || [];
+              query.$and.push({ $or: orBranches });
             }
           }
         }
@@ -488,9 +659,11 @@ const dynamicFormController = {
       if (!form) return res.status(400).json({ success: false, message: "Invalid form schema" });
 
       const effectiveParentId = parent_id || parent_primary_key_value || null;
-      const cleanData = extractFormData(form, req.body, req.files);
+      const newRecordId = new mongoose.Types.ObjectId();
+      const cleanData = extractFormData(form, req.body, req.files, form_slug, newRecordId.toString(), userId);
 
       const record = await FormData.create({
+        _id: newRecordId,
         form_slug,
         form_version: form.version || 1,
         parent_id: effectiveParentId,
@@ -538,7 +711,7 @@ const dynamicFormController = {
       const existing = await FormData.findOne({ _id: targetId, form_slug, deleted_at: null }).lean();
       if (!existing) return res.status(404).json({ success: false, message: "Record not found" });
 
-      const cleanData = extractFormData(form, req.body, req.files);
+      const cleanData = extractFormData(form, req.body, req.files, form_slug, String(targetId), userId);
 
       // Clean existing data from legacy nested section keys or undefined keys
       const updatedData = cleanRecordData(existing.data);
@@ -695,6 +868,33 @@ const dynamicFormController = {
 
       // Enrich flattened records with human-readable labels for master fields (e.g. state_name)
       const enrichedRecords = await enrichWithMasterLabels(flattenedRecords, form);
+
+      // Ensure every column defined in form.table_columns is mapped onto records
+      const tableCols = form.table_columns || [];
+      enrichedRecords.forEach((record) => {
+        tableCols.forEach((col) => {
+          if (col && col.key) {
+            const rawKey = col.key;
+            const trimmedKey = col.key.trim();
+            const cleanKey = trimmedKey.toLowerCase().replace(/\s+/g, "_");
+            const titleKey = cleanKey.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            if (record[rawKey] === undefined || record[rawKey] === null) {
+              const matchedVal =
+                record[trimmedKey] ??
+                record[cleanKey] ??
+                record[titleKey] ??
+                record[`${cleanKey}_name`] ??
+                record[`name_${cleanKey}`] ??
+                record[`${cleanKey}_label`];
+
+              if (matchedVal !== undefined && matchedVal !== null) {
+                record[rawKey] = matchedVal;
+              }
+            }
+          }
+        });
+      });
 
       // Ensure table_columns has columns if not specified
       let tableColumns = form.table_columns || [];
