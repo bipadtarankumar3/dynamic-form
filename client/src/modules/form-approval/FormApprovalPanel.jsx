@@ -189,20 +189,20 @@ export default function FormApprovalPanel({
 
   const isInitiator =
     isAdmin ||
-    Boolean(initiatorUserId && Number(currentUserId) === Number(initiatorUserId));
+    Boolean(initiatorUserId && String(currentUserId) === String(initiatorUserId));
 
   const canInitiateWorkflow = useMemo(() => {
     if (state?.canInitiate !== undefined) return Boolean(state.canInitiate);
     const allowedRoles = state?.initiator_roles || state?.matchedRule?.initiator_roles || state?.workflow?.initiator_roles || [];
     if (Array.isArray(allowedRoles) && allowedRoles.length > 0) {
       const userRoleSlug = String(loggedInUser?.role_slug || loggedInUser?.role_name || "").toLowerCase();
-      const userRoleId = Number(loggedInUser?.role_id);
+      const userRoleId = String(loggedInUser?.role_id || "");
       return (
         loggedInUser?.isConfigurator ||
-        userRoleId === 1 ||
+        userRoleId === "1" ||
         userRoleSlug === "superadmin" ||
         userRoleSlug === "configurator" ||
-        allowedRoles.some((r) => Number(r) === userRoleId || String(r).toLowerCase() === userRoleSlug)
+        allowedRoles.some((r) => String(r) === userRoleId || String(r).toLowerCase() === userRoleSlug)
       );
     }
     return isAdmin;
@@ -223,7 +223,7 @@ export default function FormApprovalPanel({
     const curr = (instance.assignments || []).find(
       (a) => Number(a.step) === Number(currentStep)
     );
-    return curr && Number(curr.user_id) === Number(currentUserId);
+    return curr && String(curr.user_id) === String(currentUserId);
   }, [instance, currentUserId, currentStep, isFinished]);
 
   const rejectionStep = instance?.rejectionInfo?.step || currentStep;
@@ -232,7 +232,7 @@ export default function FormApprovalPanel({
     (a) => Number(a.step) === Number(prevStepNum)
   );
   const isPrevApprover =
-    prevAssignment && Number(prevAssignment.user_id) === Number(currentUserId);
+    prevAssignment && String(prevAssignment.user_id) === String(currentUserId);
 
   const canPullBack =
     !isFinished &&
@@ -251,7 +251,7 @@ export default function FormApprovalPanel({
       setPullingBack(true);
       const res = await pullBackWorkflow({
         form_slug,
-        record_id: Number(record_id),
+        record_id: String(record_id),
         remarks: pullBackRemarks.trim(),
       });
       if (res?.data?.success) {
@@ -300,7 +300,7 @@ export default function FormApprovalPanel({
     try {
       await saveApprovalAssignments({
         form_slug,
-        record_id: Number(record_id),
+        record_id: String(record_id),
         assignments,
       });
       msgApi.success("Approvers saved! You can now send for approval.");
@@ -336,7 +336,7 @@ export default function FormApprovalPanel({
         try {
           const res = await sendForApproval({
             form_slug,
-            record_id: Number(record_id),
+            record_id: String(record_id),
             remarks: sendRemarks,
           });
           msgApi.success("Sent for approval!");
@@ -370,7 +370,7 @@ export default function FormApprovalPanel({
         try {
           await reopenWorkflow({
             form_slug,
-            record_id: Number(record_id),
+            record_id: String(record_id),
             remarks: "Re-opened for editing",
           });
           msgApi.success("Workflow re-opened! Record is now in Draft mode.");
@@ -397,7 +397,7 @@ export default function FormApprovalPanel({
     try {
       const res = await resendForApproval({
         form_slug,
-        record_id: Number(record_id),
+        record_id: String(record_id),
         remarks: resendRemarks,
       });
       msgApi.success("Record resubmitted for approval starting from Step 1!");
@@ -470,7 +470,7 @@ export default function FormApprovalPanel({
         try {
           const res = await performApprovalAction({
             form_slug,
-            record_id: Number(record_id),
+            record_id: String(record_id),
             instance_id: instance.id,
             action,
             remarks: actionRemarks,
