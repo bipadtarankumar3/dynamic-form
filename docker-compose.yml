@@ -6,7 +6,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./docker-data/mongodb:/data/db
+      - mongo-data:/data/db
     environment:
       - MONGO_INITDB_DATABASE=dynamicform_db
 
@@ -17,9 +17,12 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - ME_CONFIG_MONGODB_SERVER=mongo-server
-      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_URL=mongodb://mongo-server:27017/
       - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
       - ME_CONFIG_BASICAUTH=false
     depends_on:
       - mongo-server
+
+volumes:
+  mongo-data:
+    name: dynamicform_mongo-data
