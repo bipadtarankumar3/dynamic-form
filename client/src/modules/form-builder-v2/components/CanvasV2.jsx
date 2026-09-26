@@ -31,11 +31,81 @@ export default function CanvasV2({
   onReorderSection,
   onAddSubColumn,
   onDeleteSubColumn,
+  onUpdateFieldColSpan,
+  onAddRowWithLayout,
 }) {
   const [collapsedSections, setCollapsedSections] = useState({});
   const [draggedField, setDraggedField] = useState(null); // { secIdx, fldIdx }
   const [draggedSection, setDraggedSection] = useState(null); // secIdx
   const [dragOverTarget, setDragOverTarget] = useState(null); // 'sec_X' or 'fld_X_Y'
+  const [resizingField, setResizingField] = useState(null); // { secIdx, fldIdx, startX, startSpan, gridWidth, liveSpan }
+
+  const ROW_LAYOUT_PRESETS = [
+    { label: '1 Column', desc: '100%', spans: [12], bars: [100] },
+    { label: '2 Columns', desc: '50% | 50%', spans: [6, 6], bars: [50, 50] },
+    { label: '3 Columns', desc: '33% each', spans: [4, 4, 4], bars: [33.3, 33.3, 33.3] },
+    { label: '4 Columns', desc: '25% each', spans: [3, 3, 3, 3], bars: [25, 25, 25, 25] },
+    { label: '2 Columns', desc: '66% | 33%', spans: [8, 4], bars: [66.6, 33.3] },
+    { label: '2 Columns', desc: '33% | 66%', spans: [4, 8], bars: [33.3, 66.6] },
+    { label: '3 Columns', desc: '25% | 50% | 25%', spans: [3, 6, 3], bars: [25, 50, 25] },
+  ];
+
+  const getColSpanLabel = (span) => {
+    switch (span) {
+      case 12: return '100% (12/12)';
+      case 9: return '75% (9/12)';
+      case 8: return '66.7% (8/12)';
+      case 6: return '50% (6/12)';
+      case 4: return '33.3% (4/12)';
+      case 3: return '25% (3/12)';
+      case 2: return '16.7% (2/12)';
+      case 1: return '8.3% (1/12)';
+      default: return `${Math.round((span / 12) * 100)}% (${span}/12)`;
+    }
+  };
+
+  /* ── Interactive Drag to Resize Field Column Span ── */
+  const handleResizeMouseDown = (e, secIdx, fldIdx, currentSpan) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const gridEl = e.currentTarget.closest('.fb-v2-fields-grid');
+    const gridWidth = gridEl ? gridEl.getBoundingClientRect().width - 40 : 800;
+    const startSpan = currentSpan || 6;
+    const startX = e.clientX;
+
+    setResizingField({
+      secIdx,
+      fldIdx,
+      startX,
+      startSpan,
+      gridWidth,
+      liveSpan: startSpan,
+    });
+
+    const handleMouseMove = (moveEvent) => {
+      const columnWidth = gridWidth / 12;
+      const deltaX = moveEvent.clientX - startX;
+      const deltaSpan = Math.round(deltaX / columnWidth);
+      const newSpan = Math.max(1, Math.min(12, startSpan + deltaSpan));
+      setResizingField((prev) => (prev ? { ...prev, liveSpan: newSpan } : null));
+    };
+
+    const handleMouseUp = (upEvent) => {
+      const columnWidth = gridWidth / 12;
+      const deltaX = upEvent.clientX - startX;
+      const deltaSpan = Math.round(deltaX / columnWidth);
+      const finalSpan = Math.max(1, Math.min(12, startSpan + deltaSpan));
+      if (onUpdateFieldColSpan) {
+        onUpdateFieldColSpan(secIdx, fldIdx, finalSpan);
+      }
+      setResizingField(null);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
 
   const toggleCollapse = (secId) => {
     setCollapsedSections((prev) => ({ ...prev, [secId]: !prev[secId] }));
@@ -540,11 +610,13 @@ export default function CanvasV2({
                         </div>
                       ) : (
                         sec.fields.map((fld, fldIdx) => {
-                          const colSpan = fld.ui?.col_span || (fld.type === 'add_more' ? 12 : 6);
                           const isSelectedField = selectedFieldId === fld.id;
                           const isFieldDragOver = dragOverTarget === `fld_${secIdx}_${fldIdx}`;
                           const isFieldDragging =
                             draggedField?.secIdx === secIdx && draggedField?.fldIdx === fldIdx;
+                          const isResizingThisField = resizingField?.secIdx === secIdx && resizingField?.fldIdx === fldIdx;
+                          const rawColSpan = fld.ui?.col_span || (fld.type === 'add_more' ? 12 : 6);
+                          const colSpan = isResizingThisField ? resizingField.liveSpan : rawColSpan;
 
                           if (fld.type === 'add_more') {
                             const subFields = fld.fields || [
@@ -732,7 +804,7 @@ export default function CanvasV2({
                           return (
                             <div
                               key={fld.id || fldIdx}
-                              draggable
+                              draggable={!resizingField}
                               onDragStart={(e) => handleFieldDragStart(e, secIdx, fldIdx)}
                               onDragOver={(e) => handleFieldDragOver(e, secIdx, fldIdx)}
                               onDragLeave={() => setDragOverTarget(null)}
@@ -740,7 +812,7 @@ export default function CanvasV2({
                               style={{ gridColumn: `span ${colSpan}` }}
                               className={`fb-v2-field-card ${isSelectedField ? 'selected' : ''} ${
                                 isFieldDragOver ? 'drag-over' : ''
-                              } ${isFieldDragging ? 'dragging' : ''}`}
+                              } ${isFieldDragging ? 'dragging' : ''} ${isResizingThisField ? 'is-resizing' : ''}`}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setActiveSectionIndex(secIdx);
@@ -761,7 +833,7 @@ export default function CanvasV2({
                                   )}
                                 </div>
 
-                                <div style={{ display: 'flex', gap: 4 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                                   <button
                                     className="fb-v2-icon-btn"
                                     style={{ width: 22, height: 22, fontSize: 11 }}
@@ -895,10 +967,77 @@ export default function CanvasV2({
                                   {fld.ui.help_text}
                                 </div>
                               )}
+
+                              {/* Right Drag-to-Resize Handle (Elementor-style) */}
+                              <div
+                                className={`fb-v2-resize-handle ${isResizingThisField ? 'is-active' : ''}`}
+                                onMouseDown={(e) => handleResizeMouseDown(e, secIdx, fldIdx, rawColSpan)}
+                                title="Drag left/right to stretch or shrink column width (like Elementor)"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <div className="fb-v2-resize-handle-bar" />
+                                {isResizingThisField && (
+                                  <div
+                                    style={{
+                                      position: 'absolute',
+                                      top: -26,
+                                      right: 0,
+                                      background: 'var(--primary-color, #15803d)',
+                                      color: '#ffffff',
+                                      fontSize: 11,
+                                      fontWeight: 700,
+                                      padding: '2px 8px',
+                                      borderRadius: 6,
+                                      whiteSpace: 'nowrap',
+                                      boxShadow: '0 3px 8px rgba(0,0,0,0.2)',
+                                      pointerEvents: 'none',
+                                      zIndex: 100,
+                                    }}
+                                  >
+                                    {getColSpanLabel(colSpan)}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           );
                         })
                       )}
+
+                      {/* Elementor-Style Row / Column Structure Selector */}
+                      <div className="fb-v2-row-layout-panel" onClick={(e) => e.stopPropagation()}>
+                        <div className="fb-v2-row-layout-header">
+                          <div className="fb-v2-row-layout-title">
+                            <PlusCircleOutlined style={{ color: 'var(--primary-color, #15803d)' }} />
+                            <span>Add Row / Column Layout (Elementor Style)</span>
+                          </div>
+                          <span style={{ fontSize: 11, color: '#64748b' }}>
+                            Click a structure below to add a new flexible row
+                          </span>
+                        </div>
+
+                        <div className="fb-v2-layout-presets-grid">
+                          {ROW_LAYOUT_PRESETS.map((preset, pIdx) => (
+                            <div
+                              key={pIdx}
+                              className="fb-v2-preset-card"
+                              onClick={() => onAddRowWithLayout && onAddRowWithLayout(secIdx, preset.spans)}
+                              title={`Add row with ${preset.label} (${preset.desc})`}
+                            >
+                              <div className="fb-v2-preset-bars">
+                                {preset.bars.map((barPct, bIdx) => (
+                                  <div
+                                    key={bIdx}
+                                    className="fb-v2-preset-bar"
+                                    style={{ width: `${barPct}%` }}
+                                  />
+                                ))}
+                              </div>
+                              <div className="fb-v2-preset-label">{preset.label}</div>
+                              <div style={{ fontSize: 9.5, color: '#94a3b8' }}>{preset.desc}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   )
                 )}

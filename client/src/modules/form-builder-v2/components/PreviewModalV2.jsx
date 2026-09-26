@@ -1008,7 +1008,7 @@ export default function PreviewModalV2({ open, onClose, schema, allFormsList = [
                   const isFldVisible = !fld.conditions || evaluateConditions(fld.conditions, formValues);
                   if (!isFldVisible) return null;
 
-                  const colSpan = fld.ui?.col_span || (fld.type === 'add_more' || fld.type === 'lookup_table' ? 12 : 6);
+                  const colSpan = Number(fld.ui?.col_span) || (fld.col_span ? Number(fld.col_span) : (fld.type === 'add_more' ? 12 : 6));
                   const fieldKey = fld.db_field || fld.id;
                   const isCalcEnabled = !!fld.calculation?.enabled;
                   const isCalcReadOnly = isCalcEnabled && fld.calculation?.read_only !== false;
@@ -1017,7 +1017,7 @@ export default function PreviewModalV2({ open, onClose, schema, allFormsList = [
 
                   if (fld.type === 'lookup_table') {
                     return (
-                      <div key={fld.id || fIdx} style={{ gridColumn: 'span 12', marginTop: 6, marginBottom: 6 }}>
+                      <div key={fld.id || fIdx} style={{ gridColumn: `span ${colSpan}`, marginTop: 6, marginBottom: 6 }}>
                         <LinkedTableSectionV2
                           section={fld}
                           allData={formValues}
@@ -1030,7 +1030,7 @@ export default function PreviewModalV2({ open, onClose, schema, allFormsList = [
 
                   if (fld.type === 'add_more') {
                     return (
-                      <div key={fld.id || fIdx} style={{ gridColumn: 'span 12', marginTop: 10 }}>
+                      <div key={fld.id || fIdx} style={{ gridColumn: `span ${colSpan}`, marginTop: 10 }}>
                         <RepeatableSectionPreview section={fld} />
                       </div>
                     );

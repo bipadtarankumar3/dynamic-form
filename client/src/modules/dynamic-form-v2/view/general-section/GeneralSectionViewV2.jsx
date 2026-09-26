@@ -20,6 +20,7 @@ import {
 import dayjs from "dayjs";
 import { getDynamicFormHooks } from "../../hooks/dynamicFormHookRegistryV2";
 import AddMoreSectionViewV2 from "../add-more-section/AddMoreSectionViewV2";
+import LinkedTableSectionV2 from "../../add-edit/linked-table-section/LinkedTableSectionV2";
 import { getFieldRuntimeState } from "@/modules/dynamic-form-v2/helper/runTimeCondition.helper";
 
 /**
@@ -767,8 +768,9 @@ const GeneralSectionViewV2 = ({ section, data, isActiveKey, form_slug }) => {
     const { visible } = getFieldRuntimeState(field, data || {}, "admin");
     return visible;
   });
-  const visibleFields = allVisibleFields.filter((f) => !ADD_MORE_TYPES.includes(f?.type));
   const embeddedAddMoreFields = allVisibleFields.filter((f) => ADD_MORE_TYPES.includes(f?.type));
+  const visibleFields = allVisibleFields.filter((f) => !ADD_MORE_TYPES.includes(f?.type));
+  const sectionTitle = section?.section_label || section?.title || section?.label || section?.name || "General Section";
   const columnCount = section?.columns || 2;
 
   return (
@@ -776,29 +778,54 @@ const GeneralSectionViewV2 = ({ section, data, isActiveKey, form_slug }) => {
       {/* General section field cards */}
       {visibleFields.length > 0 && (
         <div
-          className="ant-card ant-card-bordered view-user-modal shadow-sm rounded-lg overflow-hidden"
-          style={{ border: "1px solid #e2e8f0", background: "#ffffff" }}
+          className="ant-card ant-card-bordered shadow-sm rounded-xl overflow-hidden"
+          style={{
+            border: "1px solid #e2e8f0",
+            borderRadius: 12,
+            background: "#ffffff",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)",
+            marginBottom: 16,
+          }}
         >
           {/* Section Header */}
           <div
-            className="ant-card-head"
             style={{
-              background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
-              borderBottom: "none",
-              padding: "10px 16px",
-              minHeight: "auto",
+              background: "#f8fafc",
+              borderBottom: "1px solid #e2e8f0",
+              padding: "12px 18px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
             }}
           >
-            <div
-              className="ant-card-head-title font-bold text-base text-white"
-              style={{ color: "#ffffff", margin: 0, fontSize: "14px", fontWeight: 700 }}
-            >
-              {section?.section_label}
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: 8,
+                  background: "#eff6ff",
+                  border: "1px solid #bfdbfe",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#2563eb",
+                  fontSize: 15,
+                }}
+              >
+                <FileTextOutlined />
+              </div>
+              <span style={{ fontSize: 15, fontWeight: 700, color: "#1e293b", letterSpacing: "-0.01em" }}>
+                {sectionTitle}
+              </span>
             </div>
+            <Tag color="blue" style={{ borderRadius: 6, fontWeight: 600, fontSize: 11, margin: 0, padding: "2px 8px" }}>
+              General Section
+            </Tag>
           </div>
 
           {/* Cards Body */}
-          <div style={{ padding: "16px 18px", background: "#ffffff" }}>
+          <div style={{ padding: "18px 20px", background: "#ffffff" }}>
             <Row gutter={[16, 16]}>
               {visibleFields.map((field, fIdx) => {
                 const key = `gen_${field.db_field || field.id || fIdx}`;
@@ -840,20 +867,32 @@ const GeneralSectionViewV2 = ({ section, data, isActiveKey, form_slug }) => {
                   );
                 }
 
+                const rawSpan = ["heading", "note", "custom_html"].includes(field?.type)
+                  ? 12
+                  : Number(field?.ui?.col_span ?? field?.ui?.colSpan ?? field?.col_span ?? (field?.type === 'add_more' || field?.type === 'lookup_table' || field?.type === 'linked_table' ? 12 : 6));
+                const antColSpan = isNaN(rawSpan) || rawSpan <= 0 ? 12 : (rawSpan <= 12 ? Math.min(24, Math.max(1, rawSpan * 2)) : Math.min(24, Math.max(1, rawSpan)));
+
+                // Dynamic Linked / Lookup Table
+                if (field?.type === "lookup_table" || field?.type === "linked_table") {
+                  return (
+                    <Col span={antColSpan} key={key}>
+                      <LinkedTableSectionV2
+                        section={field}
+                        allData={data || {}}
+                        mode="view"
+                        form_slug={form_slug}
+                      />
+                    </Col>
+                  );
+                }
+
                 const theme = getFieldTheme(field);
                 const rawVal = data?.[field?.db_field];
                 const isFilled = rawVal !== undefined && rawVal !== null && rawVal !== "";
                 const isTextarea = field.type === "textarea" || (typeof rawVal === "string" && rawVal.length > 80);
-                const requestedColSpan = Number(field?.col_span) || 1;
-
-                // Responsive column span calculation
-                let colSpanProps = { xs: 24, sm: 12, md: 12, lg: columnCount === 1 ? 24 : columnCount === 2 ? 12 : columnCount === 3 ? 8 : 6 };
-                if (requestedColSpan >= columnCount || isTextarea) {
-                  colSpanProps = { xs: 24, sm: 24, md: 24, lg: 24 };
-                }
 
                 return (
-                  <Col {...colSpanProps} key={key}>
+                  <Col span={antColSpan} key={key}>
                     <div
                       style={{
                         background: isFilled ? "#ffffff" : "#f8fafc",

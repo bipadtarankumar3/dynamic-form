@@ -1836,21 +1836,6 @@ export default function SingleFlowFieldInspectorV2({ field, onUpdateField, allFi
         </div>
       )}
 
-      {/* 5. Field Appearance & Layout */}
-      <div className="fb-v2-form-group">
-        <label className="fb-v2-form-label">Column Width Span</label>
-        <Select
-          style={{ width: '100%' }}
-          value={field.ui?.col_span || 6}
-          onChange={(val) => updateUIProp('col_span', val)}
-          options={[
-            { value: 12, label: 'Full Width (12/12)' },
-            { value: 6, label: 'Half Width (6/12)' },
-            { value: 4, label: 'One-Third (4/12)' },
-            { value: 3, label: 'Quarter Width (3/12)' },
-          ]}
-        />
-      </div>
 
       {/* 6. Formula & Calculation Builder (For Number & Calculated Fields) */}
       {(field.type === 'number' || field.calculation?.enabled) && (

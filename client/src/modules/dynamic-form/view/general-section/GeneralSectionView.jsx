@@ -343,7 +343,8 @@ const GeneralSectionView = ({ section, data, isActiveKey, form_slug }) => {
                     ),
                 };
             } else {
-                let requestedSpan = Number(field?.col_span) || 1;
+                let rawSpan = Number(field?.ui?.col_span ?? field?.ui?.colSpan ?? field?.col_span ?? 1);
+                let requestedSpan = rawSpan > columnCount ? Math.max(1, Math.round((rawSpan / 12) * columnCount)) : rawSpan;
                 if (requestedSpan >= columnCount) requestedSpan = columnCount;
                 item = {
                     key: field?.id || field?.db_field || Math.random(),

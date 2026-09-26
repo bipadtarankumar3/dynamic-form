@@ -502,6 +502,67 @@ export default function FormBuilderV2({ initialSchema, onBack, onSuccess }) {
     setSelectedFieldId(newId);
   };
 
+  /* Update Field Column Span */
+  const handleUpdateFieldColSpan = (secIdx, fldIdx, colSpan) => {
+    setSchema((prevSchema) => {
+      const updatedSections = [...prevSchema.sections];
+      const sec = updatedSections[secIdx];
+      if (!sec || !sec.fields?.[fldIdx]) return prevSchema;
+      const targetFld = sec.fields[fldIdx];
+      const updatedFld = {
+        ...targetFld,
+        ui: {
+          ...(targetFld.ui || {}),
+          col_span: Math.min(12, Math.max(1, colSpan)),
+        },
+      };
+      const fields = [...sec.fields];
+      fields[fldIdx] = updatedFld;
+      updatedSections[secIdx] = { ...sec, fields };
+      return { ...prevSchema, sections: updatedSections };
+    });
+  };
+
+  /* Add Row with Elementor-style Column Layout */
+  const handleAddRowWithLayout = (secIdx, colSpans = [6, 6]) => {
+    let firstAddedId = null;
+    setSchema((prevSchema) => {
+      const updatedSections = [...prevSchema.sections];
+      const sec = updatedSections[secIdx] || updatedSections[0];
+      if (!sec) return prevSchema;
+
+      const existingFields = sec.fields || [];
+      const newFields = colSpans.map((span, idx) => {
+        const timeKey = Date.now() + idx;
+        const colNum = existingFields.length + idx + 1;
+        const fldId = `fld_${timeKey}_${Math.random().toString(36).substr(2, 4)}`;
+        if (idx === 0) firstAddedId = fldId;
+        return {
+          id: fldId,
+          label: `Field ${colNum}`,
+          db_field: `field_${colNum}_${timeKey.toString().slice(-4)}`,
+          type: 'text',
+          required: false,
+          validation: { required: false },
+          ui: {
+            placeholder: `Enter value...`,
+            col_span: span,
+          },
+        };
+      });
+
+      const updatedSec = {
+        ...sec,
+        fields: [...existingFields, ...newFields],
+      };
+      updatedSections[secIdx] = updatedSec;
+      return { ...prevSchema, sections: updatedSections };
+    });
+    if (firstAddedId) {
+      setSelectedFieldId(firstAddedId);
+    }
+  };
+
   /* Add Sub-Column to Add-More Table */
   const handleAddSubColumn = (secIdx, fldIdx) => {
     const updatedSections = [...schema.sections];
@@ -948,6 +1009,8 @@ export default function FormBuilderV2({ initialSchema, onBack, onSuccess }) {
             onReorderSection={handleReorderSection}
             onAddSubColumn={handleAddSubColumn}
             onDeleteSubColumn={handleDeleteSubColumn}
+            onUpdateFieldColSpan={handleUpdateFieldColSpan}
+            onAddRowWithLayout={handleAddRowWithLayout}
           />
 
           {/* Right Draggable Resizer Splitter */}

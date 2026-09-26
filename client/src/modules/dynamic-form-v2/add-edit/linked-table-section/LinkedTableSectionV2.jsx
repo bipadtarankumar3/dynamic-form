@@ -22,7 +22,7 @@ const LinkedTableSectionV2 = forwardRef(({
   const [searchText, setSearchText] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
-  const masterSource = section?.master_source || section?.target_form || section?.slug || 'project';
+  const masterSource = section?.master_source || section?.target_form || section?.data_source?.table_name || section?.data_source?.name || section?.slug || 'project';
   const filterByField = section?.filter_by_field;
   const linkKey = section?.link_key || filterByField || 'id';
 

@@ -387,8 +387,10 @@ const GeneralSectionV2 = forwardRef(
             const isCalcReadOnly = field?.calculation?.enabled && field?.calculation?.read_only !== false;
             const isDisabled = disabled || isCalcReadOnly;
             const isReadOnly = readOnly || isCalcReadOnly;
+            const isFullWidthElement = ["heading", "note", "custom_html"].includes(field?.type);
             const isLayoutElement = ["heading", "note", "custom_html", "add_more", "lookup_table"].includes(field?.type);
-            const colSpan = isLayoutElement ? 24 : (field?.ui?.colSpan || 12);
+            const rawSpan = isFullWidthElement ? 12 : Number(field?.ui?.col_span ?? field?.ui?.colSpan ?? field?.col_span ?? (field?.type === 'add_more' || field?.type === 'lookup_table' ? 12 : 6));
+            const colSpan = isNaN(rawSpan) || rawSpan <= 0 ? 12 : (rawSpan <= 12 ? Math.min(24, Math.max(1, rawSpan * 2)) : Math.min(24, Math.max(1, rawSpan)));
 
             return (
               <React.Fragment key={fieldKey}>

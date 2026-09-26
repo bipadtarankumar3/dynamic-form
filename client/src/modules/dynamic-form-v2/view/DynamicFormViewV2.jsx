@@ -405,7 +405,7 @@ const DynamicFormViewV2 = ({
           )}
 
           <div className="flex flex-col gap-4">
-            {!hideTitle && (
+            {!hideTitle && !isModalView && (
               <div className="card-header flex justify-between items-center" style={{ background: "var(--primary-gradient, var(--primary-color, #15803d))", color: "#ffffff", padding: "12px 16px", borderRadius: "8px 8px 0 0" }}>
                 <h5 style={{ margin: 0, fontSize: "18px", fontWeight: 700, color: "#ffffff" }}>
                   {titleProp || schema?.title || decoded?.title || "Details"}
@@ -471,7 +471,7 @@ const DynamicFormViewV2 = ({
                         isActiveKey={isActiveKey}
                       />
                     )}
-                    {section.type === "linked_table" && (
+                    {(section.type === "linked_table" || section.type === "lookup_table") && (
                       <LinkedTableSectionV2
                         section={section}
                         allData={data || {}}
@@ -508,8 +508,23 @@ const DynamicFormViewV2 = ({
               });
             })()}
           </div>
-          <div className="flex justify-end gap-2 mt-3 pt-2 border-t border-gray-100">
-            <Button onClick={onClose}>Close</Button>
+          <div className="flex justify-end items-center gap-2 mt-4 pt-3 border-t border-gray-100">
+            {canEdit && (
+              <Button
+                type="primary"
+                icon={<EditOutlined />}
+                onClick={() => setEditModalOpen(true)}
+                style={{
+                  background: "var(--primary-color, #15803d)",
+                  borderColor: "var(--primary-color, #15803d)",
+                  fontWeight: 600,
+                  borderRadius: 6,
+                }}
+              >
+                Edit Record
+              </Button>
+            )}
+            <Button onClick={onClose} style={{ borderRadius: 6 }}>Close</Button>
           </div>
         </div>
       ) : (
