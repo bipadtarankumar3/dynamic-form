@@ -37,6 +37,8 @@ function DynamicFormsCatchAllContent() {
     : [];
 
   const queryFormSlug = searchParams?.get('form_slug');
+  const queryPartnerId = searchParams?.get('partner_id');
+  const queryUserId = searchParams?.get('user_id');
 
   // If a custom page action was accessed via legacy /admin/forms/... URL, redirect cleanly to dedicated /admin/custom-page/
   React.useEffect(() => {
