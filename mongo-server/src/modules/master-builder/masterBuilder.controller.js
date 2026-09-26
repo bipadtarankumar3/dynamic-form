@@ -2,7 +2,6 @@
 const MasterSchema = require('../../models/MasterSchema.model');
 const MasterData = require('../../models/MasterData.model');
 const Form = require('../../models/Form.model');
-const FormSchema = require('../../models/FormSchema.model');
 const { getFormCollection } = require('../../utils/formCollection.util');
 
 const masterBuilderController = {
@@ -51,13 +50,13 @@ const masterBuilderController = {
         }).lean();
 
         if (form) {
-          const formSchema = await FormSchema.findOne({ form_id: form._id, deleted_at: null }).lean();
           schema = {
             ...form,
+            _id: form._id.toString(),
             id: form._id.toString(),
             name: form.title,
-            sections: formSchema?.sections || form.sections || [],
-            fields: formSchema?.sections?.[0]?.fields || []
+            sections: form.sections || [],
+            fields: form.sections?.[0]?.fields || []
           };
         }
       }

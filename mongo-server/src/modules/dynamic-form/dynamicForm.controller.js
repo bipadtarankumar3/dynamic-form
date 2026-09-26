@@ -2,7 +2,6 @@ const path = require("path");
 const fs = require("fs");
 const mongoose = require("mongoose");
 const Form = require("../../models/Form.model");
-const FormData = require("../../models/FormData.model");
 const MasterSchema = require("../../models/MasterSchema.model");
 const MasterData = require("../../models/MasterData.model");
 const User = require("../../models/User.model");
@@ -269,12 +268,14 @@ async function enrichWithMasterLabels(flattenedRecords, form) {
         deleted_at: null,
       }).lean();
 
-      const TargetFormModel = targetForm ? getFormModel(targetForm) : FormData;
+      const TargetFormModel = targetForm ? getFormModel(targetForm) : (cleanSlug ? getFormModel(cleanSlug) : null);
       const [formDataDocs, masterDataDocs] = await Promise.all([
-        TargetFormModel.find({
-          _id: { $in: [...idObjectIds, ...ids] },
-          deleted_at: null,
-        }).lean(),
+        TargetFormModel
+          ? TargetFormModel.find({
+              _id: { $in: [...idObjectIds, ...ids] },
+              deleted_at: null,
+            }).lean()
+          : Promise.resolve([]),
         MasterData.find({
           _id: { $in: [...idObjectIds, ...ids] },
           deleted_at: null,

@@ -4,7 +4,6 @@ require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 
 const mongoose = require('mongoose');
 const Form = require('./models/Form.model');
-const FormSchema = require('./models/FormSchema.model');
 
 const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/csrdynamicform_db';
 
@@ -591,22 +590,7 @@ async function seedCoreForms() {
       { new: true, upsert: true }
     );
 
-    await FormSchema.findOneAndUpdate(
-      { form_id: form._id },
-      {
-        form_id: form._id,
-        form_code: form.form_code,
-        slug: form.slug || form.form_code,
-        title: form.title,
-        table_name: form.table_name || form.form_code,
-        sections: sections || [],
-        version: 1,
-        is_published: true
-      },
-      { new: true, upsert: true }
-    );
-
-    console.log(`  Form & Schema: "${form.title}" (${form.form_code}) with ${sections?.[0]?.fields?.length || 0} fields ✓`);
+    console.log(`  Form: "${form.title}" (${form.form_code}) with ${sections?.[0]?.fields?.length || 0} fields ✓`);
   }
 
   console.log('\n✨ Core CSR forms seeded successfully!');
