@@ -66,7 +66,7 @@ export const WizardStepApprovalChain = ({
                   placeholder="Select role(s) (e.g. Purchase Executive, Employee...)"
                   showSearch
                   optionFilterProp="label"
-                  options={roles.map((r) => ({ label: `${r.name} (ID: ${r.id})`, value: r.id }))}
+                  options={roles.map((r) => ({ label: r.name ? `${r.name}` : `${r.slug || r.id || r._id}`, value: r.id || r._id }))}
                   className="approval-form-input"
                 />
               </Form.Item>
@@ -106,7 +106,7 @@ export const WizardStepApprovalChain = ({
                               <Select
                                 size="large"
                                 placeholder="Select role"
-                                options={roles.map((r) => ({ label: `${r.name} (ID: ${r.id})`, value: r.id }))}
+                                options={roles.map((r) => ({ label: r.name ? `${r.name}` : `${r.slug || r.id || r._id}`, value: r.id || r._id }))}
                               />
                             </Form.Item>
                           </Col>

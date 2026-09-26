@@ -1,63 +1,323 @@
 // mongo-server/src/modules/workflow/workflow.controller.js
+const mongoose = require("mongoose");
 const WorkflowDef = require("../../models/WorkflowDef.model");
 const WorkflowInstance = require("../../models/WorkflowInstance.model");
 const Form = require("../../models/Form.model");
 const AuditLog = require("../../models/AuditLog.model");
-const { getFormModel } = require("../../utils/formCollection.util");
+const { resolveFormAndModel } = require("../../utils/formCollection.util");
+
+function formatWorkflow(wf) {
+  if (!wf) return null;
+  const doc = wf.toObject ? wf.toObject() : wf;
+  const id = doc._id;
+  const triggerForm = doc.trigger_form || doc.form_slug || "";
+
+  return {
+    ...doc,
+    id,
+    _id: id,
+    wdf_id: id,
+    name: doc.name,
+    wdf_name: doc.name,
+    slug: doc.slug,
+    wdf_slug: doc.slug,
+    trigger_form: triggerForm,
+    wdf_trigger_form: triggerForm,
+    form_slug: triggerForm,
+    flow_type: doc.flow_type || "linear",
+    wdf_flow_type: doc.flow_type || "linear",
+    has_conditions: Boolean(doc.has_conditions),
+    wdf_has_conditions: Boolean(doc.has_conditions),
+    steps: doc.steps || [],
+    wdf_steps: doc.steps || [],
+    rules: doc.rules || [],
+    initiator_roles: doc.initiator_roles || [],
+    wdf_initiator_roles: doc.initiator_roles || [],
+    is_active: doc.is_active !== false,
+    wdf_is_active: doc.is_active !== false,
+    created_at: doc.created_at || doc.createdAt,
+    updated_at: doc.updated_at || doc.updatedAt,
+  };
+}
+
+function generateSlug(name) {
+  return (
+    String(name || "workflow")
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9_]+/g, "_")
+      .replace(/^_+|_+$/g, "") || `workflow_${Date.now()}`
+  );
+}
 
 const workflowController = {
-  // ---- DEFINITIONS ----
-  listDefs: async (req, res) => {
+  // ============================================================
+  // 1. LIST WORKFLOWS (GET /approval-path, GET /workflows)
+  // ============================================================
+  listWorkflows: async (req, res) => {
     try {
-      const defs = await WorkflowDef.find({ deleted_at: null }).sort({ created_at: -1 });
-      return res.json({ success: true, count: defs.length, data: defs });
-    } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
+      const { form_slug, trigger_form, is_active, search } = req.query;
+      const query = { deleted_at: null };
+
+      if (form_slug || trigger_form) {
+        const formTarget = form_slug || trigger_form;
+        query.$or = [{ form_slug: formTarget }, { trigger_form: formTarget }, { slug: formTarget }];
+      }
+
+      if (is_active !== undefined) {
+        query.is_active = is_active === "true" || is_active === true;
+      }
+
+      if (search) {
+        query.$or = [
+          { name: { $regex: search, $options: "i" } },
+          { slug: { $regex: search, $options: "i" } },
+          { trigger_form: { $regex: search, $options: "i" } },
+        ];
+      }
+
+      const defs = await WorkflowDef.find(query).sort({ created_at: -1 });
+      const formatted = defs.map(formatWorkflow);
+
+      return res.json({
+        success: true,
+        count: formatted.length,
+        rows: formatted,
+        data: formatted,
+      });
+    } catch (e) {
+      console.error("[WorkflowController] listWorkflows error:", e);
+      return res.status(500).json({ success: false, message: e.message });
+    }
+  },
+
+  // Alias for backward compatibility
+  listDefs: async (req, res) => {
+    return workflowController.listWorkflows(req, res);
+  },
+
+  // ============================================================
+  // 2. GET SINGLE WORKFLOW (GET /approval-path/:id, GET /workflows/definitions/:slug)
+  // ============================================================
+  getWorkflow: async (req, res) => {
+    try {
+      const idOrSlug = req.params.id || req.params.slug;
+      let query = { deleted_at: null };
+
+      if (mongoose.isValidObjectId(idOrSlug)) {
+        query._id = idOrSlug;
+      } else {
+        query.slug = String(idOrSlug).toLowerCase();
+      }
+
+      const def = await WorkflowDef.findOne(query);
+      if (!def) {
+        return res.status(404).json({ success: false, message: "Workflow definition not found" });
+      }
+
+      return res.json({ success: true, data: formatWorkflow(def) });
+    } catch (e) {
+      console.error("[WorkflowController] getWorkflow error:", e);
+      return res.status(500).json({ success: false, message: e.message });
+    }
   },
 
   getDef: async (req, res) => {
-    try {
-      const { slug } = req.params;
-      const def = await WorkflowDef.findOne({ slug, deleted_at: null });
-      if (!def) return res.status(404).json({ success: false, message: "Workflow definition not found" });
-      return res.json({ success: true, data: def });
-    } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
+    return workflowController.getWorkflow(req, res);
   },
 
-  saveDef: async (req, res) => {
+  // ============================================================
+  // 3. CREATE WORKFLOW (POST /approval-path, POST /workflows/definitions)
+  // ============================================================
+  createWorkflow: async (req, res) => {
     try {
-      const userId = req.user?.user_id;
-      const { slug, name, form_slug, trigger_form, steps, rules, description, is_active } = req.body;
-      if (!slug || !name) return res.status(400).json({ success: false, message: "slug and name are required" });
+      const userId = req.user?.user_id || req.user?._id || req.user?.id || null;
+      const {
+        name,
+        slug,
+        trigger_form,
+        form_slug,
+        flow_type,
+        has_conditions,
+        description,
+        is_active,
+        is_draft,
+        initiator_roles,
+        conditions,
+        steps,
+        rules,
+      } = req.body;
+
+      if (!name) {
+        return res.status(400).json({ success: false, message: "name is required" });
+      }
+
+      let finalSlug = slug ? generateSlug(slug) : generateSlug(name);
+      const existingSlug = await WorkflowDef.findOne({ slug: finalSlug, deleted_at: null });
+      if (existingSlug) {
+        finalSlug = `${finalSlug}_${Date.now()}`;
+      }
 
       const payload = {
         name,
+        slug: finalSlug,
+        trigger_form: trigger_form || form_slug || null,
         form_slug: form_slug || trigger_form || null,
+        flow_type: flow_type || "linear",
+        has_conditions: Boolean(has_conditions),
         description: description || "",
+        is_active: is_draft ? false : is_active !== false,
+        initiator_roles: initiator_roles || [],
+        conditions: conditions || [],
         steps: steps || [],
         rules: rules || [],
-        is_active: is_active !== false,
+        created_by: userId,
         updated_by: userId,
       };
 
-      const existing = await WorkflowDef.findOne({ slug, deleted_at: null });
-      if (existing) {
-        const updated = await WorkflowDef.findByIdAndUpdate(existing._id, payload, { new: true });
-        return res.json({ success: true, message: "Workflow updated", data: updated });
+      const created = await WorkflowDef.create(payload);
+      return res.status(201).json({
+        success: true,
+        message: "Approval path created successfully",
+        data: formatWorkflow(created),
+      });
+    } catch (e) {
+      console.error("[WorkflowController] createWorkflow error:", e);
+      return res.status(500).json({ success: false, message: e.message });
+    }
+  },
+
+  saveDef: async (req, res) => {
+    const idOrSlug = req.params.slug || req.params.id || req.body.slug;
+    if (req.method === "PUT" || (idOrSlug && req.body._id)) {
+      return workflowController.updateWorkflow(req, res);
+    }
+    return workflowController.createWorkflow(req, res);
+  },
+
+  // ============================================================
+  // 4. UPDATE WORKFLOW (PUT /approval-path/:id)
+  // ============================================================
+  updateWorkflow: async (req, res) => {
+    try {
+      const userId = req.user?.user_id || req.user?._id || req.user?.id || null;
+      const idOrSlug = req.params.id || req.params.slug;
+      const {
+        name,
+        slug,
+        trigger_form,
+        form_slug,
+        flow_type,
+        has_conditions,
+        description,
+        is_active,
+        is_draft,
+        initiator_roles,
+        conditions,
+        steps,
+        rules,
+      } = req.body;
+
+      let query = { deleted_at: null };
+      if (mongoose.isValidObjectId(idOrSlug)) {
+        query._id = idOrSlug;
+      } else {
+        query.slug = String(idOrSlug).toLowerCase();
       }
-      const def = await WorkflowDef.create({ ...payload, slug, created_by: userId });
-      return res.status(201).json({ success: true, message: "Workflow created", data: def });
-    } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
+
+      const existing = await WorkflowDef.findOne(query);
+      if (!existing) {
+        return res.status(404).json({ success: false, message: "Workflow definition not found" });
+      }
+
+      const payload = {
+        updated_by: userId,
+      };
+      if (name !== undefined) payload.name = name;
+      if (slug !== undefined) payload.slug = generateSlug(slug);
+      if (trigger_form !== undefined || form_slug !== undefined) {
+        payload.trigger_form = trigger_form || form_slug;
+        payload.form_slug = form_slug || trigger_form;
+      }
+      if (flow_type !== undefined) payload.flow_type = flow_type;
+      if (has_conditions !== undefined) payload.has_conditions = Boolean(has_conditions);
+      if (description !== undefined) payload.description = description;
+      if (is_draft !== undefined) {
+        payload.is_active = is_draft ? false : (is_active !== undefined ? is_active : true);
+      } else if (is_active !== undefined) {
+        payload.is_active = Boolean(is_active);
+      }
+      if (initiator_roles !== undefined) payload.initiator_roles = initiator_roles;
+      if (conditions !== undefined) payload.conditions = conditions;
+      if (steps !== undefined) payload.steps = steps;
+      if (rules !== undefined) payload.rules = rules;
+
+      const updated = await WorkflowDef.findByIdAndUpdate(existing._id, { $set: payload }, { new: true });
+
+      return res.json({
+        success: true,
+        message: "Approval path updated successfully",
+        data: formatWorkflow(updated),
+      });
+    } catch (e) {
+      console.error("[WorkflowController] updateWorkflow error:", e);
+      return res.status(500).json({ success: false, message: e.message });
+    }
+  },
+
+  // ============================================================
+  // 5. DELETE WORKFLOW (DELETE /approval-path/:id)
+  // ============================================================
+  deleteWorkflow: async (req, res) => {
+    try {
+      const idOrSlug = req.params.id || req.params.slug;
+      let query = { deleted_at: null };
+      if (mongoose.isValidObjectId(idOrSlug)) {
+        query._id = idOrSlug;
+      } else {
+        query.slug = String(idOrSlug).toLowerCase();
+      }
+
+      const updated = await WorkflowDef.findOneAndUpdate(query, {
+        $set: { deleted_at: new Date() },
+      });
+
+      if (!updated) {
+        return res.status(404).json({ success: false, message: "Workflow definition not found" });
+      }
+
+      return res.json({ success: true, message: "Approval path deleted successfully" });
+    } catch (e) {
+      console.error("[WorkflowController] deleteWorkflow error:", e);
+      return res.status(500).json({ success: false, message: e.message });
+    }
   },
 
   deleteDef: async (req, res) => {
-    try {
-      const { slug } = req.params;
-      await WorkflowDef.findOneAndUpdate({ slug, deleted_at: null }, { deleted_at: new Date() });
-      return res.json({ success: true, message: "Workflow definition deleted" });
-    } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
+    return workflowController.deleteWorkflow(req, res);
   },
 
-  // ---- INSTANCES ----
+  // ============================================================
+  // 6. MODULE LIST (GET /approval-workflow/module-list)
+  // ============================================================
+  moduleList: async (req, res) => {
+    try {
+      const forms = await Form.find({ deleted_at: null }).select("title slug name form_code").sort({ title: 1 }).lean();
+      const modules = forms.map((f) => ({
+        label: f.title || f.name || f.slug,
+        title: f.title || f.name || f.slug,
+        value: f.slug,
+        slug: f.slug,
+      }));
+      return res.json({ success: true, data: modules });
+    } catch (e) {
+      return res.status(500).json({ success: false, message: e.message });
+    }
+  },
+
+  // ============================================================
+  // 7. INSTANCES (GET /workflows/instances, GET /workflows/instances/:id)
+  // ============================================================
   listInstances: async (req, res) => {
     try {
       const { form_slug, status } = req.query;
@@ -71,7 +331,9 @@ const workflowController = {
         .sort({ created_at: -1 });
 
       return res.json({ success: true, count: instances.length, data: instances });
-    } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
+    } catch (e) {
+      return res.status(500).json({ success: false, message: e.message });
+    }
   },
 
   getInstance: async (req, res) => {
@@ -80,111 +342,13 @@ const workflowController = {
       const instance = await WorkflowInstance.findById(id)
         .populate("workflow_def_id")
         .populate("submitted_by", "name email");
-      if (!instance) return res.status(404).json({ success: false, message: "Workflow instance not found" });
-      return res.json({ success: true, data: instance });
-    } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
-  },
-
-  // Initiate workflow
-  initiateWorkflow: async (req, res) => {
-    try {
-      const userId = req.user?.user_id;
-      const { form_slug, record_id, workflow_slug } = req.body;
-      if (!form_slug || !record_id) return res.status(400).json({ success: false, message: "form_slug and record_id are required" });
-
-      const form = await Form.findOne({ slug: form_slug, deleted_at: null });
-      const FormModel = form ? getFormModel(form) : getFormModel(form_slug);
-
-      const record = await FormModel.findOne({ _id: record_id, deleted_at: null });
-      if (!record) return res.status(404).json({ success: false, message: "Form record not found" });
-
-      const wfQuery = workflow_slug
-        ? { slug: workflow_slug, deleted_at: null }
-        : { form_slug, is_active: true, deleted_at: null };
-
-      const workflow = await WorkflowDef.findOne(wfQuery);
-      if (!workflow) return res.status(400).json({ success: false, message: "No active workflow found for this form" });
-
-      const existingInstance = await WorkflowInstance.findOne({ record_id, form_slug, deleted_at: null, status: "pending" });
-      if (existingInstance) return res.status(400).json({ success: false, message: "A workflow is already in progress for this record" });
-
-      const instance = await WorkflowInstance.create({
-        workflow_def_id: workflow._id,
-        form_slug,
-        record_id,
-        current_step: 1,
-        status: "pending",
-        submitted_by: userId,
-        history: [
-          {
-            step: 1,
-            action: "submitted",
-            actor_id: userId,
-            actor_name: req.user?.name || "User",
-            comments: "Workflow initiated",
-            timestamp: new Date(),
-          },
-        ],
-      });
-
-      await FormModel.findByIdAndUpdate(record_id, { status: "pending", "data.workflow_status": "pending" });
-      await AuditLog.create({ action: "workflow_initiate", module: form_slug, record_id, user_id: userId });
-
-      return res.status(201).json({ success: true, message: "Workflow initiated", data: instance });
-    } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
-  },
-
-  // Approve / Reject / Return
-  actionStep: async (req, res) => {
-    try {
-      const userId = req.user?.user_id;
-      const { instance_id, action, comment } = req.body;
-      if (!instance_id || !action) return res.status(400).json({ success: false, message: "instance_id and action are required" });
-
-      const instance = await WorkflowInstance.findOne({ _id: instance_id, deleted_at: null }).populate("workflow_def_id");
-      if (!instance) return res.status(404).json({ success: false, message: "Workflow instance not found" });
-
-      const workflow = instance.workflow_def_id;
-      const totalSteps = workflow?.steps?.length || 1;
-
-      let newStatus = instance.status;
-      let newStep = instance.current_step;
-
-      if (action === "approved" || action === "approve") {
-        if (instance.current_step >= totalSteps) {
-          newStatus = "approved";
-        } else {
-          newStep = instance.current_step + 1;
-        }
-      } else if (action === "rejected" || action === "reject") {
-        newStatus = "rejected";
-      } else if (action === "returned" || action === "return") {
-        newStatus = "returned";
+      if (!instance) {
+        return res.status(404).json({ success: false, message: "Workflow instance not found" });
       }
-
-      instance.history.push({
-        step: instance.current_step,
-        action: action,
-        actor_id: userId,
-        actor_name: req.user?.name || "Approver",
-        comments: comment || "",
-        timestamp: new Date(),
-      });
-
-      await WorkflowInstance.findByIdAndUpdate(instance_id, {
-        current_step: newStep,
-        status: newStatus,
-        history: instance.history,
-      });
-
-      const form = await Form.findOne({ slug: instance.form_slug, deleted_at: null });
-      const FormModel = form ? getFormModel(form) : getFormModel(instance.form_slug);
-      await FormModel.findByIdAndUpdate(instance.record_id, { status: newStatus, "data.workflow_status": newStatus });
-
-      await AuditLog.create({ action: `workflow_${action}`, module: instance.form_slug, record_id: instance.record_id, user_id: userId, description: comment || "" });
-
-      return res.json({ success: true, message: `Workflow step ${action}`, status: newStatus });
-    } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
+      return res.json({ success: true, data: instance });
+    } catch (e) {
+      return res.status(500).json({ success: false, message: e.message });
+    }
   },
 };
 

@@ -55,9 +55,11 @@ const workflowRoute = require('./modules/workflow/workflow.route');
 router.use('/workflows', workflowRoute);
 router.use('/configurator/workflows', workflowRoute);
 router.use('/approval-path', workflowRoute);
+router.use('/approval-workflow', workflowRoute);
 router.use('/admin/workflows', workflowRoute);
 router.use('/admin/configurator/workflows', workflowRoute);
 router.use('/admin/approval-path', workflowRoute);
+router.use('/admin/approval-workflow', workflowRoute);
 
 // 8. Form Approval Engine
 const formApprovalRoute = require('./modules/form-approval/formApproval.route');

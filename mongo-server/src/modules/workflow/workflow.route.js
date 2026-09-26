@@ -6,17 +6,27 @@ const authMiddleware = require("../../middlewares/auth.middleware");
 
 router.use(authMiddleware.validateToken);
 
-// Definitions
+// ── Approval Workflow Builder helpers ─────────────────────────
+router.get("/module-list", workflowController.moduleList);
+router.get("/list", workflowController.listWorkflows);
+router.post("/create", workflowController.createWorkflow);
+
+// ── Definitions (Legacy and REST aliases) ─────────────────────
 router.get("/definitions", workflowController.listDefs);
 router.get("/definitions/:slug", workflowController.getDef);
-router.post("/definitions", workflowController.saveDef);
-router.put("/definitions/:slug", workflowController.saveDef);
-router.delete("/definitions/:slug", workflowController.deleteDef);
+router.post("/definitions", workflowController.createWorkflow);
+router.put("/definitions/:slug", workflowController.updateWorkflow);
+router.delete("/definitions/:slug", workflowController.deleteWorkflow);
 
-// Instances
+// ── Instances ─────────────────────────────────────────────────
 router.get("/instances", workflowController.listInstances);
 router.get("/instances/:id", workflowController.getInstance);
-router.post("/initiate", workflowController.initiateWorkflow);
-router.post("/action", workflowController.actionStep);
+
+// ── Approval Path Configurator Root REST endpoints ────────────
+router.get("/", workflowController.listWorkflows);
+router.post("/", workflowController.createWorkflow);
+router.get("/:id", workflowController.getWorkflow);
+router.put("/:id", workflowController.updateWorkflow);
+router.delete("/:id", workflowController.deleteWorkflow);
 
 module.exports = router;

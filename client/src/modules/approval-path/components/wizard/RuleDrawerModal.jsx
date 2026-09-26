@@ -102,7 +102,7 @@ export const RuleDrawerModal = ({
             placeholder="Select initiator role(s) (e.g. Purchase Executive)"
             showSearch
             optionFilterProp="label"
-            options={roles.map((r) => ({ label: `${r.name} (ID: ${r.id})`, value: r.id }))}
+            options={roles.map((r) => ({ label: r.name ? `${r.name}` : `${r.slug || r.id || r._id}`, value: r.id || r._id }))}
             style={{ borderRadius: 8 }}
           />
         </Form.Item>
@@ -198,7 +198,7 @@ export const RuleDrawerModal = ({
                       >
                         <Select
                           placeholder="Select role"
-                          options={roles.map((r) => ({ label: `${r.name} (ID: ${r.id})`, value: r.id }))}
+                          options={roles.map((r) => ({ label: r.name ? `${r.name}` : `${r.slug || r.id || r._id}`, value: r.id || r._id }))}
                         />
                       </Form.Item>
                     </Col>
