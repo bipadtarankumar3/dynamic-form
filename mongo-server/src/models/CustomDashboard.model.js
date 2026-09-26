@@ -19,7 +19,6 @@ const CustomDashboardSchema = new mongoose.Schema(
   }
 );
 
-CustomDashboardSchema.index({ slug: 1 });
 CustomDashboardSchema.index({ deleted_at: 1 });
 
 module.exports = mongoose.models.CustomDashboard || mongoose.model("CustomDashboard", CustomDashboardSchema);
