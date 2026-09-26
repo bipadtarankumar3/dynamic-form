@@ -1,5 +1,6 @@
 const express = require("express");
 const controller = require("./common.controller");
+const authController = require("../auth/auth.controller");
 const authMiddleware = require("../../middlewares/auth.middleware");
 
 const router = express.Router();
@@ -8,5 +9,7 @@ router.get("/permissions",    authMiddleware.validateToken, controller.getMyPerm
 router.post("/delete-file",   authMiddleware.validateToken, controller.deleteFile);
 router.get("/documents",      authMiddleware.validateToken, controller.getDocuments);
 router.post("/slug-wise-user",authMiddleware.validateToken, controller.slugWiseUser);
+router.get("/logout",         authController.logout);
+router.post("/logout",        authController.logout);
 
 module.exports = router;

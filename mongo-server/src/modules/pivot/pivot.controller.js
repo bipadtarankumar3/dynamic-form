@@ -7,6 +7,7 @@ const FormData = require("../../models/FormData.model");
 const MasterSchema = require("../../models/MasterSchema.model");
 const MasterData = require("../../models/MasterData.model");
 const CustomDashboardWidget = require("../../models/CustomDashboardWidget.model");
+const { getFormModel } = require("../../utils/formCollection.util");
 
 // Helper: infer column data type
 function inferType(field) {
@@ -56,7 +57,8 @@ async function fetchDatasetRecords(tableName) {
   // 2. Check Form
   const form = await Form.findOne({ slug: cleanName, deleted_at: null }).lean();
   if (form) {
-    const records = await FormData.find({ form_slug: cleanName, deleted_at: null }).lean();
+    const FormModel = getFormModel(form);
+    const records = await FormModel.find({ deleted_at: null }).lean();
     return records.map((r) => {
       const flat = {
         id: r._id.toString(),

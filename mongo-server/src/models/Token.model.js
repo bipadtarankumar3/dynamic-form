@@ -8,7 +8,7 @@ const TokenSchema = new mongoose.Schema({
   deleted_at: { type: Date, default: null },
 }, { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } });
 
-TokenSchema.index({ token: 1 });
 TokenSchema.index({ user_id: 1 });
+TokenSchema.index({ deleted_at: 1 });
 
 module.exports = mongoose.model("Token", TokenSchema);

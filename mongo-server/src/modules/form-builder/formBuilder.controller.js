@@ -3,6 +3,7 @@ const Form = require("../../models/Form.model");
 const FormData = require("../../models/FormData.model");
 const DatabaseView = require("../../models/DatabaseView.model");
 const mongoose = require("mongoose");
+const { getFormModel, getFormCollectionName } = require("../../utils/formCollection.util");
 
 const formBuilderController = {
 
@@ -199,7 +200,8 @@ const formBuilderController = {
       const form = await findFormByIdOrSlug(id);
       if (!form) return res.status(404).json({ success: false, message: "Form schema not found" });
 
-      const recordCount = await FormData.countDocuments({ form_slug: form.slug, deleted_at: null });
+      const FormModel = getFormModel(form);
+      const recordCount = await FormModel.countDocuments({ deleted_at: null });
       const childFormsCount = await Form.countDocuments({ parent_form_id: form._id, deleted_at: null });
       const viewsCount = await DatabaseView.countDocuments({ view_slug: `v_${form.slug}`, deleted_at: null });
 
@@ -421,6 +423,10 @@ async function ensureFormMongoView(form, userId) {
   try {
     const viewSlug = `v_${form.slug}`;
     const viewName = `${form.title} View`;
+    const baseCollection = getFormCollectionName(form);
+
+    // Ensure model/collection is initialized
+    getFormModel(form);
 
     const projectFields = {
       _id: 1,
@@ -457,7 +463,7 @@ async function ensureFormMongoView(form, userId) {
     });
 
     const pipeline = [
-      { $match: { form_slug: form.slug, deleted_at: null } },
+      { $match: { deleted_at: null } },
       { $project: projectFields },
     ];
 
@@ -467,7 +473,7 @@ async function ensureFormMongoView(form, userId) {
     }
 
     await mongoose.connection.db.createCollection(viewSlug, {
-      viewOn: "formdatas",
+      viewOn: baseCollection,
       pipeline,
     });
 
@@ -477,7 +483,7 @@ async function ensureFormMongoView(form, userId) {
         view_name: viewName,
         view_slug: viewSlug,
         form_slug: form.slug,
-        base_collection: "formdatas",
+        base_collection: baseCollection,
         pipeline,
         columns: form.table_columns || [],
         deleted_at: null,
@@ -486,7 +492,7 @@ async function ensureFormMongoView(form, userId) {
       { upsert: true, new: true }
     );
 
-    console.log(`[FormBuilder] ✅ MongoDB View "${viewSlug}" created/updated`);
+    console.log(`[FormBuilder] ✅ Dedicated Collection "${baseCollection}" & MongoDB View "${viewSlug}" created/updated`);
   } catch (err) {
     console.warn(`[FormBuilder] Warning creating view: ${err.message}`);
   }

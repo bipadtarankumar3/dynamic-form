@@ -12,6 +12,7 @@ const forgetPwdLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 5, message: 
 router.post("/login", loginLimiter, authController.login);
 router.post("/forget-password", forgetPwdLimiter, authController.forgetPassword);
 router.post("/logout", authMiddleware.validateToken, authController.logout);
+router.get("/logout", authMiddleware.validateToken, authController.logout);
 router.get("/profile", authMiddleware.validateToken, authController.getProfile);
 router.put("/profile", authMiddleware.validateToken, authController.updateProfile);
 router.post("/change-password", authMiddleware.validateToken, authController.changePassword);

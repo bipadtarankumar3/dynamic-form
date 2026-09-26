@@ -10,6 +10,6 @@ const RoleSchema = new mongoose.Schema({
   deleted_at:       { type: Date, default: null },
 }, { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } });
 
-RoleSchema.index({ slug: 1 });
+RoleSchema.index({ deleted_at: 1 });
 
 module.exports = mongoose.model("Role", RoleSchema);

@@ -151,12 +151,12 @@ const authController = {
   logout: async (req, res, next) => {
     try {
       const token = req.headers["authorization"]?.split(" ")[1];
-      if (!token) return unauthorized(res, "Token not provided");
-
-      await Token.findOneAndUpdate({ token }, { deleted_at: new Date() });
+      if (token) {
+        await Token.findOneAndUpdate({ token }, { deleted_at: new Date() });
+      }
       return res.status(200).json({ success: true, message: "Logged out successfully" });
     } catch (error) {
-      next(error);
+      return res.status(200).json({ success: true, message: "Logged out successfully" });
     }
   },
 

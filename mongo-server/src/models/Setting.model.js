@@ -10,6 +10,6 @@ const SettingSchema = new mongoose.Schema({
   deleted_at: { type: Date, default: null },
 }, { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } });
 
-SettingSchema.index({ key: 1 });
+SettingSchema.index({ deleted_at: 1 });
 
 module.exports = mongoose.model("Setting", SettingSchema);

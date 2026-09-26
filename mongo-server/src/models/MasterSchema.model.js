@@ -14,6 +14,6 @@ const MasterSchemaSchema = new mongoose.Schema({
   deleted_at:    { type: Date, default: null },
 }, { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } });
 
-MasterSchemaSchema.index({ slug: 1 });
+MasterSchemaSchema.index({ deleted_at: 1 });
 
 module.exports = mongoose.model("MasterSchema", MasterSchemaSchema);

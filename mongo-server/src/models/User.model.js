@@ -21,7 +21,6 @@ const UserSchema = new mongoose.Schema({
 }, { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } });
 
 // Indexes
-UserSchema.index({ email: 1 });
 UserSchema.index({ deleted_at: 1 });
 
 // Hash password before save

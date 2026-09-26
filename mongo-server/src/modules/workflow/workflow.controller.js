@@ -1,8 +1,9 @@
 // mongo-server/src/modules/workflow/workflow.controller.js
 const WorkflowDef = require("../../models/WorkflowDef.model");
 const WorkflowInstance = require("../../models/WorkflowInstance.model");
-const FormData = require("../../models/FormData.model");
+const Form = require("../../models/Form.model");
 const AuditLog = require("../../models/AuditLog.model");
+const { getFormModel } = require("../../utils/formCollection.util");
 
 const workflowController = {
 
@@ -85,7 +86,10 @@ const workflowController = {
       const { form_slug, record_id, workflow_slug } = req.body;
       if (!form_slug || !record_id) return res.status(400).json({ success: false, message: "form_slug and record_id are required" });
 
-      const record = await FormData.findOne({ _id: record_id, form_slug, deleted_at: null });
+      const form = await Form.findOne({ slug: form_slug, deleted_at: null });
+      const FormModel = form ? getFormModel(form) : getFormModel(form_slug);
+
+      const record = await FormModel.findOne({ _id: record_id, deleted_at: null });
       if (!record) return res.status(404).json({ success: false, message: "Form record not found" });
 
       // Find applicable workflow
@@ -117,7 +121,7 @@ const workflowController = {
       });
 
       // Update form record status
-      await FormData.findByIdAndUpdate(record_id, { status: "pending", "data.workflow_status": "pending" });
+      await FormModel.findByIdAndUpdate(record_id, { status: "pending", "data.workflow_status": "pending" });
 
       await AuditLog.create({ action: "workflow_initiate", module: form_slug, record_id, user_id: userId, description: `Workflow "${workflow.name}" initiated` });
 
@@ -170,7 +174,9 @@ const workflowController = {
       });
 
       // Update form data status
-      await FormData.findByIdAndUpdate(instance.record_id, { status: newStatus, "data.workflow_status": newStatus });
+      const form = await Form.findOne({ slug: instance.form_slug, deleted_at: null });
+      const FormModel = form ? getFormModel(form) : getFormModel(instance.form_slug);
+      await FormModel.findByIdAndUpdate(instance.record_id, { status: newStatus, "data.workflow_status": newStatus });
 
       await AuditLog.create({ action: `workflow_${action}`, module: instance.form_slug, record_id: instance.record_id, user_id: userId, description: comment || "" });
 

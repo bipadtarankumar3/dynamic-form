@@ -10,6 +10,7 @@ const AuditLog = require("../../models/AuditLog.model");
 const DatabaseView = require("../../models/DatabaseView.model");
 const Document = require("../../models/Document.model");
 const mongoose = require("mongoose");
+const { getFormModel, getFormCollectionName } = require("../../utils/formCollection.util");
 
 // ---- Helpers ----
 
@@ -276,13 +277,19 @@ async function enrichWithMasterLabels(flattenedRecords, form) {
         )
       );
 
-      if (ids.length === 0) continue;
+      const targetForm = await Form.findOne({
+        $or: [
+          { slug: masterKey },
+          { slug: cleanSlug },
+          { "root_entity.table": masterKey },
+          { "root_entity.table": cleanSlug },
+        ],
+        deleted_at: null,
+      }).lean();
 
-      const cleanSlug = masterKey.replace(/^v_/, "").replace(/^t_frm_/, "").replace(/^t_/, "");
-      const idObjectIds = ids.filter((id) => mongoose.Types.ObjectId.isValid(id)).map((id) => new mongoose.Types.ObjectId(id));
-
+      const TargetFormModel = targetForm ? getFormModel(targetForm) : FormData;
       const [formDataDocs, masterDataDocs] = await Promise.all([
-        FormData.find({
+        TargetFormModel.find({
           _id: { $in: [...idObjectIds, ...ids] },
           deleted_at: null,
         }).lean(),
@@ -575,10 +582,11 @@ const dynamicFormController = {
           query[`data.${detectedLabelField}`] = { $regex: search, $options: "i" };
         }
 
+        const FormModel = getFormModel(form);
         const skip = (Number(page) - 1) * Number(limit);
         const [records, total] = await Promise.all([
-          FormData.find(query).skip(skip).limit(Number(limit)).lean(),
-          FormData.countDocuments(query),
+          FormModel.find(query).skip(skip).limit(Number(limit)).lean(),
+          FormModel.countDocuments(query),
         ]);
 
         const data = records.map((r) => {
@@ -658,11 +666,12 @@ const dynamicFormController = {
       const form = await getFormSchema(form_slug);
       if (!form) return res.status(400).json({ success: false, message: "Invalid form schema" });
 
+      const FormModel = getFormModel(form);
       const effectiveParentId = parent_id || parent_primary_key_value || null;
       const newRecordId = new mongoose.Types.ObjectId();
       const cleanData = extractFormData(form, req.body, req.files, form_slug, newRecordId.toString(), userId);
 
-      const record = await FormData.create({
+      const record = await FormModel.create({
         _id: newRecordId,
         form_slug,
         form_version: form.version || 1,
@@ -692,6 +701,7 @@ const dynamicFormController = {
       const form = await getFormSchema(form_slug);
       if (!form) return res.status(400).json({ success: false, message: "Invalid form schema" });
 
+      const FormModel = getFormModel(form);
       const rootPK = form.root_entity?.primary_key || "id";
       const targetId =
         record_id ||
@@ -708,7 +718,7 @@ const dynamicFormController = {
 
       if (!targetId) return res.status(400).json({ success: false, message: "record_id is required" });
 
-      const existing = await FormData.findOne({ _id: targetId, form_slug, deleted_at: null }).lean();
+      const existing = await FormModel.findOne({ _id: targetId, deleted_at: null }).lean();
       if (!existing) return res.status(404).json({ success: false, message: "Record not found" });
 
       const cleanData = extractFormData(form, req.body, req.files, form_slug, String(targetId), userId);
@@ -724,7 +734,7 @@ const dynamicFormController = {
       Object.assign(updatedData, cleanData);
       const targetStatus = status || cleanData.status || existing.status;
 
-      await FormData.findByIdAndUpdate(targetId, {
+      await FormModel.findByIdAndUpdate(targetId, {
         data: updatedData,
         status: targetStatus,
         updated_by: userId,
@@ -737,7 +747,7 @@ const dynamicFormController = {
   },
 
   // ================================================================
-  // GENERAL LIST VIEW — paginated list from FormData collection
+  // GENERAL LIST VIEW — paginated list from dedicated form collection
   // ================================================================
   generalListView: async (req, res) => {
     try {
@@ -760,6 +770,7 @@ const dynamicFormController = {
       const form = await getFormSchema(form_slug);
       if (!form) return res.status(404).json({ success: false, message: "Form schema not found" });
 
+      const FormModel = getFormModel(form);
       const currentPage = Number(page || pagination?.current_page || pagination?.page || 1);
       const limitVal = Number(limit || pageSize || pagination?.page_size || pagination?.limit || 100);
       const skip = (currentPage - 1) * limitVal;
@@ -782,7 +793,7 @@ const dynamicFormController = {
       }
 
       // Build filter query
-      const matchQuery = { form_slug, deleted_at: null };
+      const matchQuery = { deleted_at: null };
 
       // Parent ID filter
       const effectiveParentId = parent_id || parent_primary_key_value || (!Array.isArray(parsedFilters) ? parsedFilters.parent_id : undefined);
@@ -832,16 +843,16 @@ const dynamicFormController = {
         sortObj.created_at = -1;
       }
 
-      // Query FormData collection directly
+      // Query dedicated form collection directly
       const [records, total] = await Promise.all([
-        FormData.find(matchQuery)
+        FormModel.find(matchQuery)
           .skip(skip)
           .limit(limitVal)
           .sort(sortObj)
           .populate("created_by", "name email")
           .populate("updated_by", "name email")
           .lean(),
-        FormData.countDocuments(matchQuery),
+        FormModel.countDocuments(matchQuery),
       ]);
 
       // Flatten data fields for response
@@ -946,6 +957,7 @@ const dynamicFormController = {
       const form = await getFormSchema(form_slug);
       if (!form) return res.status(404).json({ success: false, message: "Form schema not found" });
 
+      const FormModel = getFormModel(form);
       const rootPK = form.root_entity?.primary_key || "id";
       const targetId =
         record_id ||
@@ -959,7 +971,7 @@ const dynamicFormController = {
 
       if (!targetId) return res.status(400).json({ success: false, message: "form_slug and record_id are required" });
 
-      const record = await FormData.findOne({ _id: targetId, form_slug, deleted_at: null }).lean();
+      const record = await FormModel.findOne({ _id: targetId, deleted_at: null }).lean();
       if (!record) return res.status(404).json({ success: false, message: "Record not found" });
 
       const idStr = record._id.toString();
@@ -998,6 +1010,7 @@ const dynamicFormController = {
       const form = await getFormSchema(form_slug);
       if (!form) return res.status(404).json({ success: false, message: "Form schema not found" });
 
+      const FormModel = getFormModel(form);
       const rootPK = form.root_entity?.primary_key || "id";
       const targetId =
         record_id ||
@@ -1011,7 +1024,7 @@ const dynamicFormController = {
 
       if (!targetId) return res.status(400).json({ success: false, message: "form_slug and record_id are required" });
 
-      const record = await FormData.findOne({ _id: targetId, form_slug, deleted_at: null })
+      const record = await FormModel.findOne({ _id: targetId, deleted_at: null })
         .populate("created_by", "name email")
         .populate("updated_by", "name email")
         .lean();
@@ -1059,11 +1072,14 @@ const dynamicFormController = {
       const targetId = record_id || id || selected_data?.id || selected_data?._id;
       if (!form_slug || !targetId) return res.status(400).json({ success: false, message: "form_slug and record_id are required" });
 
-      const record = await FormData.findOne({ _id: targetId, form_slug, deleted_at: null });
+      const form = await getFormSchema(form_slug);
+      const FormModel = form ? getFormModel(form) : getFormModel(form_slug);
+
+      const record = await FormModel.findOne({ _id: targetId, deleted_at: null });
       if (!record) return res.status(404).json({ success: false, message: "Record not found" });
 
       const newStatus = is_active === false ? "inactive" : "active";
-      await FormData.findByIdAndUpdate(targetId, { "data.is_active": is_active !== false, status: newStatus });
+      await FormModel.findByIdAndUpdate(targetId, { "data.is_active": is_active !== false, status: newStatus });
 
       return res.json({ success: true, message: `Record ${is_active !== false ? "activated" : "deactivated"}` });
     } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
@@ -1078,7 +1094,10 @@ const dynamicFormController = {
       const targetId = record_id || id || selected_data?.id || selected_data?._id;
       if (!form_slug || !targetId) return res.status(400).json({ success: false, message: "form_slug and record_id are required" });
 
-      await FormData.findOneAndUpdate({ _id: targetId, form_slug, deleted_at: null }, { deleted_at: new Date(), updated_by: req.user?.user_id });
+      const form = await getFormSchema(form_slug);
+      const FormModel = form ? getFormModel(form) : getFormModel(form_slug);
+
+      await FormModel.findOneAndUpdate({ _id: targetId, deleted_at: null }, { deleted_at: new Date(), updated_by: req.user?.user_id });
 
       await AuditLog.create({ action: "delete", module: form_slug, record_id: targetId, user_id: req.user?.user_id });
 

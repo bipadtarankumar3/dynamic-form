@@ -4,6 +4,7 @@
 const DatabaseView = require("../../models/DatabaseView.model");
 const Form = require("../../models/Form.model");
 const mongoose = require("mongoose");
+const { getFormCollectionName, getFormModel } = require("../../utils/formCollection.util");
 
 // -------------------------------------------------------
 // SCHEMA DISCOVERY
@@ -44,7 +45,7 @@ const getTables = async (req, res) => {
       table_name: f.slug,                        // wizard sends this as base_table
       display_name: f.title,
       table_type: "FORM",                        // custom marker so UI can label it
-      description: `Form data (stored in formdatas, form_slug = "${f.slug}")`,
+      description: `Form data (stored in dedicated collection "${getFormCollectionName(f)}")`,
       column_count: countFormFields(f),
       fk_count: 0,
       _form_slug: f.slug,                        // used by getTableRelationships
@@ -264,7 +265,7 @@ const getTableRelationships = async (req, res) => {
         success: true,
         data: {
           primary_key: "_id",
-          base_collection: "formdatas",   // actual MongoDB collection
+          base_collection: getFormCollectionName(form),   // dedicated MongoDB collection
           form_slug: form.slug,           // used by pipeline builder
           columns,
           many_to_one,
@@ -648,8 +649,10 @@ const databaseViewController = {
       projectFields["submitted_by_name"] = { $arrayElemAt: ["$created_by_user.name", 0] };
       projectFields["submitted_by_email"] = { $arrayElemAt: ["$created_by_user.email", 0] };
 
+      const baseCollection = getFormCollectionName(form);
+
       const pipeline = [
-        { $match: { form_slug, deleted_at: null } },
+        { $match: { deleted_at: null } },
         {
           $lookup: {
             from: "users",
@@ -662,11 +665,11 @@ const databaseViewController = {
       ];
 
       const db = mongoose.connection.db;
-      await applyMongoView(db, viewSlug, "formdatas", pipeline);
+      await applyMongoView(db, viewSlug, baseCollection, pipeline);
 
       const viewDoc = await DatabaseView.findOneAndUpdate(
         { view_slug: viewSlug },
-        { view_name: viewName, view_slug: viewSlug, base_collection: "formdatas", form_slug, pipeline, configuration: { fields: form.table_columns || [] }, is_active: true, status: "ACTIVE", auto_generated: true, updated_by: userId },
+        { view_name: viewName, view_slug: viewSlug, base_collection: baseCollection, form_slug, pipeline, configuration: { fields: form.table_columns || [] }, is_active: true, status: "ACTIVE", auto_generated: true, updated_by: userId },
         { new: true, upsert: true }
       );
 
