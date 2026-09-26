@@ -370,8 +370,10 @@ export default function DatabaseViewWizard({ initialData = null, onClose = () =>
 
   const formatAlias = (name) => {
     if (!name) return "";
+    if (name === "_id" || name === "id") return "ID";
     return name
       .replace(/_/g, " ")
+      .trim()
       .replace(/\b\w/g, l => l.toUpperCase())
       .replace(/^T Frm /, "");
   };
@@ -880,11 +882,12 @@ export default function DatabaseViewWizard({ initialData = null, onClose = () =>
             <span className="db-empty-text">Select a Base Table in Step 1 first</span>
           ) : (
             (relData.columns || [])
-              .filter(c => c.column_name.toLowerCase().includes(searchAvailableField.toLowerCase()))
-              .map((col) => {
+              .filter((c, idx, arr) => arr.findIndex(x => x.column_name === c.column_name) === idx)
+              .filter(c => (c.column_name || "").toLowerCase().includes(searchAvailableField.toLowerCase()))
+              .map((col, cIdx) => {
                 const isSel = selectedFields.some(f => f.table === selectedBaseTable && f.field === col.column_name);
                 return (
-                  <div key={col.column_name} className="db-field-item-row">
+                  <div key={`base_col_${col.column_name}_${cIdx}`} className="db-field-item-row">
                     <Checkbox
                       checked={isSel}
                       onChange={(e) => {

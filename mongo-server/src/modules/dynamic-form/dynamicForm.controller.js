@@ -608,7 +608,7 @@ const dynamicFormController = {
 
       await AuditLog.create({ action: "create", module: form_slug, record_id: record._id, user_id: userId, new_data: cleanData });
 
-      return res.status(201).json({ success: true, message: "Record created successfully", data: { id: record._id } });
+      return res.status(201).json({ success: true, message: "Record created successfully", data: { _id: record._id, id: record._id } });
     } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
   },
 

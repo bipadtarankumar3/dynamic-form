@@ -865,7 +865,7 @@ const WidgetManager = () => {
                 pagination={dependencyModal.dashboards.length > 4 ? { pageSize: 4 } : false}
                 dataSource={dependencyModal.dashboards.map((d, i) => ({
                   ...d,
-                  key: d.id || d.tdb_id || `dash-${i}`,
+                  key: d._id || d.id || d.tdb_id || `dash-${i}`,
                 }))}
                 columns={[
                   {
@@ -877,7 +877,7 @@ const WidgetManager = () => {
                           {name || r.name || 'Custom Dashboard'}
                         </div>
                         <div style={{ fontSize: '11px', color: '#94a3b8' }}>
-                          ID: {r.tdb_id || r.id}
+                          ID: {r._id || r.tdb_id || r.id}
                         </div>
                       </div>
                     ),

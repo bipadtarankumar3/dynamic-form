@@ -70,11 +70,12 @@ export default function DatabaseViewsListView() {
     try {
       setPreviewLoading(true);
       setShowPreview(true);
-      const res = await privateHttpClient.get(`${API_BASE}/${record.id}/preview`);
+      const targetSlug = record.slug || record.database_view_name || record._id || record.id;
+      const res = await privateHttpClient.get(`${API_BASE}/${targetSlug}/preview`);
       if (res.data?.success) {
         setPreviewData({
-          view_name: record.view_name,
-          database_view_name: record.database_view_name,
+          view_name: record.view_name || record.name,
+          database_view_name: record.database_view_name || record.slug,
           columns: res.data.columns || [],
           data: res.data.data || []
         });
@@ -89,7 +90,8 @@ export default function DatabaseViewsListView() {
   const handleRefreshView = async (record) => {
     try {
       setLoading(true);
-      const res = await privateHttpClient.post(`${API_BASE}/${record.id}/refresh`);
+      const targetSlug = record.slug || record.database_view_name || record._id || record.id;
+      const res = await privateHttpClient.post(`${API_BASE}/${targetSlug}/refresh`);
       if (res.data?.success) {
         message.success(res.data.message);
         fetchViews();
@@ -104,7 +106,8 @@ export default function DatabaseViewsListView() {
   const handleDropView = async (record) => {
     try {
       setLoading(true);
-      const res = await privateHttpClient.delete(`${API_BASE}/${record.id}`);
+      const targetSlug = record.slug || record.database_view_name || record._id || record.id;
+      const res = await privateHttpClient.delete(`${API_BASE}/${targetSlug}`);
       if (res.data?.success) {
         message.success(res.data.message);
         fetchViews();
@@ -122,7 +125,7 @@ export default function DatabaseViewsListView() {
       key: "index",
       width: 60,
       align: "center",
-      sorter: (a, b) => (a.id || 0) - (b.id || 0),
+      sorter: (a, b) => String(a._id || a.id || "").localeCompare(String(b._id || b.id || "")),
       render: (_, __, idx) => (
         <span className="conf-index-badge">
           {idx + 1}
@@ -133,22 +136,22 @@ export default function DatabaseViewsListView() {
       title: "View Name",
       dataIndex: "view_name",
       key: "view_name",
-      sorter: (a, b) => (a.view_name || "").localeCompare(b.view_name || ""),
+      sorter: (a, b) => (a.view_name || a.name || "").localeCompare(b.view_name || b.name || ""),
       render: (text, record) => (
         <div>
-          <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "13.5px" }}>{text}</div>
+          <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "13.5px" }}>{text || record.name || "Untitled View"}</div>
           <div style={{ color: "#64748b", fontSize: "12px" }}>{record.description || "Auto-generated view for form"}</div>
         </div>
       )
     },
     {
-      title: "PostgreSQL View",
+      title: "View Name / Slug",
       dataIndex: "database_view_name",
       key: "database_view_name",
-      sorter: (a, b) => (a.database_view_name || "").localeCompare(b.database_view_name || ""),
-      render: (text) => (
+      sorter: (a, b) => (a.database_view_name || a.slug || "").localeCompare(b.database_view_name || b.slug || ""),
+      render: (text, record) => (
         <span className="conf-slug-code" style={{ color: "#2563eb", background: "#eff6ff", padding: "2px 8px", borderRadius: 4 }}>
-          public.{text}
+          {text || record.slug || record.view_collection_name}
         </span>
       )
     },
@@ -156,10 +159,10 @@ export default function DatabaseViewsListView() {
       title: "Base Table",
       dataIndex: "base_table",
       key: "base_table",
-      sorter: (a, b) => (a.base_table || "").localeCompare(b.base_table || ""),
-      render: (text) => (
+      sorter: (a, b) => (a.base_table || a.base_form_slug || "").localeCompare(b.base_table || b.base_form_slug || ""),
+      render: (text, record) => (
         <span className="conf-slug-code" style={{ color: "#2563eb" }}>
-          {text}
+          {text || record.base_form_slug}
         </span>
       )
     },
@@ -180,7 +183,7 @@ export default function DatabaseViewsListView() {
           <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
             {forms.map((f) => (
               <Tag
-                key={f.id || f.slug}
+                key={f._id || f.id || f.slug}
                 color="blue"
                 style={{
                   borderRadius: 6,
@@ -196,7 +199,7 @@ export default function DatabaseViewsListView() {
                 }}
               >
                 <FormOutlined style={{ fontSize: 11 }} />
-                <span>{f.title}</span>
+                <span>{f.title || f.name}</span>
                 <span style={{ opacity: 0.65, fontSize: "10.5px" }}>({f.slug})</span>
               </Tag>
             ))}
@@ -274,12 +277,12 @@ export default function DatabaseViewsListView() {
             />
           </Tooltip>
 
-          <Tooltip title="SQL" color="#2563eb">
+          <Tooltip title="Pipeline" color="#2563eb">
             <Button
               size="small"
               icon={<CodeOutlined />}
               onClick={() => {
-                setSelectedSql({ name: record.database_view_name, sql: record.generated_sql });
+                setSelectedSql({ name: record.database_view_name || record.slug, sql: record.generated_sql });
                 setShowSqlModal(true);
               }}
               className="conf-action-outline-btn conf-action-sql-btn"
@@ -299,12 +302,15 @@ export default function DatabaseViewsListView() {
     }
   ];
 
-  const filteredViews = views.filter(v =>
-    v.view_name?.toLowerCase().includes(searchText.toLowerCase()) ||
-    v.database_view_name?.toLowerCase().includes(searchText.toLowerCase()) ||
-    v.base_table?.toLowerCase().includes(searchText.toLowerCase())
-  );
-  const activeViewsCount = views.filter(v => v.is_valid !== false).length;
+  const filteredViews = views.filter((v) => {
+    if (!searchText) return true;
+    const s = searchText.toLowerCase();
+    const name = (v.view_name || v.name || "").toLowerCase();
+    const dbName = (v.database_view_name || v.slug || v.view_slug || "").toLowerCase();
+    const baseTable = (v.base_table || v.base_form_slug || "").toLowerCase();
+    return name.includes(s) || dbName.includes(s) || baseTable.includes(s);
+  });
+  const activeViewsCount = views.filter(v => v.is_active !== false && v.is_valid !== false).length;
 
   return (
     <div className="conf-page-container">
@@ -406,7 +412,7 @@ export default function DatabaseViewsListView() {
         <Table
           dataSource={filteredViews}
           columns={columns}
-          rowKey="id"
+          rowKey={(record) => String(record._id || record.id || record.slug)}
           loading={loading}
           pagination={{ pageSize: 10, showSizeChanger: true }}
           scroll={{ x: true }}

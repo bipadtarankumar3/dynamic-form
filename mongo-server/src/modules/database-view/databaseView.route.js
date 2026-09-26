@@ -21,6 +21,8 @@ router.get("/:slug", databaseViewController.getView);
 router.post("/", databaseViewController.saveView);
 router.put("/:slug", databaseViewController.saveView);
 router.delete("/:slug", databaseViewController.deleteView);
+router.get("/:slug/preview", databaseViewController.previewView);
+router.post("/:slug/refresh", databaseViewController.refreshView);
 router.post("/:slug/query", databaseViewController.queryView);
 router.get("/:slug/query", databaseViewController.queryView);
 

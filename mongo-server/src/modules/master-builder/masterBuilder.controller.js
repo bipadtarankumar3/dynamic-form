@@ -14,9 +14,10 @@ const masterBuilderController = {
 
       // Merge both sources
       const combined = [
-        ...schemas.map(s => ({ ...s, id: s._id.toString(), is_master_schema: true })),
+        ...schemas.map(s => ({ ...s, _id: s._id.toString(), id: s._id.toString(), is_master_schema: true })),
         ...masterForms.map(f => ({
           ...f,
+          _id: f._id.toString(),
           id: f._id.toString(),
           name: f.title,
           label_field: f.title_field || 'name',

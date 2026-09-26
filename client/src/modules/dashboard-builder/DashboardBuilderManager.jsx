@@ -417,7 +417,7 @@ const DashboardBuilderManager = () => {
           <div className="conf-card-table">
             <Table
               dataSource={filteredDashboards}
-              rowKey="tdb_id"
+              rowKey={(record) => String(record._id || record.id || record.tdb_id)}
               pagination={{ pageSize: 10, showSizeChanger: true, showTotal: (total, range) => `Showing ${range[0]} to ${range[1]} of ${total} dashboards` }}
               columns={[
                 {

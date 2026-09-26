@@ -156,8 +156,9 @@ export default function MasterConfigsView() {
     try {
       setSaving(true);
       if (editingRecord) {
+        const targetId = editingRecord._id || editingRecord.id || editingRecord.slug;
         await privateHttpClient.put(
-          `configurator/master-configs/${editingRecord.id || editingRecord.slug}`,
+          `configurator/master-configs/${targetId}`,
           values
         );
         message.success("Master configuration updated successfully!");
@@ -193,7 +194,7 @@ export default function MasterConfigsView() {
       key: "index",
       width: 70,
       align: "center",
-      sorter: (a, b) => (a.id || 0) - (b.id || 0),
+      sorter: (a, b) => String(a._id || a.id || "").localeCompare(String(b._id || b.id || "")),
       render: (_, __, idx) => (
         <span className="conf-index-badge">
           {(page - 1) * pageSize + idx + 1}
@@ -404,7 +405,7 @@ export default function MasterConfigsView() {
         {/* Table Container */}
         <div className="conf-card-table">
           <Table
-            rowKey={(record) => record.id || record.slug}
+            rowKey={(record) => String(record._id || record.id || record.slug)}
             columns={columns}
             dataSource={records}
             loading={loadingTable}

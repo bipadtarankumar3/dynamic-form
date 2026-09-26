@@ -94,7 +94,8 @@ const auditLogController = {
         else opDisplay = act.toUpperCase();
 
         return {
-          id: log._id,
+          _id: String(log._id),
+          id: String(log._id),
           schema_name: "public",
           table_name: log.module,
           operation: opDisplay,

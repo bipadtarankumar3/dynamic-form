@@ -231,20 +231,33 @@ const dashboardBuilderController = {
         config: config || {},
       };
 
-      if (id && mongoose.isValidObjectId(id)) {
-        const updated = await CustomDashboardWidget.findByIdAndUpdate(id, payload, { new: true });
-        return res.json({ status: true, success: true, message: "Widget updated", data: updated });
+      const targetId = req.body._id || req.body.id || id;
+      if (targetId && mongoose.isValidObjectId(targetId)) {
+        const updated = await CustomDashboardWidget.findByIdAndUpdate(targetId, payload, { new: true }).lean();
+        return res.json({
+          status: true,
+          success: true,
+          message: "Widget updated",
+          data: { ...updated, _id: String(updated._id), id: String(updated._id) },
+        });
       }
 
       const created = await CustomDashboardWidget.create(payload);
-      return res.status(201).json({ status: true, success: true, message: "Widget created", data: created });
+      return res.status(201).json({
+        status: true,
+        success: true,
+        message: "Widget created",
+        data: { ...created.toObject(), _id: String(created._id), id: String(created._id) },
+      });
     } catch (e) { return res.status(500).json({ status: false, success: false, message: e.message }); }
   },
 
   deleteWidget: async (req, res) => {
     try {
-      const { id } = req.params;
-      await CustomDashboardWidget.findByIdAndUpdate(id, { deleted_at: new Date() });
+      const targetId = req.params.id || req.body._id || req.body.id;
+      if (targetId && mongoose.isValidObjectId(targetId)) {
+        await CustomDashboardWidget.findByIdAndUpdate(targetId, { deleted_at: new Date() });
+      }
       return res.json({ status: true, success: true, message: "Widget deleted" });
     } catch (e) { return res.status(500).json({ status: false, success: false, message: e.message }); }
   },

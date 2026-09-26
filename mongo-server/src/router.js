@@ -36,6 +36,13 @@ router.use('/masters', masterBuilderRoute);
 router.use('/admin/masters', masterBuilderRoute);
 router.use('/admin/configurator/master-schemas', masterBuilderRoute);
 
+// 5b. Master Configs (Dynamic Master Configurations & Key Mapping)
+const masterConfigRoute = require('./modules/master-config/masterConfig.route');
+router.use('/master-configs', masterConfigRoute);
+router.use('/configurator/master-configs', masterConfigRoute);
+router.use('/admin/master-configs', masterConfigRoute);
+router.use('/admin/configurator/master-configs', masterConfigRoute);
+
 // 6. Menu Management
 const menuRoute = require('./modules/menu/menu.route');
 router.use('/menus', menuRoute);

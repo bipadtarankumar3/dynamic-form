@@ -364,7 +364,7 @@ const pivotController = {
           success: true,
           status: true,
           message: "Report updated successfully",
-          data: { ...updated, id: String(updated._id) },
+          data: { ...updated, _id: String(updated._id), id: String(updated._id) },
         });
       }
 
@@ -373,7 +373,7 @@ const pivotController = {
         success: true,
         status: true,
         message: "Report saved successfully",
-        data: { ...created.toObject(), id: String(created._id) },
+        data: { ...created.toObject(), _id: String(created._id), id: String(created._id) },
       });
     } catch (e) {
       return res.status(500).json({ success: false, status: false, message: e.message });

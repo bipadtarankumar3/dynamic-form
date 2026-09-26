@@ -77,7 +77,6 @@ const getTableRelationships = async (req, res) => {
       const seen = new Set();
 
       const envelope = [
-        { column_name: "id", data_type: "objectId", is_primary_key: true, label: "ID" },
         { column_name: "_id", data_type: "objectId", is_primary_key: true, label: "ID" },
         { column_name: "form_slug", data_type: "string", is_primary_key: false, label: "Form Slug" },
         { column_name: "status", data_type: "string", is_primary_key: false, label: "Status" },
@@ -221,12 +220,49 @@ const preDeleteCheck = async (req, res) => {
   }
 };
 
+const normalizeDatabaseView = (v) => {
+  if (!v) return null;
+  const doc = typeof v.toObject === "function" ? v.toObject() : { ...v };
+  const idStr = String(doc._id || doc.id || "");
+  const nameStr = doc.name || doc.view_name || "Untitled View";
+  const slugStr = doc.slug || doc.database_view_name || doc.view_slug || `v_${idStr}`;
+  const baseTableStr = doc.base_form_slug || doc.base_table || doc.form_slug || "";
+  const descStr = doc.description || "";
+  const isActive = doc.is_active !== false;
+
+  return {
+    ...doc,
+    _id: idStr,
+    id: idStr,
+    name: nameStr,
+    view_name: nameStr,
+    slug: slugStr,
+    database_view_name: slugStr,
+    view_slug: slugStr,
+    base_form_slug: baseTableStr,
+    base_table: baseTableStr,
+    description: descStr,
+    is_active: isActive,
+    is_valid: true,
+    view_type: doc.view_type || "standard",
+    connected_forms: doc.connected_forms || [],
+    connected_forms_count: (doc.connected_forms || []).length,
+    generated_sql: doc.generated_sql || JSON.stringify(doc.pipeline || [], null, 2),
+    configuration_json: doc.configuration_json || doc,
+    created_at: doc.created_at || new Date(),
+    updated_at: doc.updated_at || new Date(),
+  };
+};
+
 const databaseViewController = {
   listViews: async (req, res) => {
     try {
-      const views = await DatabaseView.find({ deleted_at: null }).sort({ created_at: -1 });
-      return res.json({ success: true, count: views.length, data: views });
-    } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
+      const views = await DatabaseView.find({ deleted_at: null }).sort({ created_at: -1 }).lean();
+      const formatted = views.map(normalizeDatabaseView);
+      return res.json({ success: true, count: formatted.length, data: formatted });
+    } catch (e) {
+      return res.status(500).json({ success: false, message: e.message });
+    }
   },
 
   getView: async (req, res) => {
@@ -235,10 +271,12 @@ const databaseViewController = {
       const query = mongoose.isValidObjectId(slug)
         ? { $or: [{ _id: slug }, { slug: slug }], deleted_at: null }
         : { slug: slug, deleted_at: null };
-      const view = await DatabaseView.findOne(query);
+      const view = await DatabaseView.findOne(query).lean();
       if (!view) return res.status(404).json({ success: false, message: "View not found" });
-      return res.json({ success: true, data: view });
-    } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
+      return res.json({ success: true, data: normalizeDatabaseView(view) });
+    } catch (e) {
+      return res.status(500).json({ success: false, message: e.message });
+    }
   },
 
   saveView: async (req, res) => {
@@ -272,16 +310,88 @@ const databaseViewController = {
           view_collection_name,
           description,
           pipeline,
+          configuration_json: body,
           is_active: true,
           updated_by: userId,
         },
         { new: true, upsert: true }
-      );
+      ).lean();
 
       const db = mongoose.connection.db;
       await applyMongoView(db, view_collection_name, source_collection, pipeline);
 
-      return res.status(201).json({ success: true, message: `View "${slug}" saved and applied`, data: viewDoc });
+      return res.status(201).json({
+        success: true,
+        message: `View "${slug}" saved and applied`,
+        data: normalizeDatabaseView(viewDoc),
+      });
+    } catch (e) {
+      return res.status(500).json({ success: false, message: e.message });
+    }
+  },
+
+  previewView: async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const query = mongoose.isValidObjectId(slug)
+        ? { $or: [{ _id: slug }, { slug: slug }], deleted_at: null }
+        : { slug: slug, deleted_at: null };
+      const viewMeta = await DatabaseView.findOne(query);
+      if (!viewMeta) return res.status(404).json({ success: false, message: "View not found" });
+
+      const db = mongoose.connection.db;
+      const targetColName = viewMeta.view_collection_name || slug;
+      let data = [];
+      try {
+        const col = db.collection(targetColName);
+        data = await col.find({}).limit(50).toArray();
+      } catch (_) {
+        // Fallback: aggregate using pipeline
+        const sourceColName = viewMeta.source_collection || getFormCollectionName(viewMeta.base_form_slug);
+        const col = db.collection(sourceColName);
+        data = await col.aggregate([...(viewMeta.pipeline || []), { $limit: 50 }]).toArray();
+      }
+
+      const columns = [];
+      if (data.length > 0) {
+        Object.keys(data[0]).forEach((k) => {
+          columns.push({
+            title: k,
+            dataIndex: k,
+            key: k,
+          });
+        });
+      }
+
+      return res.json({
+        success: true,
+        view_name: viewMeta.name,
+        database_view_name: viewMeta.slug,
+        columns,
+        data,
+      });
+    } catch (e) {
+      return res.status(500).json({ success: false, message: e.message });
+    }
+  },
+
+  refreshView: async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const query = mongoose.isValidObjectId(slug)
+        ? { $or: [{ _id: slug }, { slug: slug }], deleted_at: null }
+        : { slug: slug, deleted_at: null };
+      const viewMeta = await DatabaseView.findOne(query);
+      if (!viewMeta) return res.status(404).json({ success: false, message: "View not found" });
+
+      const db = mongoose.connection.db;
+      const sourceCol = viewMeta.source_collection || getFormCollectionName(viewMeta.base_form_slug);
+      await applyMongoView(db, viewMeta.view_collection_name || slug, sourceCol, viewMeta.pipeline || []);
+
+      return res.json({
+        success: true,
+        message: `View "${viewMeta.name || slug}" refreshed successfully`,
+      });
     } catch (e) {
       return res.status(500).json({ success: false, message: e.message });
     }
@@ -302,19 +412,29 @@ const databaseViewController = {
       const skip = (Number(page) - 1) * Number(limit);
 
       const baseCollection = viewMeta.view_collection_name || slug;
-      const col = db.collection(baseCollection);
-
-      const [data, total] = await Promise.all([
-        col.find({}).skip(skip).limit(Number(limit)).toArray(),
-        col.countDocuments({}),
-      ]);
+      let data = [];
+      let total = 0;
+      try {
+        const col = db.collection(baseCollection);
+        [data, total] = await Promise.all([
+          col.find({}).skip(skip).limit(Number(limit)).toArray(),
+          col.countDocuments({}),
+        ]);
+      } catch (_) {
+        const sourceCol = viewMeta.source_collection || getFormCollectionName(viewMeta.base_form_slug);
+        const col = db.collection(sourceCol);
+        data = await col.aggregate([...(viewMeta.pipeline || []), { $skip: skip }, { $limit: Number(limit) }]).toArray();
+        total = data.length;
+      }
 
       return res.json({
         success: true,
         pagination: { page: Number(page), limit: Number(limit), total, pages: Math.ceil(total / limit) },
         data,
       });
-    } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
+    } catch (e) {
+      return res.status(500).json({ success: false, message: e.message });
+    }
   },
 
   deleteView: async (req, res) => {
@@ -332,7 +452,9 @@ const databaseViewController = {
       } catch (_) {}
 
       return res.json({ success: true, message: `View "${slug}" deleted` });
-    } catch (e) { return res.status(500).json({ success: false, message: e.message }); }
+    } catch (e) {
+      return res.status(500).json({ success: false, message: e.message });
+    }
   },
 };
 
@@ -387,4 +509,6 @@ module.exports = {
   saveView: databaseViewController.saveView,
   queryView: databaseViewController.queryView,
   deleteView: databaseViewController.deleteView,
+  previewView: databaseViewController.previewView,
+  refreshView: databaseViewController.refreshView,
 };
