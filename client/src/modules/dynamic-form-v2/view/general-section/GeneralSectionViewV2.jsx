@@ -173,9 +173,10 @@ const GeneralSectionViewV2 = ({ section, data, isActiveKey, form_slug }) => {
   };
 
   const isCurrencyField = (field) => {
-    if (field?.type === "currency") return true;
+    if (field?.is_currency === true || field?.ui?.is_currency === true || field?.type === "currency" || field?.ui?.prefix === "₹") return true;
+    if (field?.is_currency === false || field?.ui?.is_currency === false) return false;
     const name = (field?.db_field || "") + " " + (field?.label || "");
-    return /budget|amount|total|cost|price|expense|allocation|fund/i.test(name);
+    return /budget|amount|cost|price|expense|allocation|fund/i.test(name) && !/unit|qty|quantity|count|number|rate|percentage|ratio/i.test(name);
   };
 
   const cleanPath = (p) => {
@@ -630,7 +631,10 @@ const GeneralSectionViewV2 = ({ section, data, isActiveKey, form_slug }) => {
     // 9. Number / Currency
     if (!isNaN(Number(value)) && typeof value !== "boolean" && isNumericField(field)) {
       const num = Number(value);
-      const formattedNum = isCurrencyField(field) ? `₹${num.toLocaleString("en-IN")}` : num.toLocaleString("en-IN");
+      const isCurr = isCurrencyField(field);
+      const prefix = field?.ui?.prefix || (isCurr ? "₹" : "");
+      const suffix = field?.ui?.suffix ? ` ${field.ui.suffix}` : "";
+      const formattedNum = `${prefix}${num.toLocaleString("en-IN")}${suffix}`;
       return (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", gap: 6 }}>
           <span style={{ color: "#0f172a", fontWeight: 700, fontSize: 14 }}>{formattedNum}</span>

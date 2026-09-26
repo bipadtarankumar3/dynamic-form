@@ -546,7 +546,7 @@ export default function CanvasV2({
                                           </div>
                                         ) : (
                                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                            {fld.type === 'number' && <span style={{ color: '#64748b', fontSize: 12, fontWeight: 600 }}>₹</span>}
+                                            {(fld.ui?.prefix || fld.ui?.is_currency || fld.is_currency || fld.type === 'currency') && <span style={{ color: '#64748b', fontSize: 12, fontWeight: 600 }}>{fld.ui?.prefix || '₹'}</span>}
                                             <input
                                               type="text"
                                               className="fb-v2-field-preview-input"
@@ -572,6 +572,41 @@ export default function CanvasV2({
                                 </td>
                               </tr>
                             </tbody>
+                            {(() => {
+                              const hasAnyColTotal = (sec.fields || []).some(
+                                (f) => f.show_total || f.show_column_total || f.ui?.show_total || f.calculation?.show_total
+                              );
+                              if (!hasAnyColTotal) return null;
+
+                              return (
+                                <tfoot>
+                                  <tr style={{ background: '#f8fafc', borderTop: '2px solid #cbd5e1' }}>
+                                    {sec.fields.map((fld, fldIdx) => {
+                                      const shouldShow = fld.show_total || fld.show_column_total || fld.ui?.show_total || fld.calculation?.show_total;
+                                      const isCurr = fld.is_currency || fld.ui?.is_currency || fld.type === 'currency' || fld.ui?.prefix === '₹';
+                                      const prefix = fld.ui?.prefix || (isCurr ? '₹' : '');
+                                      const suffix = fld.ui?.suffix ? ` ${fld.ui.suffix}` : '';
+
+                                      return (
+                                        <td key={`tot_${fld.id || fldIdx}`} style={{ padding: '8px 12px', verticalAlign: 'middle' }}>
+                                          {shouldShow ? (
+                                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 6, padding: '2px 8px', color: '#1d4ed8', fontWeight: 700, fontSize: 11 }}>
+                                              <span>Total:</span>
+                                              <span>{prefix}0.00{suffix}</span>
+                                            </div>
+                                          ) : (
+                                            <span style={{ color: '#cbd5e1', fontSize: 12 }}>—</span>
+                                          )}
+                                        </td>
+                                      );
+                                    })}
+                                    <td style={{ textAlign: 'center', verticalAlign: 'middle', padding: '8px 12px' }}>
+                                      <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>Summary</span>
+                                    </td>
+                                  </tr>
+                                </tfoot>
+                              );
+                            })()}
                           </table>
 
                           {/* Bottom Add Row Bar */}

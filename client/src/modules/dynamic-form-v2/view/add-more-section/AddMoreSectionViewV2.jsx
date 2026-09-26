@@ -13,9 +13,10 @@ const AddMoreSectionViewV2 = ({ data = [], section, isActiveKey, allData = {} })
   };
 
   const isCurrencyField = (field) => {
-    if (field?.type === "currency") return true;
+    if (field?.is_currency === true || field?.ui?.is_currency === true || field?.type === "currency" || field?.ui?.prefix === "₹") return true;
+    if (field?.is_currency === false || field?.ui?.is_currency === false) return false;
     const name = (field?.db_field || "") + " " + (field?.label || "");
-    return /budget|amount|total|cost|price|expense|allocation|fund/i.test(name);
+    return /budget|amount|cost|price|expense|allocation|fund/i.test(name) && !/unit|qty|quantity|count|number|rate|percentage|ratio/i.test(name);
   };
 
   const getValue = (field, row) => {
@@ -110,9 +111,10 @@ const AddMoreSectionViewV2 = ({ data = [], section, isActiveKey, allData = {} })
       isNumericField(field)
     ) {
       const num = Number(value);
-      return isCurrencyField(field)
-        ? `₹${num.toLocaleString("en-IN")}`
-        : num.toLocaleString("en-IN");
+      const isCurr = isCurrencyField(field);
+      const prefix = field?.ui?.prefix || (isCurr ? "₹" : "");
+      const suffix = field?.ui?.suffix ? ` ${field.ui.suffix}` : "";
+      return `${prefix}${num.toLocaleString("en-IN")}${suffix}`;
     }
 
     if (Array.isArray(value)) {
@@ -258,9 +260,17 @@ const AddMoreSectionViewV2 = ({ data = [], section, isActiveKey, allData = {} })
   );
 
   const getFieldTotal = (field) => {
+    const shouldShowTotal = field?.show_total || field?.show_column_total || field?.ui?.show_total || field?.calculation?.show_total;
+    if (!shouldShowTotal) return null;
+
+    let targetField = field?.db_field;
+    if (field?.calculation?.type === "summary_total" && field?.calculation?.target_field) {
+      targetField = field.calculation.target_field;
+    }
+
     let hasValidNumber = false;
     const total = (data || []).reduce((acc, row) => {
-      const val = row[field?.db_field];
+      const val = row[targetField];
       if (val !== null && val !== undefined && val !== "") {
         const num = Number(val);
         if (!isNaN(num)) {
@@ -312,7 +322,7 @@ const AddMoreSectionViewV2 = ({ data = [], section, isActiveKey, allData = {} })
   }
 
   const displayMode = section?.display_mode || "table";
-  const primaryBudgetField = visibleFields.find((f) => isCurrencyField(f));
+  const primaryBudgetField = visibleFields.find((f) => (f.show_total || f.show_column_total || f.ui?.show_total) && isCurrencyField(f));
   const primaryTotalSum = primaryBudgetField ? getFieldTotal(primaryBudgetField) : null;
 
   return (
@@ -403,33 +413,44 @@ const AddMoreSectionViewV2 = ({ data = [], section, isActiveKey, allData = {} })
             bordered
             size="small"
             summary={() => {
-              if (!hasNumericColumn) return null;
+              const hasAnyTotal = visibleFields.some(
+                (f) => f?.show_total || f?.show_column_total || f?.ui?.show_total || f?.calculation?.show_total
+              );
+              if (!hasAnyTotal) return null;
 
               return (
                 <Table.Summary fixed>
                   <Table.Summary.Row style={{ background: "#f8fafc" }}>
                     <Table.Summary.Cell index={0} align="center">
-                      <strong className="text-gray-800">Grand Total</strong>
+                      <strong className="text-gray-800">Total</strong>
                     </Table.Summary.Cell>
                     {visibleFields.map((field, colIdx) => {
+                      const shouldShow = field?.show_total || field?.show_column_total || field?.ui?.show_total || field?.calculation?.show_total;
+                      if (!shouldShow) {
+                        return (
+                          <Table.Summary.Cell key={field?.id || colIdx} index={colIdx + 1} align="center">
+                            <span style={{ color: "#cbd5e1" }}>—</span>
+                          </Table.Summary.Cell>
+                        );
+                      }
+
                       const total = getFieldTotal(field);
                       const isCurrency = isCurrencyField(field);
-                      const isNumeric = isNumericField(field);
+                      const prefix = field?.ui?.prefix || (isCurrency ? "₹" : "");
+                      const suffix = field?.ui?.suffix ? ` ${field.ui.suffix}` : "";
 
                       return (
                         <Table.Summary.Cell
                           key={field?.id || colIdx}
                           index={colIdx + 1}
-                          align={isNumeric ? "right" : "left"}
+                          align="right"
                         >
                           {total !== null ? (
                             <strong className={isCurrency ? "text-blue-700 text-sm" : "text-gray-900"}>
-                              {isCurrency
-                                ? `₹${total.toLocaleString("en-IN")}`
-                                : total.toLocaleString("en-IN")}
+                              {prefix}{total.toLocaleString("en-IN")}{suffix}
                             </strong>
                           ) : (
-                            "-"
+                            "—"
                           )}
                         </Table.Summary.Cell>
                       );

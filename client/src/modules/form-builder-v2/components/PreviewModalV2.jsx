@@ -734,6 +734,45 @@ function RepeatableSectionPreview({ section }) {
                   </tr>
                 ))}
               </tbody>
+              {(() => {
+                const hasAnyColTotal = fields.some(
+                  (f) => f.show_total || f.show_column_total || f.ui?.show_total || f.calculation?.show_total
+                );
+                if (!hasAnyColTotal) return null;
+
+                return (
+                  <tfoot>
+                    <tr style={{ background: '#f8fafc', borderTop: '2px solid #cbd5e1' }}>
+                      <td style={{ padding: '10px 12px', color: '#334155', fontWeight: 700, textAlign: 'center' }}>Total</td>
+                      {fields.map((fld) => {
+                        const shouldShow = fld.show_total || fld.show_column_total || fld.ui?.show_total || fld.calculation?.show_total;
+                        if (!shouldShow) {
+                          return <td key={`tot_${fld.id}`} style={{ padding: '10px 12px', textAlign: 'center', color: '#cbd5e1' }}>—</td>;
+                        }
+
+                        const dbKey = fld.db_field || fld.id;
+                        const sum = rows.reduce((acc, r) => {
+                          const v = r[dbKey];
+                          const n = v !== undefined && v !== null && v !== '' ? Number(v) : 0;
+                          return acc + (isNaN(n) ? 0 : n);
+                        }, 0);
+                        const isCurr = fld.is_currency || fld.ui?.is_currency || fld.type === 'currency' || fld.ui?.prefix === '₹';
+                        const prefix = fld.ui?.prefix || (isCurr ? '₹' : '');
+                        const suffix = fld.ui?.suffix ? ` ${fld.ui.suffix}` : '';
+
+                        return (
+                          <td key={`tot_${fld.id}`} style={{ padding: '10px 12px', fontWeight: 700, color: '#0f172a' }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 6, padding: '2px 8px', color: '#1d4ed8' }}>
+                              {prefix}{sum.toLocaleString('en-IN')}{suffix}
+                            </span>
+                          </td>
+                        );
+                      })}
+                      {allowDelete && <td style={{ padding: '10px 12px' }} />}
+                    </tr>
+                  </tfoot>
+                );
+              })()}
             </table>
           </div>
 

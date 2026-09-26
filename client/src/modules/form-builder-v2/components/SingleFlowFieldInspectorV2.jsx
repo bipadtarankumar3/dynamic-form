@@ -396,6 +396,105 @@ export default function SingleFlowFieldInspectorV2({ field, onUpdateField, allFi
         </div>
       )}
 
+      {/* Number Field Currency & Suffix / Prefix Controls */}
+      {field.type === 'number' && (
+        <div style={{ background: '#f8fafc', padding: 12, borderRadius: 10, border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#334155', display: 'block' }}>
+                Currency / Amount (₹)
+              </span>
+              <span style={{ fontSize: 11, color: '#64748b' }}>
+                Display with Rupee symbol (₹) and Indian currency format
+              </span>
+            </div>
+            <Switch
+              size="small"
+              checked={!!(field.is_currency || field.ui?.is_currency || field.ui?.prefix === '₹')}
+              onChange={(checked) => {
+                onUpdateField({
+                  ...field,
+                  is_currency: checked,
+                  ui: {
+                    ...(field.ui || {}),
+                    is_currency: checked,
+                    prefix: checked ? '₹' : '',
+                  },
+                });
+              }}
+            />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, paddingTop: 6, borderTop: '1px dashed #e2e8f0' }}>
+            <div>
+              <label style={{ fontSize: 11, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 2 }}>Prefix</label>
+              <input
+                type="text"
+                className="fb-v2-input"
+                style={{ height: 30, fontSize: 12 }}
+                placeholder="e.g. ₹ or $"
+                value={field.ui?.prefix || ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  onUpdateField({
+                    ...field,
+                    ui: {
+                      ...(field.ui || {}),
+                      prefix: val,
+                      is_currency: val === '₹' ? true : field.ui?.is_currency,
+                    },
+                  });
+                }}
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: 11, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 2 }}>Suffix</label>
+              <input
+                type="text"
+                className="fb-v2-input"
+                style={{ height: 30, fontSize: 12 }}
+                placeholder="e.g. Units, %"
+                value={field.ui?.suffix || ''}
+                onChange={(e) => updateUIProp('suffix', e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Show Column Total in Footer / Table Summary Option */}
+      {(field.type === 'number' || field.calculation?.enabled) && (
+        <div style={{ background: '#f8fafc', padding: 12, borderRadius: 10, border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#334155', display: 'block' }}>
+              Show Column Total in Footer
+            </span>
+            <span style={{ fontSize: 11, color: '#64748b' }}>
+              Calculate and display summary total for this column at the bottom of the table
+            </span>
+          </div>
+          <Switch
+            size="small"
+            checked={!!(field.show_total || field.ui?.show_total || field.show_column_total || field.calculation?.show_total)}
+            onChange={(checked) => {
+              onUpdateField({
+                ...field,
+                show_total: checked,
+                show_column_total: checked,
+                ui: {
+                  ...(field.ui || {}),
+                  show_total: checked,
+                },
+                calculation: {
+                  ...(field.calculation || {}),
+                  show_total: checked,
+                },
+              });
+            }}
+          />
+        </div>
+      )}
+
       {/* Dynamic Linked Table Field Specialized Settings */}
       {field?.type === 'lookup_table' && (
         <div style={{ background: '#f0fdf4', padding: 14, borderRadius: 10, border: '1px solid #bbf7d0', marginBottom: 12 }}>

@@ -353,6 +353,8 @@ const AddMoreSectionV2 = forwardRef(({ section, data, serverError, allData = {},
           <Input
             value={entry?.[field?.db_field]} disabled={isDisabled} readOnly={isReadOnly}
             maxLength={field?.validation?.max_length} placeholder={field?.ui?.placeholder || ""} inputMode="decimal"
+            prefix={(field?.ui?.prefix || field?.ui?.is_currency || field?.is_currency || field?.type === "currency") ? (field?.ui?.prefix || "₹") : undefined}
+            suffix={field?.ui?.suffix || undefined}
             onChange={(e) => {
               const val = e.target.value;
               const regex = NUMBER_REGEX?.[field?.regex_type];
@@ -562,28 +564,48 @@ const AddMoreSectionV2 = forwardRef(({ section, data, serverError, allData = {},
                 </tr>
               )}
             </tbody>
-            {entries?.length > 0 && (
-              <tfoot>
-                <tr style={{ background: "#f1f5f9", fontWeight: 700, borderTop: "2px solid #cbd5e1" }}>
-                  <td style={{ padding: "11px 14px", textAlign: "center", color: "#334155" }}>Total</td>
-                  {section?.fields?.map((field, idx) => {
-                    if (field?.visible === false) return null;
-                    const isNumeric = field?.type === "number" || field?.calculation?.enabled;
-                    if (!isNumeric) return <td key={`${field?.db_field || field?.id}_${idx}`} style={{ padding: "11px 14px" }} />;
-                    let targetField = field?.db_field;
-                    if (field?.calculation?.type === "summary_total" && field?.calculation?.target_field) targetField = field.calculation.target_field;
-                    const sum = entries.reduce((acc, row) => {
-                      const rawVal = row?.[targetField];
-                      const num = rawVal !== undefined && rawVal !== null && rawVal !== "" ? Number(rawVal) : 0;
-                      return acc + (isNaN(num) ? 0 : num);
-                    }, 0);
-                    const formattedSum = formatCalculatedNumber(sum, field?.number_type, field?.calculation?.precision, field?.calculation?.rounding || "round");
-                    return <td key={`${field?.db_field || field?.id}_${idx}`} style={{ padding: "11px 14px", color: "#0f172a", fontWeight: 700 }}>{formattedSum}</td>;
-                  })}
-                  <td style={{ padding: "11px 14px" }} />
-                </tr>
-              </tfoot>
-            )}
+            {entries?.length > 0 && (() => {
+              const hasAnyTotal = (section?.fields || []).some(
+                (f) => f?.visible !== false && (f?.show_total || f?.show_column_total || f?.ui?.show_total || f?.calculation?.show_total)
+              );
+              if (!hasAnyTotal) return null;
+
+              return (
+                <tfoot>
+                  <tr style={{ background: "#f8fafc", fontWeight: 700, borderTop: "2px solid #cbd5e1" }}>
+                    <td style={{ padding: "11px 14px", textAlign: "center", color: "#334155" }}>Total</td>
+                    {section?.fields?.map((field, idx) => {
+                      if (field?.visible === false) return null;
+                      const shouldShowTotal = field?.show_total || field?.show_column_total || field?.ui?.show_total || field?.calculation?.show_total;
+                      if (!shouldShowTotal) {
+                        return <td key={`${field?.db_field || field?.id}_${idx}`} style={{ padding: "11px 14px", textAlign: "center", color: "#cbd5e1" }}>—</td>;
+                      }
+
+                      let targetField = field?.db_field;
+                      if (field?.calculation?.type === "summary_total" && field?.calculation?.target_field) targetField = field.calculation.target_field;
+                      const sum = entries.reduce((acc, row) => {
+                        const rawVal = row?.[targetField];
+                        const num = rawVal !== undefined && rawVal !== null && rawVal !== "" ? Number(rawVal) : 0;
+                        return acc + (isNaN(num) ? 0 : num);
+                      }, 0);
+                      const formattedSum = formatCalculatedNumber(sum, field?.number_type, field?.calculation?.precision, field?.calculation?.rounding || "round");
+                      const isCurr = field?.is_currency || field?.ui?.is_currency || field?.type === "currency" || field?.ui?.prefix === "₹";
+                      const prefix = field?.ui?.prefix || (isCurr ? "₹" : "");
+                      const suffix = field?.ui?.suffix ? ` ${field.ui.suffix}` : "";
+
+                      return (
+                        <td key={`${field?.db_field || field?.id}_${idx}`} style={{ padding: "11px 14px", color: "#0f172a", fontWeight: 700 }}>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 6, padding: "2px 8px", color: "#1d4ed8" }}>
+                            {prefix}{formattedSum}{suffix}
+                          </span>
+                        </td>
+                      );
+                    })}
+                    <td style={{ padding: "11px 14px" }} />
+                  </tr>
+                </tfoot>
+              );
+            })()}
           </table>
         </div>
       </Card>
