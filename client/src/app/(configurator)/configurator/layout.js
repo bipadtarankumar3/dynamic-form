@@ -26,7 +26,8 @@ import {
   AppstoreOutlined,
   DownOutlined,
   UpOutlined,
-  SlidersOutlined
+  SlidersOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 import { useRouter, usePathname } from "next/navigation";
 import authUtils from "@/utils/authUtils";
@@ -111,6 +112,7 @@ export default function ConfiguratorLayout({ children }) {
   else if (pathname.includes("/menus")) selectedKey = "menus";
   else if (pathname.includes("/rbac")) selectedKey = "rbac";
   else if (pathname.includes("/reports")) selectedKey = "reports";
+  else if (pathname.includes("/audit-logs") || pathname.includes("/audit")) selectedKey = "audit-logs";
   else if (pathname.includes("/settings")) selectedKey = "settings";
 
   // Dynamic Breadcrumb Generator starting directly with Configurator / [Module]
@@ -127,6 +129,7 @@ export default function ConfiguratorLayout({ children }) {
       "dashboards": "Dashboards",
       "mother-dashboard": "Mother Dashboard",
       "reports": "Report Builder",
+      "audit-logs": "Audit Logs",
       "settings": "Site Settings",
       "rbac": "RBAC & Permissions",
       "notification": "Notifications",
@@ -520,6 +523,7 @@ export default function ConfiguratorLayout({ children }) {
 
                   {[
                     { key: "reports", label: "Report Builder", icon: <Image src={ReportBuilder} alt="Badge Icon" width={150} height={150} />, path: "/configurator/reports" },
+                    { key: "audit-logs", label: "Audit Logs", icon: <HistoryOutlined style={{ fontSize: 18, color: "#107c41" }} />, path: "/configurator/audit-logs" },
                     // { key: "rbac", label: "RBAC & Permissions", icon: <Image src={Permissions} alt="Badge Icon" width={150} height={150} />, path: "/configurator/rbac" },
                   ].map(item => {
                     const isActive = selectedKey === item.key;
