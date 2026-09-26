@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "react-router-dom": ["./src/routes/react-router-dom-shim.js"],
+      "@/contexts/*": ["./src/context/*"],
+      "@/auth/*": ["./src/modules/auth/*"],
+      "@/views/*": ["./src/modules/*"],
+      "@/layouts/*": ["./src/components/layouts/*"],
+      "@/api/*": ["./src/services/api/*"],
+      "@/dynamic-form/*": ["./src/modules/dynamic-form/*"]
+    }
+  }
+}

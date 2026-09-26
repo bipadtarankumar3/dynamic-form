@@ -1,0 +1,366 @@
+/* ============================================================
+   Forms List View (FormListView) — moved from inline <style> tag
+   All colors now use CSS variables from settings
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+.flv-root {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  padding: 28px;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.flv-card {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(229, 231, 235, 0.5) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04) !important;
+  overflow: hidden;
+}
+
+/* ── header ── */
+.flv-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: var(--primary-gradient, var(--primary-color, #2d4a22)) !important;
+  border-bottom: none;
+}
+
+.flv-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.flv-header-icon {
+  display: none !important;
+}
+
+.flv-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.flv-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 2px 0 0 0;
+  font-weight: 500;
+}
+
+.flv-add-btn {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  height: 36px !important;
+  padding: 0 16px !important;
+  background: var(--primary-gradient, linear-gradient(135deg, var(--primary-color, #15803d) 0%, var(--secondary-color, #659327) 100%)) !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb, 21, 128, 61), 0.3) !important;
+  font-family: inherit !important;
+}
+
+.flv-add-btn:hover {
+  transform: translateY(-1px);
+  background: var(--primary-gradient-hover, var(--primary-color-dark, #166534)) !important;
+  box-shadow: 0 6px 16px rgba(var(--primary-color-rgb, 21, 128, 61), 0.4) !important;
+}
+
+/* ── body ── */
+.flv-body {
+  padding: 24px;
+}
+
+/* ── project info cards ── */
+.flv-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.flv-info-card {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(229, 231, 235, 0.5) !important;
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 4px 14px 0 rgba(31, 38, 135, 0.03) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.flv-info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px 0 rgba(31, 38, 135, 0.06) !important;
+}
+
+.flv-info-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(var(--primary-color-rgb, 21,128,61), 0.12) 0%, rgba(var(--primary-color-rgb, 21,128,61), 0.22) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color, #15803d);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.flv-info-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: 4px;
+}
+
+.flv-info-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.3;
+}
+
+/* ── section label ── */
+.flv-section-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: #475569;
+  margin-bottom: 12px;
+}
+
+/* ── table ── */
+.flv-table-wrap {
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.flv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.flv-table thead {
+  background: rgba(248, 250, 252, 0.8);
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.flv-table thead th {
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .7px;
+  color: #475569;
+  border-bottom: none;
+  white-space: nowrap;
+}
+
+.flv-table thead th.center { text-align: center; }
+
+.flv-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+}
+
+.flv-table tbody tr:last-child { border-bottom: none; }
+.flv-table tbody tr:hover { background: rgba(var(--primary-color-rgb, 21,128,61), 0.015) !important; }
+
+.flv-table tbody td {
+  padding: 16px 20px;
+  color: #334155;
+  font-weight: 500;
+  vertical-align: middle;
+}
+
+.flv-table tbody td.center { text-align: center; }
+
+.flv-form-name {
+  font-weight: 600;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.flv-form-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary-color, #15803d);
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(var(--primary-color-rgb, 21,128,61), 0.4);
+}
+
+.flv-date-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--primary-color, #15803d);
+  background: rgba(var(--primary-color-rgb, 21,128,61), 0.06);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-weight: 600;
+  border: 1px solid rgba(var(--primary-color-rgb, 21,128,61), 0.1);
+}
+
+.flv-creator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #334155;
+  font-weight: 600;
+}
+
+.flv-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  box-shadow: 0 2px 6px rgba(var(--primary-color-rgb, 21,128,61), 0.2);
+}
+
+/* ── orange gear actions button ── */
+.flv-action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50% !important;
+  background: var(--primary-color, #15803d) !important;
+  border: none !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff !important;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(var(--primary-color-rgb, 21, 128, 61), 0.25);
+  transition: all 0.2s ease;
+}
+
+.flv-action-btn:hover {
+  background: var(--primary-color-dark, #166534) !important;
+  transform: scale(1.08);
+}
+
+/* ── empty / loading ── */
+.flv-empty {
+  padding: 48px 0;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.flv-empty-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  color: #cbd5e1;
+}
+
+/* ── pagination ── */
+.flv-pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 20px 0 0;
+  gap: 6px;
+}
+
+.flv-pagination .ant-pagination-item {
+  border-radius: 50% !important;
+  font-size: 12px !important;
+  width: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+  aspect-ratio: 1 / 1 !important;
+  line-height: 1 !important;
+  border-color: #e2e8f0 !important;
+  font-family: inherit !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.flv-pagination .ant-pagination-item a {
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: 1 / 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+}
+
+.flv-pagination .ant-pagination-item-active {
+  background: var(--primary-color, #15803d) !important;
+  border-color: var(--primary-color, #15803d) !important;
+  border-radius: 50% !important;
+}
+
+.flv-pagination .ant-pagination-item-active a { color: #fff !important; }
+
+/* ── no-permission ── */
+.flv-no-perm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  color: #ef4444;
+  font-size: 15px;
+  font-weight: 500;
+  gap: 12px;
+}
+
+/* ── spin center ── */
+.flv-spin-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}

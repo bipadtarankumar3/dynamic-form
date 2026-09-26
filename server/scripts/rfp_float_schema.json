@@ -1,0 +1,158 @@
+{
+  "form_id": "frm0000000028",
+  "title": "RFP Float",
+  "slug": "rfp_float",
+  "root_entity": {
+    "table": "t_frm_rfp_float",
+    "modal_size": "1000",
+    "primary_key": "id"
+  },
+  "is_master": false,
+  "enable_approval": false,
+  "parent_form_id": "frm0000000026",
+  "view_name": "v_rfp_float",
+  "view_slug": "v_rfp_float",
+  "sections": [
+    {
+      "section_id": "sec0000000050",
+      "section_label": "Float Details",
+      "type": "general",
+      "slug": "rfp_float_general",
+      "table": "t_frm_rfp_float",
+      "primary_key": "id",
+      "relation": null,
+      "context": {
+        "master_source": null,
+        "allow_add_rows": false,
+        "is_master_driven": false,
+        "allow_delete_rows": false
+      },
+      "fields": [
+        {
+          "id": "fld_float_date",
+          "ui": {
+            "placeholder": "Select Float Date",
+            "icon": "CalendarOutlined"
+          },
+          "icon": "📅",
+          "type": "date",
+          "group": "Basic",
+          "label": "Float Date",
+          "visible": true,
+          "db_field": "float_date",
+          "required": true,
+          "data_type": "date",
+          "conditions": {
+            "rules": [],
+            "match_type": "all"
+          },
+          "validation": {
+            "required": true
+          },
+          "add_to_list": true,
+          "column_name": "float_date",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_target_ngos",
+          "ui": {
+            "placeholder": "Select Target Implementation Partners"
+          },
+          "icon": "👥",
+          "type": "select",
+          "group": "Advanced",
+          "label": "Target NGOs",
+          "visible": true,
+          "db_field": "ngo",
+          "multiple": true,
+          "allow_multiple": true,
+          "required": true,
+          "data_type": "varchar(255)",
+          "conditions": {
+            "rules": [],
+            "match_type": "all"
+          },
+          "validation": {
+            "required": true
+          },
+          "add_to_list": true,
+          "column_name": "ngo",
+          "data_source": {
+            "name": "implementation_partner",
+            "type": "master",
+            "label_key": "organization_name",
+            "value_key": "id",
+            "table_name": "t_frm_implementation_partner",
+            "primary_key": "id"
+          },
+          "add_to_query": true,
+          "options_source": "master"
+        },
+        {
+          "id": "fld_float_remarks",
+          "ui": {
+            "placeholder": "Enter Float Remarks & Criteria Notes",
+            "rows": 4
+          },
+          "icon": "📝",
+          "type": "textarea",
+          "group": "Basic",
+          "label": "Float Remarks & Notes",
+          "visible": true,
+          "db_field": "remarks",
+          "required": false,
+          "data_type": "text",
+          "conditions": {
+            "rules": [],
+            "match_type": "all"
+          },
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "remarks",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_float_status",
+          "ui": {
+            "placeholder": "Select Float Status"
+          },
+          "icon": "🏷️",
+          "type": "select",
+          "group": "Basic",
+          "label": "Status",
+          "options": [
+            {
+              "label": "Floated",
+              "value": "floated"
+            },
+            {
+              "label": "Draft",
+              "value": "draft"
+            },
+            {
+              "label": "Closed",
+              "value": "closed"
+            }
+          ],
+          "visible": true,
+          "db_field": "status",
+          "required": false,
+          "data_type": "varchar(50)",
+          "conditions": {
+            "rules": [],
+            "match_type": "all"
+          },
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "status",
+          "add_to_query": true,
+          "options_source": "static"
+        }
+      ]
+    }
+  ]
+}

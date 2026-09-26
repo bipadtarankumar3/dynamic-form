@@ -1,0 +1,575 @@
+{
+  "form_id": "frm0000000027",
+  "title": "RFP Submission",
+  "slug": "rfp_submission",
+  "root_entity": {
+    "table": "t_frm_rfp_submission",
+    "modal_size": "1400",
+    "primary_key": "id"
+  },
+  "is_master": false,
+  "enable_approval": false,
+  "parent_form_id": "frm0000000026",
+  "view_name": "v_rfp_submission",
+  "view_slug": "v_rfp_submission",
+  "sections": [
+    {
+      "section_id": "sec0000000047",
+      "section_label": "Organization Information",
+      "type": "general",
+      "slug": "organization_information",
+      "table": "t_frm_rfp_submission",
+      "primary_key": "id",
+      "relation": null,
+      "context": {
+        "master_source": null,
+        "allow_add_rows": true,
+        "is_master_driven": false,
+        "allow_delete_rows": true
+      },
+      "fields": [
+        {
+          "id": "fld_1789373384603",
+          "ui": {
+            "visible": true,
+            "col_span": 6,
+            "placeholder": "Enter Name of the organization"
+          },
+          "type": "text",
+          "label": "Name of the organization",
+          "visible": true,
+          "db_field": "name_of_the_organization",
+          "required": true,
+          "data_type": "varchar(255)",
+          "conditions": {
+            "rules": [],
+            "match_type": "all"
+          },
+          "validation": {},
+          "add_to_list": true,
+          "column_name": "name_of_the_organization",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_1789373593005",
+          "ui": {
+            "placeholder": "Enter Registered Under"
+          },
+          "icon": "🔽",
+          "type": "select",
+          "group": "Advanced",
+          "label": "Registered Under",
+          "visible": true,
+          "db_field": "registered_under",
+          "required": false,
+          "data_type": "varchar(255)",
+          "conditions": {
+            "rules": [],
+            "match_type": "all"
+          },
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "registered_under",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_1789373604533",
+          "ui": {
+            "placeholder": "Enter Registration Number"
+          },
+          "icon": "🔤",
+          "type": "text",
+          "group": "Basic",
+          "label": "Registration Number",
+          "visible": true,
+          "db_field": "registration_number",
+          "required": false,
+          "data_type": "varchar(255)",
+          "conditions": {
+            "rules": [],
+            "match_type": "all"
+          },
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "registration_number",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_1789373631420",
+          "ui": {
+            "placeholder": "Enter Registration Address"
+          },
+          "icon": "📝",
+          "type": "textarea",
+          "group": "Basic",
+          "label": "Registration Address",
+          "visible": true,
+          "db_field": "registration_address",
+          "required": false,
+          "data_type": "text",
+          "conditions": {
+            "rules": [],
+            "match_type": "all"
+          },
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "registration_address",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_1789373698463",
+          "ui": {
+            "placeholder": "Enter Present Address"
+          },
+          "icon": "📝",
+          "type": "textarea",
+          "group": "Basic",
+          "label": "Present Address",
+          "visible": true,
+          "db_field": "present_address",
+          "required": false,
+          "data_type": "text",
+          "conditions": {
+            "rules": [],
+            "match_type": "all"
+          },
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "present_address",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_1789373639798",
+          "ui": {
+            "placeholder": "Enter Contact Name"
+          },
+          "icon": "🔤",
+          "type": "text",
+          "group": "Basic",
+          "label": "Contact Name",
+          "visible": true,
+          "db_field": "contact_name",
+          "required": false,
+          "data_type": "varchar(255)",
+          "conditions": {
+            "rules": [],
+            "match_type": "all"
+          },
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "contact_name",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_1789373655201",
+          "ui": {
+            "placeholder": "Enter Designation"
+          },
+          "icon": "🔤",
+          "type": "text",
+          "group": "Basic",
+          "label": "Designation",
+          "visible": true,
+          "db_field": "designation",
+          "required": false,
+          "data_type": "varchar(255)",
+          "conditions": {
+            "rules": [],
+            "match_type": "all"
+          },
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "designation",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_1789373664909",
+          "ui": {
+            "placeholder": "Enter Phone Number"
+          },
+          "icon": "🔤",
+          "type": "text",
+          "group": "Basic",
+          "label": "Phone Number",
+          "visible": true,
+          "db_field": "phone_number",
+          "required": false,
+          "data_type": "varchar(255)",
+          "conditions": {
+            "rules": [],
+            "match_type": "all"
+          },
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "phone_number",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_1789373677972",
+          "ui": {
+            "placeholder": "Contact Email"
+          },
+          "icon": "🔤",
+          "type": "text",
+          "group": "Basic",
+          "label": "Website",
+          "visible": true,
+          "db_field": "website",
+          "required": false,
+          "data_type": "varchar(255)",
+          "conditions": {
+            "rules": [],
+            "match_type": "all"
+          },
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "website",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_1789375386510",
+          "ui": {
+            "placeholder": "Enter IT Example under Sec 12 A No"
+          },
+          "icon": "🔤",
+          "type": "text",
+          "group": "Basic",
+          "label": "IT Example under Sec 12 A No",
+          "visible": true,
+          "db_field": "it_example_under_sec_12_a_no",
+          "required": false,
+          "data_type": "varchar(255)",
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "it_example_under_sec_12_a_no",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_1789375422711",
+          "ui": {
+            "placeholder": "Enter IT Example under Sec 35 AC No"
+          },
+          "icon": "🔤",
+          "type": "text",
+          "group": "Basic",
+          "label": "IT Example under Sec 35 AC No",
+          "visible": true,
+          "db_field": "it_example_under_sec_35_ac_no",
+          "required": false,
+          "data_type": "varchar(255)",
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "it_example_under_sec_35_ac_no",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_1789375451213",
+          "ui": {
+            "placeholder": "Enter IT Example under Sec 80 G No"
+          },
+          "icon": "🔤",
+          "type": "text",
+          "group": "Basic",
+          "label": "IT Example under Sec 80 G No",
+          "visible": true,
+          "db_field": "it_example_under_sec_80_g_no",
+          "required": false,
+          "data_type": "varchar(255)",
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "it_example_under_sec_80_g_no",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_1789375483301",
+          "ui": {
+            "placeholder": "Enter Area of expertise"
+          },
+          "icon": "🔽",
+          "type": "select",
+          "group": "Advanced",
+          "label": "Area of expertise",
+          "options": [
+            {
+              "label": "Health",
+              "value": "health"
+            },
+            {
+              "label": "Education",
+              "value": "education"
+            },
+            {
+              "label": "Livelhood",
+              "value": "livelhood"
+            }
+          ],
+          "visible": true,
+          "db_field": "area_of_expertise",
+          "multiple": true,
+          "required": false,
+          "data_type": "varchar(255)",
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "area_of_expertise",
+          "data_source": null,
+          "add_to_query": true,
+          "allow_multiple": true,
+          "options_source": "static"
+        },
+        {
+          "id": "fld_1789375595264",
+          "ui": {
+            "placeholder": "Enter Overall Experience"
+          },
+          "icon": "🔤",
+          "type": "text",
+          "group": "Basic",
+          "label": "Overall Experience",
+          "visible": true,
+          "db_field": "overall_experience",
+          "required": false,
+          "data_type": "varchar(255)",
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "overall_experience",
+          "add_to_query": true
+        }
+      ]
+    },
+    {
+      "section_id": "sec0000000048",
+      "section_label": "Documents",
+      "type": "add_more",
+      "slug": "documents",
+      "table": "t_documents",
+      "primary_key": "id",
+      "relation": {
+        "foreign_key": "parent_id",
+        "parent_table": "t_frm_rfp_submission"
+      },
+      "context": {
+        "master_source": "dd_document_type",
+        "allow_add_rows": false,
+        "is_master_driven": true,
+        "allow_delete_rows": false
+      },
+      "fields": [
+        {
+          "id": "fld_1789375680542",
+          "ui": {
+            "placeholder": "Enter Registration"
+          },
+          "icon": "🔽",
+          "type": "select",
+          "group": "Advanced",
+          "label": "Registration",
+          "visible": true,
+          "db_field": "registration",
+          "required": true,
+          "data_type": "varchar(255)",
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "registration",
+          "data_source": {
+            "name": "dd_document_type",
+            "type": "master",
+            "label_key": "type_name",
+            "value_key": "id",
+            "table_name": "t_frm_dd_document_type",
+            "primary_key": "id"
+          },
+          "add_to_query": true,
+          "options_source": "master"
+        },
+        {
+          "id": "fld_1789375748495",
+          "ui": {
+            "placeholder": "Enter File Upload"
+          },
+          "icon": "📎",
+          "type": "file",
+          "group": "Advanced",
+          "label": "File Upload",
+          "visible": true,
+          "db_field": "file_upload",
+          "required": false,
+          "data_type": "file",
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "file_upload",
+          "add_to_query": true
+        }
+      ]
+    },
+    {
+      "section_id": "sec0000000049",
+      "section_label": "Format of budget",
+      "type": "add_more",
+      "slug": "format_of_budget",
+      "table": "t_format_of_budget",
+      "primary_key": "id",
+      "relation": {
+        "foreign_key": "parent_id",
+        "parent_table": "t_frm_rfp_submission"
+      },
+      "context": {
+        "master_source": null,
+        "allow_add_rows": true,
+        "is_master_driven": false,
+        "allow_delete_rows": true
+      },
+      "fields": [
+        {
+          "id": "fld_1789375888743",
+          "ui": {
+            "placeholder": "Enter Particulars"
+          },
+          "icon": "🔤",
+          "type": "text",
+          "group": "Basic",
+          "label": "Particulars",
+          "visible": true,
+          "db_field": "particulars",
+          "required": false,
+          "data_type": "varchar(255)",
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "particulars",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_1789375906615",
+          "ui": {
+            "placeholder": "Enter Unit"
+          },
+          "icon": "🔢",
+          "type": "number",
+          "group": "Basic",
+          "label": "Unit",
+          "visible": true,
+          "db_field": "unit",
+          "required": false,
+          "data_type": "integer",
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "unit",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_1789375912412",
+          "ui": {
+            "placeholder": "Enter Number Of Unit"
+          },
+          "icon": "🔤",
+          "type": "text",
+          "group": "Basic",
+          "label": "Number Of Unit",
+          "visible": true,
+          "db_field": "number_of_unit",
+          "required": false,
+          "data_type": "varchar(255)",
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "number_of_unit",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_1789375923949",
+          "ui": {
+            "placeholder": "Enter Unit Cost"
+          },
+          "icon": "🔢",
+          "type": "number",
+          "group": "Basic",
+          "label": "Unit Cost",
+          "visible": true,
+          "db_field": "unit_cost",
+          "required": false,
+          "data_type": "integer",
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "unit_cost",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_1789375934197",
+          "ui": {
+            "placeholder": "Enter Number Of Months"
+          },
+          "icon": "🔢",
+          "type": "number",
+          "group": "Basic",
+          "label": "Number Of Months",
+          "visible": true,
+          "db_field": "number_of_months",
+          "required": false,
+          "data_type": "integer",
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "number_of_months",
+          "add_to_query": true
+        },
+        {
+          "id": "fld_1789375949285",
+          "ui": {
+            "placeholder": "Enter Total"
+          },
+          "icon": "🔢",
+          "type": "number",
+          "group": "Basic",
+          "label": "Total",
+          "visible": true,
+          "db_field": "total",
+          "required": false,
+          "data_type": "integer",
+          "validation": {
+            "required": false
+          },
+          "add_to_list": true,
+          "column_name": "total",
+          "add_to_query": true
+        }
+      ]
+    }
+  ]
+}

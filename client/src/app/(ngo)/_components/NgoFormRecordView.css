@@ -1,0 +1,421 @@
+.ngo-profile-container {
+  width: 100%;
+  padding-bottom: 48px;
+}
+
+.ngo-profile-card {
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  border-top: 3px solid #16a34a;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+  margin-bottom: 24px;
+  background: #ffffff;
+  overflow: hidden;
+  position: relative;
+}
+
+.ngo-profile-card-content {
+  z-index: 1;
+  padding: 24px 28px;
+  position: relative;
+}
+
+.ngo-profile-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 28px;
+  align-items: center;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .ngo-profile-header {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+.ngo-profile-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  min-width: 0;
+}
+
+.ngo-avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.ngo-avatar {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  color: #ffffff;
+  font-size: 26px;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.22);
+  flex-shrink: 0;
+  border: 3px solid #ecfdf5;
+}
+
+.ngo-avatar-camera {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #ffffff;
+  border-radius: 50%;
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+}
+
+.ngo-avatar-camera-icon {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.ngo-profile-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.ngo-profile-name {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.3px;
+  line-height: 1.25;
+}
+
+.ngo-tag-approved,
+.ngo-tag-under-review,
+.ngo-tag-needs-revision {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ngo-tag-approved {
+  background: #f0fdf4 !important;
+  color: #15803d !important;
+  border: 1px solid #86efac !important;
+}
+
+.ngo-tag-under-review {
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+  border: 1px solid #93c5fd !important;
+}
+
+.ngo-tag-needs-revision {
+  background: #fef2f2 !important;
+  color: #b91c1c !important;
+  border: 1px solid #fca5a5 !important;
+}
+
+.ngo-tag-draft {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 12px;
+  background-color: #ffedd5;
+  color: #f97316;
+  border: 1px solid #fed7aa;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ngo-draft-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #f97316;
+}
+
+.ngo-tag-pending {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 12px;
+  background-color: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.ngo-profile-description {
+  margin: 0 0 12px;
+  font-size: 13.5px;
+  color: #475569;
+  line-height: 1.5;
+  max-width: 650px;
+}
+
+.ngo-meta-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ngo-meta-email {
+  background-color: #f0f9ff;
+  border: 1px solid #bae6fd;
+  color: #0369a1;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 12.5px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ngo-meta-phone {
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #047857;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 12.5px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ngo-meta-csr,
+.ngo-meta-darpan {
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 12.5px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ngo-profile-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+}
+
+@media (max-width: 1024px) {
+  .ngo-profile-right {
+    width: 100%;
+  }
+}
+
+.ngo-completeness-card {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+}
+
+.ngo-completeness-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 6px;
+}
+
+.ngo-completeness-percent {
+  color: #16a34a;
+  font-weight: 800;
+  font-size: 13.5px;
+}
+
+.ngo-action-buttons-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.ngo-action-primary-btn {
+  width: 100% !important;
+  height: 38px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+}
+
+.ngo-action-secondary-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.ngo-action-secondary-btn {
+  flex: 1;
+  height: 34px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  border-color: #cbd5e1 !important;
+  color: #334155 !important;
+  background: #ffffff !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+}
+
+.ngo-action-secondary-btn:hover {
+  border-color: #94a3b8 !important;
+  color: #0f172a !important;
+  background: #f1f5f9 !important;
+}
+
+.ngo-action-buttons {
+  width: 100%;
+  display: flex;
+  gap: 8px;
+}
+
+.ngo-btn-history {
+  flex: 1;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 12px;
+  height: 38px;
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+.ngo-btn-edit {
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  height: 38px;
+  background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+  border-color: #15803d !important;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.2);
+}
+
+.ngo-btn-edit-full {
+  flex: 1;
+}
+
+.ngo-btn-edit-partial {
+  flex: 2;
+}
+
+.ngo-bg-decorative {
+  display: none;
+}
+
+.ngo-profile-container .ant-card.ant-card-bordered {
+  border: 1px solid #e2e8f0;
+}
+
+/* ───────────────────────────────────────────────
+   NgoDynamicFormModal — Premium Dark Emerald Header & Layout
+─────────────────────────────────────────────── */
+
+.ngo-dynamic-modal .ant-modal-content {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 20px 40px -8px rgba(15, 23, 42, 0.22) !important;
+}
+
+.ngo-dynamic-modal .ant-modal-header {
+  background: linear-gradient(135deg, #15803d 0%, #1e3a8a 100%) !important;
+  padding: 18px 24px !important;
+  margin: 0 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 16px 16px 0 0 !important;
+}
+
+.ngo-dynamic-modal .ant-modal-title {
+  color: #ffffff !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+}
+
+.ngo-dynamic-modal .ant-modal-close {
+  color: #ffffff !important;
+  top: 16px !important;
+  right: 18px !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+.ngo-dynamic-modal .ant-modal-close:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.ngo-dynamic-modal .ant-modal-body {
+  padding: 20px 24px 16px 24px !important;
+  background: #f8fafc !important;
+}
+
+.ngo-modal-form-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.ngo-modal-form-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ngo-modal-form-scroll::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.ngo-modal-form-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.ngo-modal-form-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Modal Inner Section Cards */
+.ngo-dynamic-modal .ant-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
+}
+
+.ngo-dynamic-modal .ant-card .ant-card-head {
+  background: linear-gradient(135deg, #15803d 0%, #166534 100%) !important;
+  min-height: 44px !important;
+  padding: 8px 16px !important;
+  border-radius: 10px 10px 0 0 !important;
+}
+
+.ngo-dynamic-modal .ant-card .ant-card-head-title {
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}

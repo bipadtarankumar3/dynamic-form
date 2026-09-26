@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>NGO Registration Verification OTP</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f8fafc; padding: 20px;">
+  <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-top: 4px solid #15803d;">
+    <h2 style="color: #15803d; text-align: center; margin-top: 0;">🏛️ NGO Partner Registration</h2>
+    
+    <p style="font-size: 16px; color: #334155;">
+      Dear <strong>{{person_name}}</strong>,
+    </p>
+    
+    <p style="font-size: 14px; color: #475569; line-height: 1.6;">
+      Thank you for initiating the partner onboarding registration for <strong>{{organization_name}}</strong> (Darpan ID: <strong>{{darpan_no}}</strong>).
+    </p>
+
+    <p style="font-size: 14px; color: #475569;">
+      To verify your email address and continue with the profile and due diligence onboarding, please enter the verification code below:
+    </p>
+
+    <div style="text-align: center; margin: 30px 0;">
+      <span style="display: inline-block; font-size: 32px; letter-spacing: 8px; background: #f0fdf4; color: #15803d; border: 2px dashed #86efac; padding: 14px 32px; border-radius: 8px; font-weight: bold;">
+        {{otp}}
+      </span>
+    </div>
+
+    <p style="font-size: 13px; color: #64748b; text-align: center;">
+      ⏰ This verification code is valid for <strong>15 minutes</strong>. Do not share this code with anyone.
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 25px 0;" />
+
+    <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 0;">
+      © {{year}} TechCSR Platform. All rights reserved.
+    </p>
+  </div>
+</body>
+</html>

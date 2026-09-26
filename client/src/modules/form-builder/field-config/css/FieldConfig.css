@@ -1,0 +1,110 @@
+/* ── Tabs ── */
+.tfc-tabs .ant-tabs-nav::before { border-color: #e5e7eb; }
+.tfc-tabs .ant-tabs-tab { font-size: 13px; font-weight: 500; color: #6b7280; padding: 8px 0; }
+.tfc-tabs .ant-tabs-tab-active .ant-tabs-tab-btn { color: #111827; }
+.tfc-tabs .ant-tabs-ink-bar { background: #4f46e5; height: 2px; border-radius: 2px 2px 0 0; }
+
+/* ── Basic grid ── */
+.tfc-basic-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 4px 2px;
+}
+.tfc-field { display: flex; flex-direction: column; gap: 5px; }
+.tfc-field--full { grid-column: 1 / -1; }
+
+/* ── Labels ── */
+.tfc-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #6b7280;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tfc-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #eef2ff;
+  color: #4f46e5;
+  border: 1px solid #c7d2fe;
+}
+
+/* ── Inputs ── */
+.tfc-input.ant-input,
+.tfc-input .ant-input {
+  font-size: 13.5px;
+  border-radius: 7px;
+  border-color: #e5e7eb;
+  background: #f9fafb;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.tfc-input.ant-input:focus,
+.tfc-input .ant-input:focus {
+  border-color: #a5b4fc;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  background: #fff;
+}
+.tfc-input.ant-input:disabled,
+.tfc-input .ant-input:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+.tfc-input--mono.ant-input,
+.tfc-input--mono .ant-input {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 12.5px;
+  letter-spacing: -0.01em;
+}
+.tfc-input--num.ant-input { width: 80px; }
+.tfc-input--msg.ant-input { font-size: 13px; }
+
+/* ── Validation list ── */
+.tfc-val-list { display: flex; flex-direction: column; gap: 8px; padding: 2px; }
+
+.tfc-val-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 9px;
+  border: 1px solid #f3f4f6;
+  background: #fafafa;
+  transition: border-color 0.15s, background 0.15s;
+}
+.tfc-val-row--active {
+  border-color: #c7d2fe;
+  background: #eef2ff;
+}
+
+.tfc-val-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  min-width: 130px;
+}
+.tfc-val-name { font-size: 13px; font-weight: 500; color: #374151; }
+
+.tfc-val-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+.tfc-msg-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+}
+
+/* ── Ant Switch accent ── */
+.ant-switch-checked { background-color: #4f46e5 !important; }

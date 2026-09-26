@@ -1,0 +1,109 @@
+export const buildDependencyMeta = (fields = []) => {
+  const childrenMap = {};
+  const allDependentsMap = {};
+
+  // immediate children
+  fields.forEach((f) => {
+    if (f?.visible === false) return;
+    const parent = f?.dependency?.parent_db_field || f?.dependency?.parent || f?.dependency?.parent_field || f?.parent_db_field;
+    if (!parent) return;
+
+    const childKey = f?.db_field || f?.column_name || f?.id;
+    if (!childKey) return;
+
+    if (!childrenMap[parent]) childrenMap[parent] = [];
+    if (!childrenMap[parent].includes(childKey)) childrenMap[parent].push(childKey);
+
+    const normParent = normalizeKey(parent);
+    if (normParent && normParent !== parent) {
+      if (!childrenMap[normParent]) childrenMap[normParent] = [];
+      if (!childrenMap[normParent].includes(childKey)) childrenMap[normParent].push(childKey);
+    }
+  });
+
+  // build deep dependents
+  const dfs = (node, acc, visiting = new Set()) => {
+    if (visiting.has(node)) return; // cycle protection
+    visiting.add(node);
+
+    (childrenMap[node] || []).forEach((child) => {
+      if (!acc.has(child)) {
+        acc.add(child);
+        dfs(child, acc, visiting);
+      }
+    });
+
+    visiting.delete(node);
+  };
+
+  Object.keys(childrenMap).forEach((parent) => {
+    const acc = new Set();
+    dfs(parent, acc);
+    allDependentsMap[parent] = Array.from(acc);
+  });
+
+  return {
+    childrenMap, // immediate children
+    allDependentsMap, // deep dependents
+  };
+};
+
+export const normalizeKey = (str) =>
+  (str || "")
+    .toLowerCase()
+    .replace(/^(tpro|tprj|tthm|tng|tst|tdis|tblk|tgramp|tvill|tact|tschsvn|tsdg|tftb|tfy|tng|ttrai|tsupi|tsdgdet|tbgh)_/, "")
+    .replace(/_(id|select|name|code|pk)$/, "")
+    .replace(/_/g, "");
+
+/**
+ * Build the filters object to send to the master-details API.
+ *
+ * If `filterColumn` is provided (from dependency.filter_column), it is used as the
+ * key in the filter object regardless of the parent field's db_field name.
+ * This lets users freely name their form fields (e.g. bb_id) while explicitly
+ * mapping to the correct FK column in the master table (e.g. block_id).
+ *
+ * Example:
+ *   parentDbField = "bb_id"      → form state key to read value from
+ *   filterColumn  = "block_id"   → key sent to server (FK column in master table)
+ *   result: { block_id: <selected bb_id value> }
+ */
+export const buildFilters = (filterKeys = [], values = {}, parentDbField = null, filterColumn = null) => {
+  // If an explicit filter_column is configured, use it directly
+  if (filterColumn && parentDbField) {
+    const val = values?.[parentDbField] ?? values?.[filterColumn];
+    if (val === undefined || val === null || val === "") return null;
+    return { [filterColumn]: val };
+  }
+
+  let keys = Array.isArray(filterKeys) ? filterKeys : Object.keys(filterKeys || {});
+  if (!keys.length && parentDbField) {
+    keys = [parentDbField];
+  }
+  if (!keys.length) return {};
+
+  const filters = {};
+
+  for (const key of keys) {
+    let val = values?.[key];
+
+    if ((val === undefined || val === null || val === "") && parentDbField && values?.[parentDbField] !== undefined) {
+      val = values[parentDbField];
+    }
+
+    if (val === undefined || val === null || val === "") {
+      const normKey = normalizeKey(key);
+      const matchedValueKey = Object.keys(values || {}).find(
+        (vk) => normalizeKey(vk) === normKey && values[vk] !== undefined && values[vk] !== null && values[vk] !== ""
+      );
+      if (matchedValueKey) {
+        val = values[matchedValueKey];
+      }
+    }
+
+    if (val === undefined || val === null || val === "") return null;
+    filters[key] = val;
+  }
+
+  return filters;
+};

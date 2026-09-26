@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>NGO Profile Created</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+  <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+
+    <h2 style="color: #333; text-align: center;">🎉 NGO Profile Successfully Created</h2>
+
+    <p style="font-size: 16px; color: #555;">
+      Dear <strong>{{name}}</strong>,
+    </p>
+
+    <p style="font-size: 15px; color: #555;">
+      We are pleased to inform you that your <strong>NGO profile</strong> has been successfully created on the TechCSR-CSR Product platform.
+    </p>
+
+    <p style="font-size: 15px; color: #555;">
+      You can now log in to the system using the credentials provided below and start managing your NGO details, submissions, and related activities.
+    </p>
+
+    <div style="background: #f7f9fc; padding: 18px; border-radius: 6px; margin: 20px 0;">
+      <p style="font-size: 14px; color: #444; margin: 6px 0;">
+        <strong>Login Email:</strong> {{email}}
+      </p>
+      <p style="font-size: 14px; color: #444; margin: 6px 0;">
+        <strong>Temporary Password:</strong> {{password}}
+      </p>
+    </div>
+
+    <div style="text-align: center; margin: 25px 0;">
+      <a href="{{login_url}}"
+         style="background-color: #007bff; color: #ffffff; text-decoration: none; padding: 12px 28px; border-radius: 6px; font-size: 15px; font-weight: bold;">
+        Login to Your Account
+      </a>
+    </div>
+
+    <p style="font-size: 14px; color: #555;">
+      For security reasons, we strongly recommend that you <strong>change your password immediately</strong> after your first login.
+    </p>
+
+    <p style="font-size: 14px; color: #888; margin-top: 20px;">
+      If you believe this account was created in error or you need assistance, please contact our support team.
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #eee; margin: 25px 0;" />
+
+    <p style="font-size: 12px; color: #999; text-align: center;">
+      © {{year}} TechCSR-CSR Product. All rights reserved.
+    </p>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,378 @@
+/* ==========================================================================
+   DEFAULT CSR OVERVIEW DASHBOARD - PIXEL PERFECT & RESPONSIVE
+   ========================================================================== */
+
+.default-csr-dashboard {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: #1e293b;
+  background-color: #f8fafc;
+  min-height: calc(100vh - 70px);
+  padding: 12px 16px 30px;
+  box-sizing: border-box;
+}
+
+/* 1. TOP DYNAMIC FILTERS BAR */
+.dcd-filters-bar {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justifyContent: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.dcd-filters-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dcd-filter-item {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 115px;
+  min-width: 105px;
+  max-width: 155px;
+}
+
+.dcd-filter-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.dcd-filters-group .ant-select {
+  width: 100% !important;
+}
+
+.dcd-filters-group .ant-select .ant-select-selector {
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  height: 32px !important;
+  display: flex;
+  align-items: center;
+}
+
+.dcd-last-updated {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 5px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* 2. TOP 8 KPI SUMMARY CARDS */
+.dcd-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.dcd-kpi-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  min-width: 0;
+}
+
+.dcd-kpi-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.dcd-kpi-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.dcd-kpi-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  flex: 1;
+}
+
+.dcd-kpi-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dcd-kpi-value {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.2;
+  margin: 1px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dcd-kpi-sub {
+  font-size: 9.5px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 3. GRID SYSTEM */
+.dcd-grid-row {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.dcd-grid-row-1 {
+  grid-template-columns: 3.2fr 2.9fr 2.9fr 3fr;
+}
+
+.dcd-grid-row-2 {
+  grid-template-columns: 2.8fr 3.6fr 2.8fr 2.8fr;
+}
+
+.dcd-grid-row-3 {
+  grid-template-columns: 3.6fr 4.6fr 3.8fr;
+}
+
+/* 4. CARD PANELS */
+.dcd-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  height: 100%;
+}
+
+.dcd-card-header {
+  display: flex;
+  justifyContent: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.dcd-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dcd-card-subtitle {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Action Required List */
+.dcd-action-item {
+  display: flex;
+  align-items: center;
+  justifyContent: space-between;
+  padding: 7px 9px;
+  border-radius: 6px;
+  background: #f8fafc;
+  margin-bottom: 5px;
+  font-size: 11.5px;
+  border-left: 3px solid #cbd5e1;
+  gap: 8px;
+}
+
+.dcd-action-item.alert {
+  border-left-color: #ef4444;
+  background: #fef2f2;
+}
+
+.dcd-action-item.warning {
+  border-left-color: #f59e0b;
+  background: #fffbeb;
+}
+
+/* Compliance Status */
+.dcd-compliance-row {
+  display: flex;
+  align-items: center;
+  justifyContent: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 11.5px;
+  gap: 8px;
+}
+
+.dcd-compliance-row:last-child {
+  border-bottom: none;
+}
+
+/* SDG Tiles Grid */
+.dcd-sdg-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  flex: 1;
+}
+
+.dcd-sdg-box {
+  border-radius: 6px;
+  padding: 6px 8px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justifyContent: space-between;
+  min-height: 62px;
+}
+
+.dcd-sdg-num {
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.dcd-sdg-name {
+  font-size: 8.5px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+  margin: 2px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dcd-sdg-amount {
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 2px 4px;
+  border-radius: 3px;
+  text-align: center;
+}
+
+/* Partner Performance Table */
+.dcd-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+
+.dcd-table th {
+  text-align: left;
+  padding: 6px 8px;
+  color: #64748b;
+  font-weight: 600;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.dcd-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #f1f5f9;
+  white-space: nowrap;
+}
+
+/* Geographic summary list */
+.dcd-geo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 6px 0;
+  font-size: 11.5px;
+}
+
+.dcd-geo-item:last-child {
+  border-bottom: none;
+}
+
+/* ==========================================================================
+   MEDIA BREAKPOINTS
+   ========================================================================== */
+
+@media (max-width: 1550px) {
+  .dcd-kpi-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1280px) {
+  .dcd-grid-row-1 {
+    grid-template-columns: 1fr 1fr;
+  }
+  .dcd-grid-row-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+  .dcd-grid-row-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 992px) {
+  .dcd-kpi-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .dcd-grid-row-1,
+  .dcd-grid-row-2,
+  .dcd-grid-row-3 {
+    grid-template-columns: 1fr;
+  }
+  .dcd-filter-item {
+    flex: 1 1 140px;
+    max-width: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .dcd-kpi-row {
+    grid-template-columns: 1fr;
+  }
+  .dcd-sdg-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .dcd-filters-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .dcd-last-updated {
+    justify-content: center;
+  }
+}

@@ -1,0 +1,566 @@
+/* AzureDevOpsTheme.css - Premium Modern Enterprise Theme */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* HSL Tailored Color Palette */
+  --primary-color: hsl(208, 100%, 45%);
+  --primary-gradient: linear-gradient(135deg, hsl(208, 100%, 48%) 0%, hsl(208, 100%, 40%) 100%);
+  --primary-hover-gradient: linear-gradient(135deg, hsl(208, 100%, 52%) 0%, hsl(208, 100%, 44%) 100%);
+  --primary-shadow: 0 4px 14px 0 rgba(0, 120, 212, 0.25);
+  
+  --success-color: hsl(145, 63%, 42%);
+  --success-gradient: linear-gradient(135deg, hsl(145, 63%, 46%) 0%, hsl(145, 63%, 38%) 100%);
+  
+  --error-color: hsl(354, 70%, 50%);
+  --error-bg-light: hsl(354, 70%, 97%);
+  
+  --bg-gradient: linear-gradient(135deg, hsl(210, 30%, 98%) 0%, hsl(210, 35%, 95%) 100%);
+  --surface-bg: hsl(0, 0%, 100%);
+  --surface-hover: hsl(210, 25%, 98%);
+  
+  --text-primary: hsl(210, 30%, 15%);
+  --text-secondary: hsl(210, 10%, 45%);
+  --text-muted: hsl(210, 8%, 65%);
+  
+  --border-color: hsl(210, 14%, 90%);
+  --border-focus: hsl(208, 100%, 45%);
+  
+  --border-radius-sm: 6px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  
+  --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-body: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  
+  --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.azure-devops-container {
+  background: var(--bg-gradient);
+  min-height: calc(100vh - 64px);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  padding-bottom: 40px;
+}
+
+/* Header styling */
+.azure-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 32px;
+  background-color: var(--surface-bg);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  backdrop-filter: blur(8px);
+}
+
+.azure-header-breadcrumbs {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.azure-header-breadcrumbs .breadcrumb-item {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition-smooth);
+  display: inline-flex;
+  align-items: center;
+}
+
+.azure-header-breadcrumbs .breadcrumb-item:hover {
+  background-color: var(--surface-hover);
+  color: var(--primary-color);
+}
+
+.azure-header-breadcrumbs .breadcrumb-separator {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+/* Main Content Area */
+.azure-content {
+  padding: 0 32px;
+  margin-top: 24px;
+}
+
+/* Tabs Navigation Styling */
+.azure-tabs {
+  background: transparent;
+}
+
+.azure-tabs .ant-tabs-nav {
+  margin-bottom: 20px !important;
+  background: var(--surface-bg);
+  padding: 6px 12px;
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border-color);
+}
+
+.azure-tabs .ant-tabs-nav::before {
+  border-bottom: none !important;
+}
+
+.azure-tabs .ant-tabs-tab {
+  color: var(--text-secondary) !important;
+  font-weight: 500;
+  font-family: var(--font-display);
+  padding: 10px 20px !important;
+  border-radius: var(--border-radius-md) !important;
+  transition: var(--transition-smooth) !important;
+  margin: 2px 4px !important;
+}
+
+.azure-tabs .ant-tabs-tab:hover {
+  color: var(--primary-color) !important;
+  background-color: var(--surface-hover);
+}
+
+.azure-tabs .ant-tabs-tab-active {
+  background-color: hsl(208, 100%, 96%) !important;
+}
+
+.azure-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--primary-color) !important;
+  font-weight: 600;
+}
+
+.azure-tabs .ant-tabs-ink-bar {
+  background: var(--primary-color) !important;
+  height: 3px !important;
+  border-radius: 3px 3px 0 0;
+}
+
+/* Button Configurations */
+.azure-btn-primary {
+  background: var(--primary-gradient) !important;
+  border: none !important;
+  color: #fff !important;
+  border-radius: var(--border-radius-md) !important;
+  font-weight: 500;
+  font-family: var(--font-display);
+  height: 38px !important;
+  padding: 4px 20px !important;
+  box-shadow: var(--primary-shadow) !important;
+  transition: var(--transition-smooth) !important;
+}
+
+.azure-btn-primary:hover {
+  background: var(--primary-hover-gradient) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px 0 rgba(0, 120, 212, 0.35) !important;
+}
+
+.azure-btn-primary:active {
+  transform: translateY(0);
+}
+
+.azure-btn-secondary {
+  background-color: var(--surface-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--border-radius-md) !important;
+  font-weight: 500;
+  font-family: var(--font-display);
+  height: 38px !important;
+  padding: 4px 20px !important;
+  transition: var(--transition-smooth) !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+}
+
+.azure-btn-secondary:hover {
+  background-color: var(--surface-hover) !important;
+  border-color: var(--text-muted) !important;
+  color: var(--primary-color) !important;
+  transform: translateY(-1px);
+}
+
+.azure-btn-secondary:active {
+  transform: translateY(0);
+}
+
+/* Inputs & Dropdowns styling */
+.azure-input,
+.azure-select .ant-select-selector {
+  background-color: var(--surface-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--border-radius-md) !important;
+  height: 38px !important;
+  padding: 3px 12px !important;
+  transition: var(--transition-smooth) !important;
+}
+
+.azure-select .ant-select-selector {
+  padding: 0 12px !important;
+  display: flex;
+  align-items: center;
+}
+
+.azure-input:hover,
+.azure-select:hover .ant-select-selector {
+  border-color: var(--text-muted) !important;
+}
+
+.azure-input:focus,
+.azure-input-focused,
+.azure-select-focused .ant-select-selector,
+.azure-select .ant-select-selector:focus {
+  border-color: var(--border-focus) !important;
+  box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.15) !important;
+}
+
+.azure-input input {
+  background-color: transparent !important;
+  color: var(--text-primary) !important;
+}
+
+.azure-select .ant-select-arrow {
+  color: var(--text-secondary);
+}
+
+.ant-select-dropdown {
+  background-color: var(--surface-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--border-radius-lg) !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08) !important;
+  padding: 4px !important;
+}
+
+.ant-select-item {
+  color: var(--text-primary) !important;
+  border-radius: var(--border-radius-sm) !important;
+  transition: var(--transition-smooth) !important;
+  margin: 2px 0;
+}
+
+.ant-select-item-option-active {
+  background-color: var(--surface-hover) !important;
+  color: var(--primary-color) !important;
+}
+
+.ant-select-item-option-selected {
+  background-color: hsl(208, 100%, 96%) !important;
+  color: var(--primary-color) !important;
+  font-weight: 600 !important;
+}
+
+/* Query Filter Constructor Card */
+.azure-filter-table {
+  background: var(--surface-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-xl);
+  margin-top: 20px;
+  padding: 16px 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+}
+
+.azure-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 8px;
+  border-bottom: 1px solid var(--border-color);
+  transition: var(--transition-smooth);
+  border-radius: var(--border-radius-md);
+}
+
+.azure-filter-row:hover {
+  background-color: hsl(210, 30%, 99%);
+}
+
+.azure-filter-row:last-child {
+  border-bottom: none;
+}
+
+.azure-filter-header {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 4px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 10px;
+  background-color: transparent !important;
+}
+
+.azure-filter-header:hover {
+  background-color: transparent !important;
+}
+
+/* Action button circle designs */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  background-color: var(--surface-hover);
+}
+
+.icon-btn.add {
+  color: var(--success-color);
+  background-color: hsl(145, 63%, 96%);
+}
+.icon-btn.add:hover {
+  color: #fff;
+  background: var(--success-gradient);
+  transform: scale(1.1);
+}
+
+.icon-btn.remove {
+  color: var(--error-color);
+  background-color: var(--error-bg-light);
+}
+.icon-btn.remove:hover {
+  color: #fff;
+  background: var(--error-color);
+  transform: scale(1.1);
+}
+
+/* Floating table results card */
+.azure-table {
+  background: var(--surface-bg);
+  border-radius: var(--border-radius-xl);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+  padding: 8px;
+}
+
+.azure-table .ant-table {
+  background-color: transparent !important;
+}
+
+.azure-table .ant-table-thead > tr > th {
+  background-color: hsl(210, 20%, 98%) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-display) !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  padding: 16px 20px !important;
+}
+
+.azure-table .ant-table-tbody > tr > td {
+  border-bottom: 1px solid var(--border-color) !important;
+  padding: 16px 20px !important;
+  color: var(--text-primary) !important;
+  font-size: 14px;
+}
+
+.azure-table .ant-table-tbody > tr.ant-table-row:hover > td {
+  background-color: var(--surface-hover) !important;
+}
+
+.azure-table .ant-table-container {
+  border-radius: var(--border-radius-lg) !important;
+  overflow: hidden;
+}
+
+/* Text categories */
+.azure-text-primary {
+  color: var(--primary-color) !important;
+  font-weight: 500;
+  transition: var(--transition-smooth);
+}
+.azure-text-primary:hover {
+  color: hsl(208, 100%, 38%) !important;
+  text-decoration: underline !important;
+}
+
+.azure-text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+/* Empty State Styling */
+.empty-state {
+  text-align: center;
+  padding: 80px 24px;
+  background-color: var(--surface-bg);
+  border-radius: var(--border-radius-xl);
+  border: 1px dashed var(--border-color);
+  margin-top: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.01);
+}
+
+.empty-state img {
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.04));
+  transition: var(--transition-smooth);
+}
+
+.empty-state:hover img {
+  transform: translateY(-4px) scale(1.02);
+}
+
+/* Modals Modernization & Specific Overrides */
+.query-builder-modal.ant-modal .anticon {
+  color: inherit !important;
+}
+
+.query-builder-modal.ant-modal .ant-modal-content {
+  background-color: var(--surface-bg) !important;
+  border-radius: var(--border-radius-xl) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid var(--border-color) !important;
+  overflow: visible !important;
+  padding: 0 !important;
+}
+
+.query-builder-modal.ant-modal .ant-modal-header {
+  background: transparent !important;
+  background-image: none !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  padding: 20px 24px !important;
+  margin: 0 !important;
+}
+
+.query-builder-modal.ant-modal .ant-modal-title {
+  background-image: none !important;
+  background-color: transparent !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  font-size: 18px !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: auto !important;
+  line-height: normal !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.query-builder-modal.ant-modal .ant-modal-close {
+  color: var(--text-secondary) !important;
+  top: 18px !important;
+  right: 18px !important;
+}
+
+.query-builder-modal.ant-modal .ant-modal-close .anticon {
+  color: var(--text-secondary) !important;
+  font-size: 16px !important;
+  transition: var(--transition-smooth) !important;
+}
+
+.query-builder-modal.ant-modal .ant-modal-close:hover {
+  background-color: var(--surface-hover) !important;
+}
+
+.query-builder-modal.ant-modal .ant-modal-close:hover .anticon {
+  color: var(--primary-color) !important;
+}
+
+.query-builder-modal.ant-modal .ant-modal-body {
+  padding: 24px !important;
+  background-color: var(--surface-bg) !important;
+}
+
+.query-builder-modal.ant-modal .ant-modal-footer {
+  border-top: 1px solid var(--border-color) !important;
+  padding: 16px 24px !important;
+  margin: 0 !important;
+  background-color: var(--surface-bg) !important;
+}
+
+.query-builder-modal.ant-modal .ant-modal-footer .ant-btn {
+  border-radius: var(--border-radius-md) !important;
+  font-family: var(--font-display) !important;
+  font-weight: 500 !important;
+  height: 38px !important;
+  padding: 4px 18px !important;
+}
+
+.query-builder-modal.ant-modal .ant-modal-footer .ant-btn-primary {
+  background: var(--primary-gradient) !important;
+  border: none !important;
+}
+
+.query-builder-modal.ant-modal .ant-modal-footer .ant-btn-primary:hover {
+  background: var(--primary-hover-gradient) !important;
+}
+
+/* Drag Handle styling */
+.drag-icon-handle {
+  cursor: grab;
+  color: var(--text-muted);
+  transition: var(--transition-smooth);
+}
+.drag-icon-handle:hover {
+  color: var(--primary-color);
+}
+.drag-icon-handle:active {
+  cursor: grabbing;
+}
+
+/* Chart Builder Tab Styles */
+.chart-builder-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  margin-top: 16px;
+}
+
+.chart-settings-sidebar {
+  width: 320px;
+  background-color: var(--surface-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-xl);
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  flex-shrink: 0;
+}
+
+.chart-viz-container {
+  flex: 1;
+  background-color: var(--surface-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-xl);
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+}
+
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.setting-label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 992px) {
+  .chart-builder-layout {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .chart-settings-sidebar {
+    width: 100%;
+  }
+}
+

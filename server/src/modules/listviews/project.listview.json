@@ -1,0 +1,225 @@
+{
+  "list_view": {
+    "entity": {
+      "table": "public.t_project",
+      "alias": "p",
+      "primary_key": "tproj_project_id"
+    },
+
+    "default_sort": {
+      "column": "p.tproj_created_at",
+      "order": "desc"
+    },
+
+    "columns": [
+      {
+        "key": "project_id",
+        "label": "Project ID",
+        "db_field": "p.tproj_project_id",
+        "sortable": true,
+        "filterable": true,
+        "visible_to": ["admin"]
+      },
+      {
+        "key": "project_name",
+        "label": "Project Name",
+        "db_field": "p.tproj_project_name",
+        "sortable": true,
+        "filterable": true,
+        "visible_to": ["admin", "user"]
+      },
+      {
+        "key": "project_code",
+        "label": "Project Code",
+        "db_field": "p.tproj_project_code",
+        "sortable": true,
+        "filterable": true,
+        "visible_to": ["admin"]
+      },
+      {
+        "key": "project_age",
+        "label": "Project Age",
+        "db_field": "p.tproj_age",
+        "sortable": true,
+        "filterable": true,
+        "visible_to": ["admin"]
+      },
+
+      {
+        "key": "state_id",
+        "label": "State ID",
+        "db_field": "p.tproj_state_id",
+        "filterable": true,
+        "visible_to": ["admin"]
+      },
+      {
+        "key": "state_name",
+        "label": "State",
+        "db_field": "s.tsl_state_name",
+        "source": "join",
+        "join": {
+          "table": "public.t_state",
+          "alias": "s",
+          "on": "s.tsl_state_id = p.tproj_state_id"
+        },
+        "filterable": true,
+        "filter_type": "select",
+        "visible_to": ["admin", "user"]
+      },
+
+      {
+        "key": "district_id",
+        "label": "District ID",
+        "db_field": "p.tproj_district_id",
+        "filterable": true,
+        "visible_to": ["admin"]
+      },
+      {
+        "key": "district_name",
+        "label": "District",
+        "db_field": "d.tdl_district_name",
+        "source": "join",
+        "depends_on": "state_name",
+        "join": {
+          "table": "public.t_district",
+          "alias": "d",
+          "on": "d.tdl_district_id = p.tproj_district_id"
+        },
+        "filterable": true,
+        "filter_type": "select",
+        "visible_to": ["admin", "user"]
+      },
+
+      {
+        "key": "block_id",
+        "label": "Block ID",
+        "db_field": "p.tproj_block_id",
+        "filterable": true,
+        "visible_to": ["admin"]
+      },
+      {
+        "key": "block_name",
+        "label": "Block",
+        "db_field": "b.tbl_block_name",
+        "source": "join",
+        "depends_on": "district_name",
+        "join": {
+          "table": "public.t_block",
+          "alias": "b",
+          "on": "b.tbl_block_id = p.tproj_block_id"
+        },
+        "filterable": true,
+        "filter_type": "select",
+        "visible_to": ["admin"]
+      },
+
+      {
+        "key": "is_active",
+        "label": "Active",
+        "db_field": "p.tproj_is_active",
+        "filterable": true,
+        "filter_type": "boolean",
+        "visible_to": ["admin"]
+      },
+
+      {
+        "key": "created_by",
+        "label": "Created By",
+        "db_field": "p.tproj_created_by",
+        "visible_to": ["admin"]
+      },
+      {
+        "key": "updated_by",
+        "label": "Updated By",
+        "db_field": "p.tproj_updated_by",
+        "visible_to": ["admin"]
+      },
+
+      {
+        "key": "created_at",
+        "label": "Created At",
+        "db_field": "p.tproj_created_at",
+        "sortable": true,
+        "visible_to": ["admin"]
+      },
+      {
+        "key": "updated_at",
+        "label": "Updated At",
+        "db_field": "p.tproj_updated_at",
+        "sortable": true,
+        "visible_to": ["admin"]
+      }
+    ],
+
+    "actions": [
+      {
+        "type": "view",
+        "roles": ["admin", "user"]
+      },
+      {
+        "type": "edit",
+        "roles": ["admin"]
+      },
+      {
+        "type": "delete",
+        "roles": ["admin"],
+        "confirm": true
+      }
+    ],
+    "add_more_columns": {
+     
+      "project_locations_two": {
+        "entity": {
+          "table": "public.t_sdg_cat",
+          "alias": "usd_one",
+          "primary_key": "tsdcat_id"
+        },
+        "relation": {
+          "local_key": "tsdcat_project_id",
+          "parent_key": "tproj_project_id"
+        },
+        "group_by": "usd_one.tsdcat_project_id",
+
+        "columns": [
+          {
+            "key": "project_id",
+            "label": "Project ID",
+            "db_field": "usd_one.tsdcat_project_id"
+          },
+          {
+            "key": "sdg_id",
+            "label": "SDG ID",
+            "db_field": "usd_one.tsdcat_sdg_id"
+          },
+          {
+            "key": "sdg_name",
+            "label": "SDG Name",
+            "db_field": "s.tsdg_sdg_name",
+            "source": "join",
+            "join": {
+              "table": "public.t_sdg",
+              "alias": "s",
+              "on": "s.tsdg_sdg_id = usd_one.tsdcat_sdg_id"
+            }
+          },
+          {
+            "key": "category_id",
+            "label": "Category ID",
+            "db_field": "usd_one.tsdcat_category_id"
+          },
+          {
+            "key": "category_name",
+            "label": "Category",
+            "db_field": "c.tcat_category_name",
+            "source": "join",
+            "join": {
+              "table": "public.t_category",
+              "alias": "c",
+              "on": "c.tcat_category_id = usd_one.tsdcat_category_id"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

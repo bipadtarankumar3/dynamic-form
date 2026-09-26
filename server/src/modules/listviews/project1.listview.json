@@ -1,0 +1,126 @@
+{
+  "list_view": {
+    "entity": {
+      "table": "public.t_sdg_cat",
+      "alias": "psc",
+      "primary_key": "tsdcat_id"
+    },
+
+    "default_sort": {
+      "column": "psc.tsdcat_created_at",
+      "order": "desc"
+    },
+
+    "columns": [
+    
+      {
+        "key": "sdg_name",
+        "label": "SDG",
+        "db_field": "sdg.tsdg_sdg_name",
+        "sortable": true,
+        "filterable": true,
+        "source": "join",
+        "join": {
+          "table": "public.t_sdg",
+          "alias": "sdg",
+          "on": "sdg.tsdg_sdg_id = psc.tsdcat_sdg_id"
+        },
+        "visible_to": ["admin", "user"]
+      },
+
+      {
+        "key": "category_name",
+        "label": "Category",
+        "db_field": "c.tcat_category_name",
+        "sortable": true,
+        "filterable": true,
+        "source": "join",
+        "join": {
+          "table": "public.t_category",
+          "alias": "c",
+          "on": "c.tcat_category_id = psc.tsdcat_category_id"
+        },
+        "visible_to": ["admin", "user"]
+      }
+    ],
+
+    "general_sections": [
+        {
+        "key": "project_id",
+        "label": "Project ID",
+        "db_field": "p.tproj_project_id",
+        "sortable": true,
+        "filterable": true,
+        "source": "join",
+        "join": {
+          "table": "public.t_project",
+          "alias": "p",
+          "on": "p.tproj_project_id = psc.tsdcat_project_id"
+        },
+        "visible_to": ["admin"]
+      },
+      {
+        "key": "project_name",
+        "label": "Project Name",
+        "db_field": "p.tproj_project_name",
+        "sortable": true,
+        "filterable": true,
+        "visible_to": ["admin", "user"]
+      },
+      {
+        "key": "project_code",
+        "label": "Project Code",
+        "db_field": "p.tproj_project_code",
+        "sortable": true,
+        "filterable": true,
+        "visible_to": ["admin"]
+      },
+      {
+        "key": "project_age",
+        "label": "Project Age",
+        "db_field": "p.tproj_age",
+        "sortable": true,
+        "filterable": true,
+        "visible_to": ["admin"]
+      },
+
+      {
+        "key": "state_name",
+        "label": "State",
+        "db_field": "s.tsl_state_name",
+        "source": "join",
+        "join": {
+          "table": "public.t_state",
+          "alias": "s",
+          "on": "s.tsl_state_id = p.tproj_state_id"
+        },
+        "filterable": true,
+        "filter_type": "select",
+        "visible_to": ["admin", "user"]
+      },
+
+      {
+        "key": "district_name",
+        "label": "District",
+        "db_field": "d.tdl_district_name",
+        "source": "join",
+        "depends_on": "state_name",
+        "join": {
+          "table": "public.t_district",
+          "alias": "d",
+          "on": "d.tdl_district_id = p.tproj_district_id"
+        },
+        "filterable": true,
+        "filter_type": "select",
+        "visible_to": ["admin", "user"]
+      }
+
+    ],
+
+    "actions": [
+      { "type": "view", "roles": ["admin", "user"] },
+      { "type": "edit", "roles": ["admin"] },
+      { "type": "delete", "roles": ["admin"], "confirm": true }
+    ]
+  }
+}
