@@ -28,7 +28,7 @@ export function getUniqueCopyDefaults(sourceTitle = '', sourceSlug = '', existin
     (existingForms || []).map((f) => (f.slug || '').trim().toLowerCase())
   );
   const existingTables = new Set([
-    ...(existingForms || []).map((f) => (f.table_name || `t_frm_${f.slug}`).trim().toLowerCase()),
+    ...(existingForms || []).map((f) => (f.table_name || f.slug).trim().toLowerCase()),
     ...(dbTables || []).map((t) => (typeof t === 'string' ? t : t.value || t.table_name || '').trim().toLowerCase()),
   ]);
 
@@ -38,7 +38,7 @@ export function getUniqueCopyDefaults(sourceTitle = '', sourceSlug = '', existin
 
   let candidateTitle = `${cleanTitle} (Copy)`;
   let candidateSlug = `${cleanSlug}_copy`;
-  let candidateTable = `t_frm_${candidateSlug}`;
+  let candidateTable = candidateSlug;
   let counter = 2;
 
   while (
@@ -48,7 +48,7 @@ export function getUniqueCopyDefaults(sourceTitle = '', sourceSlug = '', existin
   ) {
     candidateTitle = `${cleanTitle} (Copy ${counter})`;
     candidateSlug = `${cleanSlug}_copy_${counter}`;
-    candidateTable = `t_frm_${candidateSlug}`;
+    candidateTable = candidateSlug;
     counter++;
   }
 
@@ -160,7 +160,7 @@ export default function DuplicateFormModalV2({
     setTitle(val);
     const newSlug = slugify(val);
     setSlug(newSlug);
-    const newTable = `t_frm_${newSlug}`;
+    const newTable = newSlug;
     setTableName(newTable);
     form.setFieldsValue({ slug: newSlug, table_name: newTable });
   };
@@ -168,7 +168,7 @@ export default function DuplicateFormModalV2({
   const handleSlugChange = (e) => {
     const val = slugify(e.target.value);
     setSlug(val);
-    const newTable = `t_frm_${val}`;
+    const newTable = val;
     setTableName(newTable);
     form.setFieldsValue({ slug: val, table_name: newTable });
   };

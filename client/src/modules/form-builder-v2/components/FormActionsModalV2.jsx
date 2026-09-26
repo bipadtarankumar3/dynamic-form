@@ -290,8 +290,8 @@ export default function FormActionsModalV2({
 
   const isBaseTableSource = (sourceName) => {
     if (!sourceName) return false;
-    const baseTbl = schema.table_name || `t_frm_${schema.slug}`;
-    return sourceName === baseTbl || sourceName.startsWith('t_frm_');
+    const baseTbl = schema.table_name || schema.slug || '';
+    return sourceName === baseTbl;
   };
 
   const fetchColumnsForView = async (viewNameOrSlug, viewsList = dbViews) => {
@@ -430,7 +430,7 @@ export default function FormActionsModalV2({
       });
       seenValues.add(defaultAutoViewVal);
 
-      const baseTblVal = schema.table_name || `t_frm_${schema.slug}`;
+      const baseTblVal = schema.table_name || schema.slug || '';
       opts.push({
         label: `📁 Base Table (${baseTblVal})`,
         value: baseTblVal,

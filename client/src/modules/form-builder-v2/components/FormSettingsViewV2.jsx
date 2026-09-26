@@ -130,7 +130,7 @@ export default function FormSettingsViewV2({
                 </label>
                 <Input
                   size="large"
-                  value={schema.table_name || `t_frm_${schema.slug}`}
+                  value={schema.table_name || schema.slug || ''}
                   disabled
                   style={{ borderRadius: 8, background: '#f8fafc', color: '#64748b', fontWeight: 500 }}
                 />
@@ -180,7 +180,7 @@ export default function FormSettingsViewV2({
                     // Auto create column and sync FOREIGN KEY on backend
                     const formId = schema?.id || schema?.form_id;
                     const slug = schema?.slug;
-                    const tableName = schema?.table_name || (slug ? `t_frm_${slug}` : null);
+                    const tableName = schema?.table_name || slug || null;
 
                     if (formId || slug || tableName) {
                       try {

@@ -33,8 +33,8 @@ export default function TriggerFlowVisualizer({ triggers = [], schema = {} }) {
 
   const activeTrg = triggers[0] || {
     name: 'Automatic Balance Calculation',
-    source_table: schema?.table_name || `t_frm_${schema?.slug || 'project'}`,
-    target_table: 't_frm_project',
+    source_table: schema?.table_name || schema?.slug || 'project',
+    target_table: 'project',
     events: ['insert', 'update'],
     watch_update_fields: ['amount'],
     actions: [
@@ -51,8 +51,8 @@ export default function TriggerFlowVisualizer({ triggers = [], schema = {} }) {
   const firstAction = (activeTrg.actions && activeTrg.actions[0]) || {};
   const rawTargetCol = firstAction.target_field || 'outstanding_amount';
   const rawSourceCol = activeTrg.watch_update_fields?.[0] || 'amount';
-  const rawTargetTable = activeTrg.target_table || 't_frm_project';
-  const rawSourceTable = schema?.table_name || `t_frm_${schema?.slug || 'project'}`;
+  const rawTargetTable = activeTrg.target_table || 'project';
+  const rawSourceTable = schema?.table_name || schema?.slug || 'project';
 
   // Human-friendly titles
   const friendlyFormName = schema?.title || toHumanTitle(rawSourceTable);

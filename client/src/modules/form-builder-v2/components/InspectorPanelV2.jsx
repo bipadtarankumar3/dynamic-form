@@ -1185,7 +1185,7 @@ export default function InspectorPanelV2({
                       onUpdateFormMeta({
                         title: newTitle,
                         slug: autoSlug,
-                        table_name: `t_frm_${autoSlug}`,
+                        table_name: autoSlug,
                       });
                     } else {
                       onUpdateFormMeta({ title: newTitle });
@@ -1221,7 +1221,7 @@ export default function InspectorPanelV2({
                     const newSlug = e.target.value.toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_');
                     onUpdateFormMeta({
                       slug: newSlug,
-                      table_name: `t_frm_${newSlug}`,
+                      table_name: newSlug,
                     });
                   }}
                 />
@@ -1342,7 +1342,7 @@ export default function InspectorPanelV2({
                     // Auto create column and sync FOREIGN KEY on backend
                     const formId = formMeta?.id || formMeta?.form_id;
                     const slug = formMeta?.slug;
-                    const tableName = formMeta?.table_name || (slug ? `t_frm_${slug}` : null);
+                    const tableName = formMeta?.table_name || slug || null;
 
                     if (formId || slug || tableName) {
                       try {

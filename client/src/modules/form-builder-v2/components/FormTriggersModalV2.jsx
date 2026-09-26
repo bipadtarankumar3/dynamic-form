@@ -112,7 +112,7 @@ export default function FormTriggersModalV2({
   // Load all available DB tables
   useEffect(() => {
     if (!open) return;
-    const curTbl = schema?.table_name || (schema?.slug ? `t_frm_${schema.slug}` : '');
+    const curTbl = schema?.table_name || schema?.slug || '';
     const fetchTables = async () => {
       try {
         const res = await privateHttpClient.get('configurator/form-schemas/all-tables');
@@ -127,7 +127,7 @@ export default function FormTriggersModalV2({
         console.warn('Failed to load tables list from all-tables:', err);
       }
       const fallback = (allFormsList || [])
-        .map((f) => f.table_name || `t_frm_${f.slug}`)
+        .map((f) => f.table_name || f.slug)
         .filter(Boolean);
       setTablesList(Array.from(new Set([curTbl, ...fallback].filter(Boolean))));
     };
@@ -167,7 +167,7 @@ export default function FormTriggersModalV2({
   // Fetch ALL columns and fields of the CURRENT form
   useEffect(() => {
     if (!open || !schema) return;
-    const currentTable = schema.table_name || `t_frm_${schema.slug}`;
+    const currentTable = schema.table_name || schema.slug || '';
 
     const fetchCurrentFields = async () => {
       const fieldSet = new Set(['id', 'parent_id']);
@@ -571,7 +571,7 @@ export default function FormTriggersModalV2({
                             <span style={{ color: '#94a3b8' }}>•</span>
                             <LinkOutlined style={{ color: '#0284c7' }} />
                             <span>
-                              Linked via: <code>{schema?.table_name || `t_frm_${schema?.slug}`}.{trg.source_fk_field}</code> ➔ <code>{trg.target_table}.{trg.target_pk || 'id'}</code>
+                              Linked via: <code>{schema?.table_name || schema?.slug || 'form'}.{trg.source_fk_field}</code> ➔ <code>{trg.target_table}.{trg.target_pk || 'id'}</code>
                             </span>
                           </div>
 
@@ -863,7 +863,7 @@ export default function FormTriggersModalV2({
                       type="dashed"
                       icon={<ThunderboltOutlined style={{ color: 'var(--primary-color, #15803d)' }} />}
                       onClick={() => {
-                        const activeTbl = editingTrigger.source_table || schema?.table_name || `t_frm_${schema?.slug}` || '';
+                        const activeTbl = editingTrigger.source_table || schema?.table_name || schema?.slug || '';
                         setEditingTrigger({
                           ...editingTrigger,
                           source_table: activeTbl,
@@ -890,7 +890,7 @@ export default function FormTriggersModalV2({
                           showSearch
                           size="middle"
                           placeholder="Choose present table..."
-                          value={editingTrigger.source_table || schema?.table_name || `t_frm_${schema?.slug}`}
+                          value={editingTrigger.source_table || schema?.table_name || schema?.slug || ''}
                           onChange={(val) => {
                             setEditingTrigger({ ...editingTrigger, source_table: val });
                             fetchColumnsForTable(val);
@@ -969,7 +969,7 @@ export default function FormTriggersModalV2({
                           <span>Relationship Pipeline:</span>
                         </span>
                         <span className="trg-relation-chip trg-relation-chip-primary">
-                          {(editingTrigger.source_table || schema?.table_name || `t_frm_${schema?.slug}`)}.{editingTrigger.source_fk_field}
+                          {(editingTrigger.source_table || schema?.table_name || schema?.slug || '')}.{editingTrigger.source_fk_field}
                         </span>
                         <ArrowRightOutlined style={{ color: '#94a3b8', fontSize: 12 }} />
                         <span className="trg-relation-chip trg-relation-chip-secondary">
@@ -977,7 +977,7 @@ export default function FormTriggersModalV2({
                         </span>
                       </div>
 
-                      {(editingTrigger.target_table === (editingTrigger.source_table || schema?.table_name || `t_frm_${schema?.slug}`)) ? (
+                      {(editingTrigger.target_table === (editingTrigger.source_table || schema?.table_name || schema?.slug || '')) ? (
                         <Tag color="purple" style={{ margin: 0, fontWeight: 700, borderRadius: 6, padding: '3px 10px' }}>
                           ⚡ Same-Table Automation Active
                         </Tag>

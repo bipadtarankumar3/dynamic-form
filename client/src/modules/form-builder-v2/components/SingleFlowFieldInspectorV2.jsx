@@ -830,7 +830,7 @@ export default function SingleFlowFieldInspectorV2({ field, onUpdateField, allFi
                         onChange={(e) => {
                           const enabled = e.target.checked;
                           const currentLimit = field.validation?.dynamic_limit || {};
-                          const defTable = currentLimit.target_table || 't_frm_project';
+                          const defTable = currentLimit.target_table || 'project';
                           updateValProp('dynamic_limit', {
                             enabled,
                             target_table: defTable,
@@ -865,7 +865,7 @@ export default function SingleFlowFieldInspectorV2({ field, onUpdateField, allFi
                             fetchColumnsForTable(val);
                           }}
                           options={allTables.map((t) => ({ label: t.table_name || t.label, value: t.table_name || t.value }))}
-                          placeholder="e.g. t_frm_project"
+                          placeholder="e.g. project"
                           style={{ width: '100%' }}
                         />
                       </div>
