@@ -31,16 +31,43 @@ export const reorderCustomDashboards = async (items) => {
 export const getAvailableRoles = async () => {
   try {
     const res = await privateHttpClient.get("configurator/rbac/roles");
-    if (res.data?.success || res.data?.status) {
-      return res.data.data || [];
+    const rawList = res.data?.data || res.data?.roles || [];
+    if (Array.isArray(rawList) && rawList.length > 0) {
+      return rawList.map((r, idx) => {
+        const idVal = String(r._id || r.id || r.role_id || r.role_slug || r.slug || `role_${idx}`);
+        const nameVal = r.name || r.role_name || r.role_slug || r.slug || `Role #${idVal}`;
+        return {
+          ...r,
+          id: idVal,
+          _id: idVal,
+          role_id: idVal,
+          name: nameVal,
+          role_name: nameVal,
+        };
+      });
     }
   } catch (e) {
     try {
       const res2 = await privateHttpClient.get("rbac/rol/list");
-      return res2.data?.data || [];
+      const rawList2 = res2.data?.data || [];
+      if (Array.isArray(rawList2) && rawList2.length > 0) {
+        return rawList2.map((r, idx) => {
+          const idVal = String(r._id || r.id || r.role_id || r.role_slug || r.slug || `role_${idx}`);
+          const nameVal = r.name || r.role_name || r.role_slug || r.slug || `Role #${idVal}`;
+          return {
+            ...r,
+            id: idVal,
+            _id: idVal,
+            role_id: idVal,
+            name: nameVal,
+            role_name: nameVal,
+          };
+        });
+      }
     } catch (err) {
       console.error("Failed to fetch roles", err);
     }
   }
   return [];
 };
+

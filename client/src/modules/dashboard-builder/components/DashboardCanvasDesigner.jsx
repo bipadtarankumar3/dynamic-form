@@ -1255,19 +1255,20 @@ const DashboardCanvasDesigner = ({
         widgets_layout: canvasRows,
       };
 
+      const targetId = dashboard?.tdb_id || dashboard?.id || dashboard?._id;
       if (typeof onSave === 'function') {
         await onSave(payload);
-      } else if (dashboard?.tdb_id) {
+      } else if (targetId) {
         const updateFn = typeof updateDashboard === 'function' ? updateDashboard : updateCustomDashboard;
-        const res = await updateFn(dashboard.tdb_id, payload);
-        if (res?.data?.status) {
+        const res = await updateFn(targetId, payload);
+        if (res?.data?.status || res?.data?.success) {
           message.success(asDraft ? 'Dashboard saved as draft!' : 'Dashboard published successfully!');
           handleBack();
         }
       } else {
         const createFn = typeof createDashboard === 'function' ? createDashboard : createCustomDashboard;
         const res = await createFn(payload);
-        if (res?.data?.status) {
+        if (res?.data?.status || res?.data?.success) {
           message.success(asDraft ? 'Dashboard saved as draft!' : 'Dashboard created and published successfully!');
           handleBack();
         }

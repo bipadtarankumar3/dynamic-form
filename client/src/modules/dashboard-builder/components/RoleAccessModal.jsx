@@ -214,10 +214,13 @@ const RoleAccessModal = ({
               filterOption={(input, option) =>
                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
               }
-              options={availableToAdd.map((r) => ({
-                label: r.name,
-                value: r.id,
-              }))}
+              options={availableToAdd
+                .map((r, idx) => {
+                  const val = String(r?._id || r?.id || r?.role_id || r?.role_slug || r?.slug || `role_${idx}`);
+                  const label = r?.name || r?.role_name || r?.role_slug || `Role #${val}`;
+                  return { label, value: val };
+                })
+                .filter((opt) => opt.value !== null && opt.value !== undefined && opt.value !== "null")}
             />
           </div>
 

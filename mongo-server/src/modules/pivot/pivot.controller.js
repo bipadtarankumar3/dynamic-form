@@ -272,6 +272,183 @@ const pivotController = {
       return res.status(500).json({ status: false, message: e.message });
     }
   },
+
+  // ---- REPORTS / SAVED WIDGETS CRUD ----
+  getAllReports: async (req, res) => {
+    try {
+      const PivotReport = require("../../models/PivotReport.model");
+      const reports = await PivotReport.find({ deleted_at: null }).sort({ order: 1, created_at: -1 }).lean();
+      const formatted = reports.map((r) => ({
+        id: String(r._id),
+        _id: String(r._id),
+        report_id: String(r._id),
+        name: r.name || r.title || "Report",
+        title: r.title || r.name || "Report",
+        table_name: r.table_name,
+        chart_type: r.chart_type || "kpi_card",
+        configuration: r.configuration || r.zones || {},
+        zones: r.zones || r.configuration || {},
+        is_active: r.is_active !== false,
+        status: r.is_active !== false,
+        roles: r.roles || [],
+        order: r.order || 0,
+        created_at: r.created_at,
+        updated_at: r.updated_at,
+      }));
+
+      return res.json({
+        success: true,
+        status: true,
+        count: formatted.length,
+        data: formatted,
+      });
+    } catch (e) {
+      return res.status(500).json({ success: false, status: false, message: e.message });
+    }
+  },
+
+  getSavedReports: async (req, res) => {
+    try {
+      const PivotReport = require("../../models/PivotReport.model");
+      const reports = await PivotReport.find({ deleted_at: null, is_active: { $ne: false } }).sort({ order: 1, created_at: -1 }).lean();
+      const formatted = reports.map((r) => ({
+        id: String(r._id),
+        _id: String(r._id),
+        report_id: String(r._id),
+        name: r.name || r.title,
+        title: r.title || r.name,
+        table_name: r.table_name,
+        chart_type: r.chart_type || "kpi_card",
+        configuration: r.configuration || r.zones || {},
+        is_active: r.is_active !== false,
+        status: r.is_active !== false,
+        order: r.order || 0,
+      }));
+
+      return res.json({
+        success: true,
+        status: true,
+        data: formatted,
+      });
+    } catch (e) {
+      return res.status(500).json({ success: false, status: false, message: e.message });
+    }
+  },
+
+  saveReport: async (req, res) => {
+    try {
+      const PivotReport = require("../../models/PivotReport.model");
+      const userId = req.user?.user_id;
+      const { id, name, title, table_name, chart_type, configuration, zones, roles, is_active } = req.body;
+
+      const reportName = name || title;
+      if (!reportName || !table_name) {
+        return res.status(400).json({ success: false, status: false, message: "Report title and table_name are required" });
+      }
+
+      const payload = {
+        name: reportName,
+        title: reportName,
+        table_name,
+        chart_type: chart_type || "kpi_card",
+        configuration: configuration || zones || {},
+        zones: zones || configuration || {},
+        roles: roles || [],
+        is_active: is_active !== false,
+        updated_by: userId,
+      };
+
+      if (id && mongoose.isValidObjectId(id)) {
+        const updated = await PivotReport.findByIdAndUpdate(id, payload, { new: true }).lean();
+        return res.json({
+          success: true,
+          status: true,
+          message: "Report updated successfully",
+          data: { ...updated, id: String(updated._id) },
+        });
+      }
+
+      const created = await PivotReport.create({ ...payload, created_by: userId });
+      return res.status(201).json({
+        success: true,
+        status: true,
+        message: "Report saved successfully",
+        data: { ...created.toObject(), id: String(created._id) },
+      });
+    } catch (e) {
+      return res.status(500).json({ success: false, status: false, message: e.message });
+    }
+  },
+
+  toggleReportStatus: async (req, res) => {
+    try {
+      const PivotReport = require("../../models/PivotReport.model");
+      const { id } = req.params;
+      const report = await PivotReport.findById(id);
+      if (!report) {
+        return res.status(404).json({ success: false, status: false, message: "Report not found" });
+      }
+      report.is_active = !report.is_active;
+      await report.save();
+      return res.json({
+        success: true,
+        status: true,
+        message: `Report ${report.is_active ? "activated" : "deactivated"} successfully`,
+      });
+    } catch (e) {
+      return res.status(500).json({ success: false, status: false, message: e.message });
+    }
+  },
+
+  deleteReport: async (req, res) => {
+    try {
+      const PivotReport = require("../../models/PivotReport.model");
+      const { id } = req.params;
+      await PivotReport.findByIdAndUpdate(id, { deleted_at: new Date() });
+      return res.json({ success: true, status: true, message: "Report deleted successfully" });
+    } catch (e) {
+      return res.status(500).json({ success: false, status: false, message: e.message });
+    }
+  },
+
+  reorderReports: async (req, res) => {
+    try {
+      const PivotReport = require("../../models/PivotReport.model");
+      const { items = [] } = req.body;
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const itemId = item.id || item._id;
+        if (itemId && mongoose.isValidObjectId(itemId)) {
+          await PivotReport.findByIdAndUpdate(itemId, { order: i });
+        }
+      }
+      return res.json({ success: true, status: true, message: "Reports reordered successfully" });
+    } catch (e) {
+      return res.status(500).json({ success: false, status: false, message: e.message });
+    }
+  },
+
+  getFilterOptions: async (req, res) => {
+    try {
+      const { table_name, field, search = "" } = req.body;
+      const records = await fetchDatasetRecords(table_name);
+      const valSet = new Set();
+      records.forEach((r) => {
+        const val = r[field] !== undefined ? r[field] : r.data?.[field];
+        if (val !== undefined && val !== null && val !== "") {
+          valSet.add(typeof val === "object" ? val.label || val.name || JSON.stringify(val) : String(val));
+        }
+      });
+      let values = Array.from(valSet);
+      if (search) {
+        const s = search.toLowerCase();
+        values = values.filter((v) => v.toLowerCase().includes(s));
+      }
+      return res.json({ success: true, status: true, data: values.map((v) => ({ value: v, label: v })) });
+    } catch (e) {
+      return res.status(500).json({ success: false, status: false, message: e.message });
+    }
+  },
 };
 
 module.exports = pivotController;

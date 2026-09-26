@@ -81,10 +81,10 @@ const DashboardBuilderManager = () => {
         getAvailableRoles(),
       ]);
 
-      if (dashRes.data?.status) {
+      if (dashRes.data?.status || dashRes.data?.success) {
         setDashboards(dashRes.data.data || []);
       }
-      if (widgetRes.data?.status) {
+      if (widgetRes.data?.status || widgetRes.data?.success) {
         setSavedWidgets(widgetRes.data.data || []);
       }
       setRoles(rolesData || []);
@@ -103,11 +103,17 @@ const DashboardBuilderManager = () => {
   const handleCreateNew = () => {
     setCurrentDashboard({
       tdb_name: '',
+      name: '',
       tdb_description: '',
+      description: '',
       tdb_roles: [],
+      roles: [],
       tdb_widgets_layout: [],
+      widgets_layout: [],
       tdb_is_active: true,
+      is_active: true,
       tdb_is_default: false,
+      is_default: false,
     });
     setIsCreating(true);
   };
@@ -122,7 +128,7 @@ const DashboardBuilderManager = () => {
       const isDraft = payload.is_active === false;
       if (isCreating) {
         const res = await createCustomDashboard(payload);
-        if (res.data?.status) {
+        if (res.data?.status || res.data?.success) {
           message.success(
             isDraft
               ? 'Dashboard saved as draft successfully!'
@@ -133,8 +139,9 @@ const DashboardBuilderManager = () => {
           fetchData();
         }
       } else {
-        const res = await updateCustomDashboard(currentDashboard.tdb_id, payload);
-        if (res.data?.status) {
+        const targetId = currentDashboard?.tdb_id || currentDashboard?.id || currentDashboard?._id;
+        const res = await updateCustomDashboard(targetId, payload);
+        if (res.data?.status || res.data?.success) {
           message.success(
             isDraft
               ? 'Dashboard saved as draft successfully!'
@@ -154,7 +161,7 @@ const DashboardBuilderManager = () => {
     e?.stopPropagation();
     try {
       const res = await toggleCustomDashboardStatus(id);
-      if (res.data?.status) {
+      if (res.data?.status || res.data?.success) {
         message.success(res.data.message || 'Status updated');
         fetchData();
       }
@@ -166,7 +173,7 @@ const DashboardBuilderManager = () => {
   const handleDelete = async (id) => {
     try {
       const res = await deleteCustomDashboard(id);
-      if (res.data?.status) {
+      if (res.data?.status || res.data?.success) {
         message.success('Dashboard deleted');
         fetchData();
       }
@@ -179,16 +186,16 @@ const DashboardBuilderManager = () => {
     e?.stopPropagation();
     try {
       const payload = {
-        name: `${item.tdb_name} (Copy)`,
-        description: item.tdb_description,
-        roles: item.tdb_roles || [],
-        widgets_layout: item.tdb_widgets_layout || [],
+        name: `${item.tdb_name || item.name} (Copy)`,
+        description: item.tdb_description || item.description || '',
+        roles: item.tdb_roles || item.roles || [],
+        widgets_layout: item.tdb_widgets_layout || item.widgets_layout || item.layout || [],
         is_active: true,
         is_default: false,
       };
       const res = await createCustomDashboard(payload);
-      if (res.data?.status) {
-        message.success(`Duplicated "${item.tdb_name}"`);
+      if (res.data?.status || res.data?.success) {
+        message.success(`Duplicated "${item.tdb_name || item.name}"`);
         fetchData();
       }
     } catch (err) {
@@ -236,15 +243,15 @@ const DashboardBuilderManager = () => {
 
   const filteredDashboards = dashboards.filter((d) => {
     const matchesSearch =
-      (d.tdb_name || '').toLowerCase().includes(search.toLowerCase()) ||
-      (d.tdb_description || '').toLowerCase().includes(search.toLowerCase());
+      (d.tdb_name || d.name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (d.tdb_description || d.description || '').toLowerCase().includes(search.toLowerCase());
 
-    const assignedRoles = parseRoles(d.tdb_roles);
+    const assignedRoles = parseRoles(d.tdb_roles || d.roles);
     const matchesRole =
       roleFilter === 'all' ||
       assignedRoles.some((r) => {
         if (typeof r === 'object' && r !== null) {
-          const id = r.role_id ?? r.id;
+          const id = r.role_id ?? r.id ?? r._id ?? r.role_slug ?? r.name;
           return String(id) === String(roleFilter);
         }
         return String(r) === String(roleFilter);
@@ -338,18 +345,21 @@ const DashboardBuilderManager = () => {
               <span className="conf-pill-count">{filteredDashboards.length}</span>
             </div>
             <Select
-              value={roleFilter}
-              onChange={setRoleFilter}
+              value={roleFilter || "all"}
+              onChange={(val) => setRoleFilter(val || "all")}
               style={{ width: 180 }}
               className="conf-role-select"
-            >
-              <Option value="all">All Roles</Option>
-              {roles.map((r) => (
-                <Option key={r.id} value={r.id}>
-                  {r.name}
-                </Option>
-              ))}
-            </Select>
+              options={[
+                { label: "All Roles", value: "all" },
+                ...roles
+                  .map((r, idx) => {
+                    const val = String(r?._id || r?.id || r?.role_id || r?.role_slug || r?.slug || `role_${idx}`);
+                    const label = r?.name || r?.role_name || r?.role_slug || `Role #${val}`;
+                    return { label, value: val };
+                  })
+                  .filter((opt) => opt.value !== null && opt.value !== undefined && opt.value !== "null"),
+              ]}
+            />
           </div>
 
           <div className="conf-toolbar-right">
